@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: 'postgres:14.1-alpine'
+    restart: 'always'
+    environment:
+        POSTGRES_USER: 'postgres'
+        POSTGRES_PASSWORD: '1234'
+        POSTGRES_DB: 'postgres'
+    ports:
+      - '5432:5432'
+  ProtestCrawler:
+    build: "postgresupdater"
+    image: "protestcrawler:2.0.41"
+    network_mode: 'host'
+    #  TelegramBot:
+    #    build: "telegrambot"
+    #    image: "telegrambot:0.0.20"
+    #    ports:
+    #      - '5000:5000'
+    #    volumes:
+    #      - ./output:/app/output

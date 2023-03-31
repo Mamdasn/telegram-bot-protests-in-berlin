@@ -6,6 +6,19 @@ __pycache__/
 # C extensions
 *.so
 
+# Output of telegram
+output/
+
+# Hide SSL folder
+telegrambot/SSL
+
+# Hide unecessary Zolders
+telegrambot/__pycache__/
+telegrambot/output/
+telegrambot/postgresconf/__pycache__/
+postgresupdater/__pycache__/
+postgresupdater/postgresconf/__pycache__/
+
 # Distribution / packaging
 .Python
 build/

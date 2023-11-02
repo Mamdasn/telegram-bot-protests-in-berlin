@@ -1,5 +1,6 @@
 import requests
 from credentials import config
+import datetime 
 
 token = config.TG_BOT_TOKEN
 base_link = f'https://api.telegram.org/bot{token}'
@@ -31,6 +32,48 @@ base_link = f'https://api.telegram.org/bot{token}'
 #        return pages[page_number - 1], number_of_pages
 #    else:
 #        return '', number_of_pages
+
+def get_next_period_of_time(number_of_days, start_date=None):
+    if not start_date:
+        start_date = datetime.datetime.today()
+    date_list = [(start_date + datetime.timedelta(days=i)).strftime('%d.%m.%y') for i in range(number_of_days)]
+    return date_list
+
+def get_calender(start_date):
+    number_of_days = 24
+    days=[[]]
+    years = []
+    for i, d in enumerate(get_next_period_of_time(number_of_days=number_of_days, start_date=start_date)):
+        row = i // 4
+        if len(days)==row:
+            days.append([])
+        exact_date = start_date + datetime.timedelta(days=i)
+        date = exact_date.strftime("%d.%m.%Y")
+        month = date.split('.')[1]
+        day   = date.split('.')[0]
+        years.append(str(exact_date.year))
+        short_month_name = exact_date.strftime('%b')
+        days[row].append({'text': f"{short_month_name}. {day}", 'callback_data': f'/date {date}'})
+    days.append([])
+    today = datetime.datetime.today()
+    print('start_date:', start_date.strftime("%d.%m.%Y"), 'today:', today.strftime("%d.%m.%Y"))
+    if start_date.strftime("%d.%m.%Y")!=today.strftime("%d.%m.%Y"):
+        previous_start_date = start_date + datetime.timedelta(days=-number_of_days)
+        days[-1].append({'text': f"<", 'callback_data': f'/calender {previous_start_date}'})
+    days[-1].append({'text': f"{', '.join(set(years))}", 'callback_data': f'/calender {start_date}'})
+    next_start_date = start_date + datetime.timedelta(days=number_of_days)
+    days[-1].append({'text': f">", 'callback_data': f'/calender {next_start_date}'})
+    reply_markup = {'inline_keyboard': days}
+    print('reply_markup:', reply_markup)
+    return reply_markup, set(years)
+
+def get_remaining_days_in_current_month():
+    now = datetime.datetime.now()
+    next_month = datetime.datetime(now.year, now.month + 1, 1) if now.month != 12 else datetime.datetime(now.year + 1, 1, 1)
+    last_day_of_current_month = next_month - datetime.timedelta(days=1)
+    remaining_days = [day for day in range(now.day, last_day_of_current_month.day + 1)]
+    return remaining_days
+
 def message_format_for_postgres(queries, page_number=1, length_of_message=4000):
     queries = [f"{q}\n" for q in queries]
     queries_len = [len(q) for q in queries]
@@ -82,10 +125,12 @@ def parse_message(msg):
             return None, None, None
         message_id = reply_to_message.get('message_id')
         message_text = reply_to_message.get('text')
+        dice = reply_to_message.get('dice')
+        dice_value = dice.get('value') if dice else None
         from_user = reply_to_message.get('from')
         chat_id = from_user.get('id')
 
-        message_info = [message_text, message_id, callback_query_data, callback_query_message_id]
+        message_info = [message_text, message_id, callback_query_data, callback_query_message_id, dice_value]
         return chat_id, message_info, 'callback_query'
 
 
@@ -98,8 +143,10 @@ def parse_message(msg):
         if chat_type == 'private': 
             message_id = message.get('message_id')
             txt = message.get('text')
-            message_info = [txt, message_id]
-            return chat_id, [txt, message_id], 'message'
+            dice = message.get('dice')
+            dice_value = dice.get('value') if dice else None
+            message_info = [txt, message_id, dice_value]
+            return chat_id, message_info, 'message'
 
     return None, None, None
     

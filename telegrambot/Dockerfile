@@ -29,4 +29,5 @@ RUN mkdir -p /app/output
 RUN chmod +x nginx-setup.sh
 RUN chmod +x initial-webhook-setup.sh
 
-CMD ["python", "telegram-bot-run.py"]
+# Specify the command to run on container start
+CMD ["sh", "-c", "/app/initial-webhook-setup.sh && /app/nginx-setup.sh && nginx && python3 telegram-bot-run.py >> /app/output/telegram.logs 2>&1"]

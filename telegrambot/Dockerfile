@@ -2,6 +2,8 @@
 
 FROM python:3.11-alpine
 
+RUN apk --no-cache add nginx curl openssl
+
 WORKDIR /app
 
 #RUN python3 -m pip install --upgrade pip

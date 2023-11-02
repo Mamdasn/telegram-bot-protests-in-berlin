@@ -2,13 +2,19 @@
 
 FROM python:3.11-alpine
 
+# Install nginx
 RUN apk --no-cache add nginx curl openssl
 
+# Set the working directory inside the container
 WORKDIR /app
 
-#RUN python3 -m pip install --upgrade pip
-COPY requirements.txt requirements-telegrambot.txt
-RUN pip3 install -r requirements-telegrambot.txt
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install any dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+
 ENV TG_BOT_TOKEN="Run telegram-bot-setup.sh"
 COPY . .
 

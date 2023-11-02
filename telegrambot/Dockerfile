@@ -15,7 +15,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 
-ENV TG_BOT_TOKEN="Run telegram-bot-setup.sh"
 COPY . .
 
 EXPOSE 5000 5000

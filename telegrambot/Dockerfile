@@ -22,4 +22,7 @@ COPY portforwarding.conf /etc/nginx/nginx.conf
 
 EXPOSE 443
 
+# Create a directory in the container to log the output of the code
+RUN mkdir -p /app/output
+
 CMD ["python", "telegram-bot-run.py"]

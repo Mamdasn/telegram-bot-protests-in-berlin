@@ -1,4 +1,9 @@
 # Byte-compiled / optimized / DLL files
+telegrambot/__pycache__/
+protestcrawler/__pycache__/
+telegrambot/postgresconf/__pycache__/
+protestcrawler/postgresconf/__pycache__/
+
 __pycache__/
 *.py[cod]
 *$py.class
@@ -8,16 +13,10 @@ __pycache__/
 
 # Output of telegram
 output/
+telegrambot/output/
 
 # Hide SSL folder
-telegrambot/SSL
-
-# Hide unecessary Zolders
-telegrambot/__pycache__/
-telegrambot/output/
-telegrambot/postgresconf/__pycache__/
-postgresupdater/__pycache__/
-postgresupdater/postgresconf/__pycache__/
+telegrambot/SSLFILES
 
 # Distribution / packaging
 .Python

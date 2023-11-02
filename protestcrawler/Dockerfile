@@ -10,4 +10,4 @@ RUN pip3 install -r requirements-postgresupdater.txt
 
 COPY . .
 
-CMD ["python", "ProtestCrawler.py"]
+CMD ["python", "protestcrawler.py"]

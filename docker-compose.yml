@@ -1,23 +1,27 @@
 version: '3.8'
-
+ 
 services:
   postgres_db:
     image: 'postgres:14.1-alpine'
     restart: 'always'
+    container_name: postgres_db
     environment:
         POSTGRES_USER: 'postgres'
         POSTGRES_PASSWORD: '1234'
         POSTGRES_DB: 'postgres'
+        log_statement: "all"
     ports:
       - '5432:5432'
-  ProtestCrawler:
-    build: "postgresupdater"
-    image: "protestcrawler:2.0.41"
-    network_mode: 'host'
-    #  TelegramBot:
-    #    build: "telegrambot"
-    #    image: "telegrambot:0.0.20"
-    #    ports:
-    #      - '5000:5000'
-    #    volumes:
-    #      - ./output:/app/output
+  protestcrawler:
+    build: "protestcrawler"
+    image: "protestcrawler:0.0.0"
+  telegrambot:
+    build: "telegrambot"
+    image: telegrambot:0.0.0
+    ports:
+      - '443:443'
+    environment:
+      - IP_ADDRESS=${IP_ADDRESS}
+      - TG_BOT_TOKEN=${TG_BOT_TOKEN}
+    volumes:
+      - ./telegrambot/output:/app/output

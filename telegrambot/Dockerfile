@@ -14,8 +14,11 @@ COPY requirements.txt .
 # Install any dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-
+# Copy the content of the local src directory to the working directory
 COPY . .
+
+# Copy the Nginx configuration file
+COPY portforwarding.conf /etc/nginx/nginx.conf
 
 EXPOSE 5000 5000
 

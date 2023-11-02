@@ -20,6 +20,6 @@ COPY . .
 # Copy the Nginx configuration file
 COPY portforwarding.conf /etc/nginx/nginx.conf
 
-EXPOSE 5000 5000
+EXPOSE 443
 
 CMD ["python", "telegram-bot-run.py"]

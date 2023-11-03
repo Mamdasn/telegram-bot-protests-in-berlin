@@ -6,11 +6,13 @@ from telegram_bot_api import parse_message, \
                                 send_message, \
                                 deleteMessage, \
                                 editMessageText, \
-                                message_format_for_postgres, \
                                 answerInlineQuery, \
                                 sendVideo, \
-                                get_calender, \
-                                get_next_period_of_time
+from tools_collection import message_format_for_postgres, \
+                             get_calender, \
+                             get_next_period_of_time, \
+                             make_reply_markup_page_control
+
 from threading import Thread
 import datetime
 from time import sleep
@@ -50,18 +52,6 @@ def manage_messages(msg):
                 handle_inline_query(inline_query_id=chat_id, message_info=message_info)
     except Exception as e:
         print(e)
-
-def make_reply_markup_page_control(page_number, number_of_pages, command):
-    reply_markup=''
-    next_page = {'text': '>', 'callback_data': f'page {page_number+1} {command}'}
-    previous_page = {'text': '<', 'callback_data': f'page {page_number-1} {command}'}
-    if 2<=page_number<number_of_pages:
-        reply_markup = {'inline_keyboard': [[previous_page, next_page]]}
-    elif (page_number==number_of_pages) and (1<number_of_pages):
-            reply_markup = {'inline_keyboard': [[previous_page], ]}
-    elif (page_number==1) and (1<number_of_pages):
-            reply_markup = {'inline_keyboard': [[next_page], ]}
-    return reply_markup
 
 def message_and_reply_markup_format(page_number, queries, command):
     queries_formatted = fetcher.format_postgre_queries(queries)

@@ -1,37 +1,9 @@
 import requests
 from credentials import config
-import datetime 
+import datetime
 
 token = config.TG_BOT_TOKEN
 base_link = f'https://api.telegram.org/bot{token}'
-
-# webhook = 'https://api.telegram.org/bot{token}/setWebhook
-# delete a webhook = 'https://api.telegram.org/bot{token}/deleteWebhook'
-# get updates = 'https://api.telegram.org/bot{token}/getUpdates'
-
-#def message_format_for_postgres1(queries, page_number=1, length_of_message=3500):
-#    queries = [f"{q}\n" for q in queries]
-#    queries_len = [len(q) for q in queries]
-#    
-#    # Concatenate the queries into pages
-#    pages = []
-#    current_page = ''
-#    for query in queries:
-#        if len(current_page) + len(query) <= length_of_message:
-#            current_page += query
-#        else:
-#            pages.append(current_page)
-#            current_page = query
-#    if current_page:
-#        pages.append(current_page)
-#    
-#    number_of_pages = len(pages)
-#    
-#    # Return the requested page number and the number of pages
-#    if page_number > 0 and page_number <= number_of_pages:
-#        return pages[page_number - 1], number_of_pages
-#    else:
-#        return '', number_of_pages
 
 def get_next_period_of_time(number_of_days, start_date=None):
     if not start_date:
@@ -86,13 +58,87 @@ def message_format_for_postgres(queries, page_number=1, length_of_message=4000):
                 break
             number_of_pages += 1
             query_indexes_for_current_page.append([])
-            
+
         query_indexes_for_current_page[-1].append(i)
-            
+
     page = ''.join(
                 [queries[i] for i in query_indexes_for_current_page[page_number-1]]
                 ) if page_number <= number_of_pages else ''
     return page, number_of_pages
+
+class Message:
+    def __init__(self, message: dict):
+        self._message = message
+    @staticmethod
+    def _getitem(dic, key):
+        keys = key if isinstance(key, tuple) else (key,)
+        query = dic
+        for k in keys:
+            if not isinstance(query, dict): return None
+            query = query.get(k)
+        return query
+    @property
+    def message(self):
+        return self._getitem(self._message, 'message')
+    @property
+    def chat(self):
+        return self._getitem(self.message, 'chat')
+    @property
+    def chat_id(self):
+        return self._getitem(self.message, ('chat', 'id'))
+    @property
+    def chat_type(self):
+        return self._getitem(self.message, ('chat', 'type'))
+    @property
+    def message_id(self):
+        if self.chat_type == 'private':
+            return self._getitem(self.message, 'message_id')
+    @property
+    def message_text(self):
+        if self.chat_type == 'private':
+            return self._getitem(self.message, 'text')
+    @property
+    def message_info(self):
+        return (self.message_text, self.message_id)
+    @property
+    def inline_query(self):
+        return self._getitem(self._message, 'inline_query')
+    @property
+    def query(self):
+        return self._getitem(self.inline_query, 'query')
+    @property
+    def query_id(self):
+        return self._getitem(self.inline_query, 'id')
+    @property
+    def callback_query(self):
+        return self._getitem(self._message, 'callback_query')
+    @property
+    def callback_query_id(self):
+        return self._getitem(self.callback_query, 'id')
+    @property
+    def callback_query_data(self):
+        return self._getitem(self.callback_query, 'data')
+    @property
+    def callback_query_message(self):
+        return self._getitem(self.callback_query, 'message')
+    @property
+    def callback_query_message_id(self):
+        return self._getitem(self.callback_query_message, 'message_id')
+    @property
+    def callback_query_reply_to_message(self):
+        return self._getitem(self.callback_query_message, 'reply_to_message')
+    @property
+    def callback_query_reply_to_message_message_id(self):
+        return self._getitem(self.callback_query_reply_to_message, 'message_id')
+    @property
+    def callback_query_reply_to_message_text(self):
+        return self._getitem(self.callback_query_reply_to_message, 'text')
+    @property
+    def callback_query_reply_to_message_from(self):
+        return self._getitem(self.callback_query_reply_to_message, 'from')
+    @property
+    def callback_query_reply_to_message_from_chat_id(self):
+        return self._getitem(self.callback_query_reply_to_message_from, 'id')
 
 def parse_message(msg):
     """
@@ -104,53 +150,21 @@ def parse_message(msg):
     Returns:
         chat_id (int): The ID of the chat the message was sent in.
         message_info (list): A list containing information about the message.
-        message_type (str): Either 'callback_query' or 'message'.
+        message_type (str): 'private message' to indicate the type of the returned message.
     """
-    # inline_query check
-    inline_query = msg.get('inline_query')
-    if inline_query:
-        search_query = inline_query.get('query')
-        inline_query_id = inline_query.get('id')
-        return inline_query_id, search_query, 'inline_query'
+    msg = Message(msg)
+    if msg.inline_query:
+        return msg.query_id, msg.query, 'inline_query'
+    if msg.callback_query:
+        message_info = [msg.callback_query_reply_to_message_text,
+                        msg.callback_query_reply_to_message_message_id,
+                        msg.callback_query_data,
+                        msg.callback_query_message_id]
+        return msg.callback_query_reply_to_message_from_chat_id, message_info, 'callback_query'
+    if msg.chat_type == 'private':
+        return msg.chat_id, msg.message_info, 'private message'
 
-    # callback_data check
-    callback_query = msg.get('callback_query')
-    if callback_query:
-        callback_query_id = callback_query.get('id')
-        callback_query_data = callback_query.get('data')
-        message = callback_query.get('message')
-        callback_query_message_id = message.get('message_id')
-        reply_to_message = message.get('reply_to_message', None)
-        if reply_to_message == None:
-            return None, None, None
-        message_id = reply_to_message.get('message_id')
-        message_text = reply_to_message.get('text')
-        dice = reply_to_message.get('dice')
-        dice_value = dice.get('value') if dice else None
-        from_user = reply_to_message.get('from')
-        chat_id = from_user.get('id')
-
-        message_info = [message_text, message_id, callback_query_data, callback_query_message_id, dice_value]
-        return chat_id, message_info, 'callback_query'
-
-
-    # message check
-    message = msg.get('message')
-    if message:
-        chat = message.get('chat')
-        chat_id = chat.get('id')
-        chat_type = chat.get('type')
-        if chat_type == 'private': 
-            message_id = message.get('message_id')
-            txt = message.get('text')
-            dice = message.get('dice')
-            dice_value = dice.get('value') if dice else None
-            message_info = [txt, message_id, dice_value]
-            return chat_id, message_info, 'message'
-
-    return None, None, None
-    
-def sendChatAction(chat_id, action='typing'): 
+def sendChatAction(chat_id, action='typing'):
     """
     Parameters:
     ----------
@@ -252,5 +266,3 @@ def sendVideo(chat_id, fileaddress, message_id=None, caption=None):
     with requests.Session() as session:
         r = session.post(url, data=payload, files=files)
     return r
-
-

@@ -7,12 +7,11 @@ from telegram_bot_api import parse_message, \
                                 deleteMessage, \
                                 editMessageText, \
                                 answerInlineQuery, \
-                                sendVideo, \
+                                sendVideo
 from tools_collection import message_format_for_postgres, \
                              get_calender, \
                              get_next_period_of_time, \
                              make_reply_markup_page_control
-
 from threading import Thread
 import datetime
 from time import sleep
@@ -239,14 +238,6 @@ def index():
     msg_http_code = str(msg)
     print(msg_str)
     print(msg_http_code)
-    with open('message-logger.txt', 'a') as f:
-        f.write(str(datetime.datetime.now()))
-        f.write(', ')
-        f.write(msg_http_code)
-        f.write('\n')
-        f.write(msg_str)
-        f.write('\n')
-        f.close()
     manage_messages(msg)
     return Response('Ok', status=200)
 

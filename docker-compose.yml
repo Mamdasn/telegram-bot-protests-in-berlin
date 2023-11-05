@@ -13,9 +13,11 @@ services:
     ports:
       - '5432:5432'
   protestcrawler:
+    container_name: protestcrawler
     build: "protestcrawler"
     image: "protestcrawler:0.0.0"
   telegrambot:
+    container_name: telegrambot
     build: "telegrambot"
     image: telegrambot:0.0.0
     ports:

@@ -29,12 +29,10 @@ class Message:
         return self._getitem(self.message, ('chat', 'type'))
     @property
     def message_id(self):
-        if self.chat_type == 'private':
-            return self._getitem(self.message, 'message_id')
+        return self._getitem(self.message, 'message_id')
     @property
     def message_text(self):
-        if self.chat_type == 'private':
-            return self._getitem(self.message, 'text')
+        return self._getitem(self.message, 'text')
     @property
     def message_info(self):
         return (self.message_text, self.message_id)
@@ -63,20 +61,35 @@ class Message:
     def callback_query_message_id(self):
         return self._getitem(self.callback_query_message, 'message_id')
     @property
+    def callback_query_message_chat(self):
+        return self._getitem(self.callback_query_message, 'chat')
+    @property
+    def callback_query_message_chat_id(self):
+        return self._getitem(self.callback_query_message_chat, 'id')
+    @property
     def callback_query_reply_to_message(self):
         return self._getitem(self.callback_query_message, 'reply_to_message')
     @property
     def callback_query_reply_to_message_message_id(self):
         return self._getitem(self.callback_query_reply_to_message, 'message_id')
     @property
-    def callback_query_reply_to_message_text(self):
-        return self._getitem(self.callback_query_reply_to_message, 'text')
+    def my_chat_member(self):
+        return self._getitem(self._message, 'my_chat_member')
     @property
-    def callback_query_reply_to_message_from(self):
-        return self._getitem(self.callback_query_reply_to_message, 'from')
+    def my_chat_member_chat(self):
+        return self._getitem(self.my_chat_member, 'chat')
     @property
-    def callback_query_reply_to_message_from_chat_id(self):
-        return self._getitem(self.callback_query_reply_to_message_from, 'id')
+    def my_chat_member_chat_title(self):
+        return self._getitem(self.my_chat_member_chat, 'title')
+    @property
+    def my_chat_member_chat_type(self):
+        return self._getitem(self.my_chat_member_chat, 'type')
+    @property
+    def my_chat_member_from(self):
+        return self._getitem(self.my_chat_member, 'from')
+    @property
+    def my_chat_member_from_first_name(self):
+        return self._getitem(self.my_chat_member_from, 'first_name')
 
 def parse_message(msg):
     """
@@ -94,13 +107,14 @@ def parse_message(msg):
     if msg.inline_query:
         return msg.query_id, msg.query, 'inline_query'
     if msg.callback_query:
-        message_info = [msg.callback_query_reply_to_message_text,
-                        msg.callback_query_reply_to_message_message_id,
+        message_info = [msg.callback_query_reply_to_message_message_id,
                         msg.callback_query_data,
                         msg.callback_query_message_id]
-        return msg.callback_query_reply_to_message_from_chat_id, message_info, 'callback_query'
+        return msg.callback_query_message_chat_id, message_info, 'callback_query'
     if msg.chat_type == 'private':
-        return msg.chat_id, msg.message_info, 'private message'
+        return msg.chat_id, msg.message_info, 'private'
+    if msg.chat_type == 'group':
+        return msg.chat_id, msg.message_info, 'group'
 
 def sendChatAction(chat_id, action='typing'):
     """

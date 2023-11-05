@@ -38,6 +38,12 @@ for _ in range(100):
 
 app = Flask(__name__)
 
+def message_and_reply_markup_format(page_number, queries, command):
+    queries_formatted = fetcher.format_postgre_queries(queries)
+    page, number_of_pages = message_format_for_postgres(queries_formatted, page_number)
+    reply_markup = make_reply_markup_page_control(page_number, number_of_pages, command)
+    return reply_markup, page
+
 def manage_messages(msg):
     try:
         parsed_message = parse_message(msg)
@@ -45,24 +51,20 @@ def manage_messages(msg):
             chat_id, message_info, chat_type = parsed_message
             if chat_type == 'callback_query':
                 handle_callback_query(chat_id, message_info)
-            elif chat_type == 'private message':
-                handle_message(chat_id, message_info)
+            elif chat_type in ('private', 'group'):
+                handle_message(chat_id, message_info, chat_type)
             elif chat_type == 'inline_query':
                 handle_inline_query(inline_query_id=chat_id, message_info=message_info)
     except Exception as e:
         print(e)
 
-def message_and_reply_markup_format(page_number, queries, command):
-    queries_formatted = fetcher.format_postgre_queries(queries)
-    page, number_of_pages = message_format_for_postgres(queries_formatted, page_number)
-    reply_markup = make_reply_markup_page_control(page_number, number_of_pages, command)
-    return reply_markup, page
-
 def handle_commands(message):
     queries = []
     reply_markup = ''
     if message:
-        if (message == '/today') or (message == 'Today 🪧'):
+        if message == '/start':
+            queries = ['Hey there,\nThis bot is made to provide you access to the up-to-date protest events in Berlin.']
+        elif (message == '/today') or (message == 'Today 🪧'):
             date = datetime.datetime.today().strftime("%Y.%m.%d")
             queries = fetcher.getBySpecificDate(date)
         elif (message == '/tomorrow') or (message == 'Tomorrow 🪧'):
@@ -75,8 +77,6 @@ def handle_commands(message):
                 start_date = datetime.datetime.strptime(start_date_string, "%Y-%m-%d %H:%M:%S.%f")
             reply_markup, years = get_calender(start_date)
             queries = [f"Choose a date in {' or '.join(years)}"]
-        elif (message == '🔎'):
-            queries = ["Send me a text to search:"]
         elif (message == '/weekend') or (message == 'Weekend 🪧'):
             queries = []
             for i in range(7):
@@ -117,6 +117,8 @@ With the following command you can search and select a specific protest info in 
 For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
             queries = [reply]
 
+        elif (message == '🔎'):
+            queries = ["Send me a text to search:"]
         elif not message.startswith('/'):
             message = f"/search {message}"
 
@@ -127,6 +129,38 @@ For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
             if not queries:
                 queries = ["There's nothing to show."]
     return queries, reply_markup
+
+def handle_message(chat_id, message_info, chat_type='private'):
+    message, message_id = message_info
+    keyboard = [["Today 🪧", "Tomorrow 🪧", "🔎"],
+                ["This Week 🪧", "Weekend 🪧", "Calender 🗓️"],
+                ["Help ❔", "Info 💁"]]
+    reply_keyboard_markup = {"keyboard": keyboard, "resize_keyboard": True, "input_field_placeholder": "Select one:"}
+
+    if chat_type == 'group':
+        reply_keyboard_markup = None
+        if not message.startswith('/'):
+            return
+
+    queries, reply_markup_main = handle_commands(message)
+
+    if len(queries)>0:
+            reply_markup_page, page = message_and_reply_markup_format(page_number=1, queries=queries, command=message)
+
+            if reply_markup_main:
+                reply_markup = reply_markup_main
+            elif reply_markup_page:
+                reply_markup = reply_markup_page
+            else:
+                reply_markup = reply_keyboard_markup
+                
+            r = send_message(
+                    chat_id=chat_id,
+                    text=page,
+                    reply_to_message_id=message_id,
+                    reply_markup=reply_markup
+                    )
+            print(r)
 
 def handle_inline_query(inline_query_id, message_info):
     search_query = message_info.split(',')
@@ -155,7 +189,7 @@ def handle_inline_query(inline_query_id, message_info):
     print(r)
 
 def handle_callback_query(chat_id, message_info):
-    _, message_id, callback_query_data, callback_query_message_id = message_info
+    message_id, callback_query_data, callback_query_message_id = message_info
     reply_markup = ''
     page_number = 1
     is_pagenumber_in_callback_query = callback_query_data.split()[0] == 'page'
@@ -179,45 +213,6 @@ def handle_callback_query(chat_id, message_info):
         text=reply,
         reply_markup=reply_markup
     )
-
-def handle_message(chat_id, message_info):
-    message, message_id = message_info
-    queries, reply_markup_main = handle_commands(message)
-    # keyboard = [["/today", "/tomorrow"], ["/help", "/info"]]
-    keyboard = [["Today 🪧", "Tomorrow 🪧", "🔎"],
-                ["This Week 🪧", "Weekend 🪧", "Calender 🗓️"],
-                ["Help ❔", "Info 💁"]]
-    reply_keyboard_markup = {"keyboard": keyboard, "resize_keyboard": True, "input_field_placeholder": "Select one:"}
-
-    if len(queries)>0:
-            reply_markup_page, page = message_and_reply_markup_format(page_number=1, queries=queries, command=message)
-            reply_markup = reply_keyboard_markup
-            if reply_markup_main:
-                reply_markup = reply_markup_main
-            elif reply_markup_page:
-                reply_markup = reply_markup_page
-
-            r = send_message(
-                    chat_id=chat_id,
-                    text=page,
-                    reply_to_message_id=message_id,
-                    reply_markup=reply_markup
-                    )
-            print(r)
-    elif message == '/start':
-        send_message(
-            chat_id=chat_id,
-            text='Hey there,\nThis bot is made to provide you access to the up-to-date protest events in Berlin.',
-            reply_to_message_id=message_id,
-            reply_markup=reply_keyboard_markup
-        )
-    else:
-        send_message(
-            chat_id=chat_id,
-            text="Send me the correct message to proceed.",
-            reply_to_message_id=message_id,
-            reply_markup=reply_keyboard_markup
-        )
 
 @app.before_request
 def block_method():

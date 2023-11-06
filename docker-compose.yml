@@ -1,5 +1,5 @@
 version: '3.8'
- 
+
 services:
   postgres_db:
     image: 'postgres:14.1-alpine'
@@ -15,11 +15,11 @@ services:
   protestcrawler:
     container_name: protestcrawler
     build: "protestcrawler"
-    image: "protestcrawler:0.0.0"
+    image: sfarhad/protestcrawler:0.0.0
   telegrambot:
     container_name: telegrambot
     build: "telegrambot"
-    image: telegrambot:0.0.0
+    image: sfarhad/telegrambot:0.0.0
     ports:
       - '443:443'
     environment:

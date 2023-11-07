@@ -21,7 +21,9 @@ jobs:
         ssh-keyscan -t rsa ${{ secrets.SSH_HOST }} >> ~/known_hosts
         ssh -v -o UserKnownHostsFile=~/known_hosts \
             -i ~/id_rsa ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
-                "export TG_BOT_TOKEN=${{secrets.TG_BOT_TOKEN}} \
+                "export PROTESTCRAWLER_IMAGE_BUILD=protestcrawler:0.0.0 \
+                && export TELEGRAMBOT_IMAGE_BUILD=telegrambot:0.0.0 \
+                && export TG_BOT_TOKEN=${{secrets.TG_BOT_TOKEN}} \
                 && export IP_ADDRESS=${{secrets.SSH_HOST}} \
                 && cd telegram-bot-protests-in-berlin \
                 && docker compose down \

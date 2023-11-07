@@ -15,11 +15,11 @@ services:
   protestcrawler:
     container_name: protestcrawler
     build: "protestcrawler"
-    image: sfarhad/protestcrawler:0.0.0
+    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:0.0.0}
   telegrambot:
     container_name: telegrambot
     build: "telegrambot"
-    image: sfarhad/telegrambot:0.0.0
+    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:0.0.0}
     ports:
       - '443:443'
     environment:

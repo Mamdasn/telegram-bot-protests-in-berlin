@@ -1,0 +1,33 @@
+name: Deploy to Google Cloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/id_rsa
+        chmod 600 ~/id_rsa
+    - name: Deploy to Google Cloud
+      run: |
+        ssh-keyscan -t rsa ${{ secrets.SSH_HOST }} >> ~/known_hosts
+        ssh -v -o UserKnownHostsFile=~/known_hosts \
+            -i ~/id_rsa ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} \
+                "export TG_BOT_TOKEN=${{secrets.TG_BOT_TOKEN}} \
+                && export IP_ADDRESS=${{secrets.SSH_HOST}} \
+                && cd telegram-bot-protests-in-berlin \
+                && docker compose down \
+                && docker system prune -af \
+                && git fetch --all \
+                && git switch main \
+                && git merge origin/main \
+                && docker compose build --no-cache \
+                && docker compose up -d"

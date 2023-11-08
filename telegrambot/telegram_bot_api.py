@@ -155,7 +155,7 @@ async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=Non
     """
     asyncio.create_task(sendChatAction(chat_id, action='typing'))
     url = f"{base_link}/sendMessage"
-    payload = {'chat_id': chat_id, 'text': text, 'parse_mode': 'HTML'}
+    payload = {'chat_id': chat_id, 'text': text, 'disable_web_page_preview': True, 'parse_mode': 'HTML'}
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
@@ -193,7 +193,7 @@ async def editMessageText(chat_id, message_id, text, reply_markup=None):
         Request response
     """
     url = f"{base_link}/editMessageText"
-    payload = {'chat_id': chat_id, 'message_id': message_id, 'text': text, 'parse_mode': 'HTML'}
+    payload = {'chat_id': chat_id, 'message_id': message_id, 'text': text, 'disable_web_page_preview': True, 'parse_mode': 'HTML'}
     if reply_markup:
         payload['reply_markup'] = reply_markup
     r = asyncio.create_task(post_json(url, payload))

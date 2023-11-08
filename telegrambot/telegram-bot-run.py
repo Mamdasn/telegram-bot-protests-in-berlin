@@ -1,13 +1,11 @@
 from flask.wrappers import Response
 from flask import Flask
 from flask import request, abort
-import json
 from telegram_bot_api import parse_message, \
                                 send_message, \
                                 deleteMessage, \
                                 editMessageText, \
-                                answerInlineQuery, \
-                                sendVideo
+                                answerInlineQuery
 from tools_collection import message_format_for_postgres, \
                              get_calender, \
                              get_next_period_of_time, \
@@ -18,6 +16,8 @@ from time import sleep
 from postgres_api import Fetchpostgres
 from postgresconf.config import config as pconfig
 from credentials import config
+import asyncio
+import json
 
 token = config.TG_BOT_TOKEN
 
@@ -153,13 +153,14 @@ def handle_message(chat_id, message_info, chat_type='private'):
                 reply_markup = reply_markup_page
             else:
                 reply_markup = reply_keyboard_markup
-                
-            r = send_message(
-                    chat_id=chat_id,
-                    text=page,
-                    reply_to_message_id=message_id,
-                    reply_markup=reply_markup
-                    )
+            r = asyncio.run(
+                    send_message(
+            		    chat_id=chat_id,
+            		    text=page,
+            		    reply_to_message_id=message_id,
+            		    reply_markup=reply_markup
+            	    )
+            )
             print(r)
 
 def handle_inline_query(inline_query_id, message_info):
@@ -182,10 +183,12 @@ def handle_inline_query(inline_query_id, message_info):
                     'title': "There's nothing to show.", \
                     'input_message_content': {'message_text': "There's nothing to show.", 'parse_mode': 'HTML'}, \
                     })
-    r = answerInlineQuery(
-            inline_query_id=inline_query_id,
-            results=results
-            )
+    r = asyncio.run(
+				answerInlineQuery(
+            		inline_query_id=inline_query_id,
+            		results=results
+            	)
+		)
     print(r)
 
 def handle_callback_query(chat_id, message_info):
@@ -207,12 +210,15 @@ def handle_callback_query(chat_id, message_info):
     reply_markup_page, reply = message_and_reply_markup_format(page_number, queries, command)
     if reply_markup_page:
         reply_markup = reply_markup_page
-    editMessageText(
-        chat_id=chat_id,
-        message_id=callback_query_message_id,
-        text=reply,
-        reply_markup=reply_markup
-    )
+    r = asyncio.run(
+        editMessageText(
+            chat_id=chat_id,
+    		    message_id=callback_query_message_id,
+    		    text=reply,
+    		    reply_markup=reply_markup
+            )
+        )
+    print(r)
 
 @app.before_request
 def block_method():

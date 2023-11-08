@@ -30,4 +30,4 @@ RUN chmod +x nginx-setup.sh
 RUN chmod +x initial-webhook-setup.sh
 
 # Specify the command to run on container start
-CMD ["sh", "-c", "/app/initial-webhook-setup.sh && /app/nginx-setup.sh && nginx && python3 telegram-bot-run.py >> /app/output/telegram.logs 2>&1"]
+CMD ["sh", "-c", "/app/initial-webhook-setup.sh && /app/nginx-setup.sh && nginx && gunicorn --bind 0.0.0.0:5000 wsgi:app >> /app/output/telegram.logs 2>&1"]

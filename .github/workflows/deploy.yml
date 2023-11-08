@@ -1,9 +1,11 @@
 name: Deploy to Google Cloud
 
+# Only trigger, when the build workflow succeeded
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Dockerhub Publish"]
+    types:
+      - completed
 
 jobs:
   deploy:
@@ -26,10 +28,9 @@ jobs:
                 && export TG_BOT_TOKEN=${{secrets.TG_BOT_TOKEN}} \
                 && export IP_ADDRESS=${{secrets.SSH_HOST}} \
                 && cd telegram-bot-protests-in-berlin \
-                && docker compose down \
-                && docker system prune -af \
                 && git fetch --all \
                 && git switch main \
                 && git merge origin/main \
-                && docker compose build --no-cache \
+                && docker compose down \
+                && docker system prune -af \
                 && docker compose up -d"

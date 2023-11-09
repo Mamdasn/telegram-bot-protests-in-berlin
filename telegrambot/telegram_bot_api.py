@@ -3,100 +3,132 @@ import asyncio
 from credentials import config
 
 token = config.TG_BOT_TOKEN
-base_link = f'https://api.telegram.org/bot{token}'
+base_link = f"https://api.telegram.org/bot{token}"
+
 
 class Message:
     def __init__(self, message: dict):
         self._message = message
+
     @staticmethod
     def _getitem(dic, key):
         keys = key if isinstance(key, tuple) else (key,)
         query = dic
         for k in keys:
-            if not isinstance(query, dict): return None
+            if not isinstance(query, dict):
+                return None
             query = query.get(k)
         return query
+
     @property
     def message(self):
-        return self._getitem(self._message, 'message')
+        return self._getitem(self._message, "message")
+
     @property
     def chat(self):
-        return self._getitem(self.message, 'chat')
+        return self._getitem(self.message, "chat")
+
     @property
     def chat_id(self):
-        return self._getitem(self.message, ('chat', 'id'))
+        return self._getitem(self.message, ("chat", "id"))
+
     @property
     def chat_type(self):
-        return self._getitem(self.message, ('chat', 'type'))
+        return self._getitem(self.message, ("chat", "type"))
+
     @property
     def message_id(self):
-        return self._getitem(self.message, 'message_id')
+        return self._getitem(self.message, "message_id")
+
     @property
     def message_text(self):
-        return self._getitem(self.message, 'text')
+        return self._getitem(self.message, "text")
+
     @property
     def message_info(self):
         return (self.message_text, self.message_id)
+
     @property
     def inline_query(self):
-        return self._getitem(self._message, 'inline_query')
+        return self._getitem(self._message, "inline_query")
+
     @property
     def query(self):
-        return self._getitem(self.inline_query, 'query')
+        return self._getitem(self.inline_query, "query")
+
     @property
     def query_id(self):
-        return self._getitem(self.inline_query, 'id')
+        return self._getitem(self.inline_query, "id")
+
     @property
     def callback_query(self):
-        return self._getitem(self._message, 'callback_query')
+        return self._getitem(self._message, "callback_query")
+
     @property
     def callback_query_id(self):
-        return self._getitem(self.callback_query, 'id')
+        return self._getitem(self.callback_query, "id")
+
     @property
     def callback_query_data(self):
-        return self._getitem(self.callback_query, 'data')
+        return self._getitem(self.callback_query, "data")
+
     @property
     def callback_query_message(self):
-        return self._getitem(self.callback_query, 'message')
+        return self._getitem(self.callback_query, "message")
+
     @property
     def callback_query_message_id(self):
-        return self._getitem(self.callback_query_message, 'message_id')
+        return self._getitem(self.callback_query_message, "message_id")
+
     @property
     def callback_query_message_chat(self):
-        return self._getitem(self.callback_query_message, 'chat')
+        return self._getitem(self.callback_query_message, "chat")
+
     @property
     def callback_query_message_chat_id(self):
-        return self._getitem(self.callback_query_message_chat, 'id')
+        return self._getitem(self.callback_query_message_chat, "id")
+
     @property
     def callback_query_reply_to_message(self):
-        return self._getitem(self.callback_query_message, 'reply_to_message')
+        return self._getitem(self.callback_query_message, "reply_to_message")
+
     @property
     def callback_query_reply_to_message_message_id(self):
-        return self._getitem(self.callback_query_reply_to_message, 'message_id')
+        return self._getitem(self.callback_query_reply_to_message, "message_id")
+
     @property
     def my_chat_member(self):
-        return self._getitem(self._message, 'my_chat_member')
+        return self._getitem(self._message, "my_chat_member")
+
     @property
     def my_chat_member_chat(self):
-        return self._getitem(self.my_chat_member, 'chat')
+        return self._getitem(self.my_chat_member, "chat")
+
     @property
     def my_chat_member_chat_title(self):
-        return self._getitem(self.my_chat_member_chat, 'title')
+        return self._getitem(self.my_chat_member_chat, "title")
+
     @property
     def my_chat_member_chat_type(self):
-        return self._getitem(self.my_chat_member_chat, 'type')
+        return self._getitem(self.my_chat_member_chat, "type")
+
     @property
     def my_chat_member_from(self):
-        return self._getitem(self.my_chat_member, 'from')
+        return self._getitem(self.my_chat_member, "from")
+
     @property
     def my_chat_member_from_first_name(self):
-        return self._getitem(self.my_chat_member_from, 'first_name')
+        return self._getitem(self.my_chat_member_from, "first_name")
+
     @property
     def callback_query_message_info(self):
-        return (self.callback_query_id, 
-                self.callback_query_reply_to_message_message_id,
-                self.callback_query_data,
-                self.callback_query_message_id)
+        return (
+            self.callback_query_id,
+            self.callback_query_reply_to_message_message_id,
+            self.callback_query_data,
+            self.callback_query_message_id,
+        )
+
 
 def parse_message(msg):
     """
@@ -112,20 +144,26 @@ def parse_message(msg):
     """
     msg = Message(msg)
     if msg.inline_query:
-        return msg.query_id, msg.query, 'inline_query'
+        return msg.query_id, msg.query, "inline_query"
     if msg.callback_query:
-        return msg.callback_query_message_chat_id, msg.callback_query_message_info, 'callback_query'
-    if msg.chat_type == 'private':
-        return msg.chat_id, msg.message_info, 'private'
-    if msg.chat_type == 'group':
-        return msg.chat_id, msg.message_info, 'group'
+        return (
+            msg.callback_query_message_chat_id,
+            msg.callback_query_message_info,
+            "callback_query",
+        )
+    if msg.chat_type == "private":
+        return msg.chat_id, msg.message_info, "private"
+    if msg.chat_type == "group":
+        return msg.chat_id, msg.message_info, "group"
+
 
 async def post_json(url, json_data):
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=json_data) as response:
             return await response.text()
 
-async def sendChatAction(chat_id, action='typing'):
+
+async def sendChatAction(chat_id, action="typing"):
     """
     Parameters:
     ----------
@@ -138,9 +176,10 @@ async def sendChatAction(chat_id, action='typing'):
         Request response
     """
     url = f"{base_link}/sendChatAction"
-    payload = {'chat_id': chat_id, 'action': action}
+    payload = {"chat_id": chat_id, "action": action}
     r = asyncio.create_task(post_json(url, payload))
     return await r
+
 
 async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=None):
     """
@@ -156,15 +195,21 @@ async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=Non
     Return:
         Request response
     """
-    asyncio.create_task(sendChatAction(chat_id, action='typing'))
+    asyncio.create_task(sendChatAction(chat_id, action="typing"))
     url = f"{base_link}/sendMessage"
-    payload = {'chat_id': chat_id, 'text': text, 'disable_web_page_preview': True, 'parse_mode': 'HTML'}
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "disable_web_page_preview": True,
+        "parse_mode": "HTML",
+    }
     if reply_to_message_id:
-        payload['reply_to_message_id'] = reply_to_message_id
+        payload["reply_to_message_id"] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload["reply_markup"] = reply_markup
     r = asyncio.create_task(post_json(url, payload))
     return await r
+
 
 async def deleteMessage(chat_id, message_id):
     """
@@ -179,9 +224,10 @@ async def deleteMessage(chat_id, message_id):
         Request response
     """
     url = f"{base_link}/deleteMessage"
-    payload = {'chat_id': chat_id, 'message_id': message_id}
+    payload = {"chat_id": chat_id, "message_id": message_id}
     r = asyncio.create_task(post_json(url, payload))
     return await r
+
 
 async def editMessageText(chat_id, message_id, text, reply_markup=None):
     """
@@ -196,20 +242,32 @@ async def editMessageText(chat_id, message_id, text, reply_markup=None):
         Request response
     """
     url = f"{base_link}/editMessageText"
-    payload = {'chat_id': chat_id, 'message_id': message_id, 'text': text, 'disable_web_page_preview': True, 'parse_mode': 'HTML'}
+    payload = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+        "text": text,
+        "disable_web_page_preview": True,
+        "parse_mode": "HTML",
+    }
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload["reply_markup"] = reply_markup
     r = asyncio.create_task(post_json(url, payload))
     return await r
+
 
 async def answerInlineQuery(inline_query_id, results):
     url = f"{base_link}/answerInlineQuery"
-    payload = {'inline_query_id': inline_query_id, 'results': results, 'cache_time': 200}
+    payload = {
+        "inline_query_id": inline_query_id,
+        "results": results,
+        "cache_time": 200,
+    }
     r = asyncio.create_task(post_json(url, payload))
     return await r
 
+
 async def answerCallbackQuery(callback_query_id, text):
     url = f"{base_link}/answerCallbackQuery"
-    payload = {'callback_query_id': callback_query_id, 'text': text}
+    payload = {"callback_query_id": callback_query_id, "text": text}
     r = asyncio.create_task(post_json(url, payload))
     return await r

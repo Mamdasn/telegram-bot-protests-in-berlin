@@ -22,8 +22,8 @@ class EventCrawler:
 
     @staticmethod
     def _run_in_parallel(parser, data, number_of_threads, **kwargs):
-        
         output_data = []
+
         def _parser(task_queue, **kwargs):
             while True:
                 task = task_queue.get()
@@ -90,8 +90,10 @@ while True:
     print("Scraping data from berlin.de")
     url = "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
     data = ecrawler.crawl(
-        url, number_of_threads=8, save_to_database=True,
+        url,
+        number_of_threads=8,
+        save_to_database=True,
     )
-    print('Number of protests:', len(data))
+    print("Number of protests:", len(data))
     print("Scraping data finished.")
     time.sleep(21600)

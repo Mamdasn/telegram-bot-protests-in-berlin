@@ -5,7 +5,8 @@ from telegram_bot_api import parse_message, \
                                 send_message, \
                                 deleteMessage, \
                                 editMessageText, \
-                                answerInlineQuery
+                                answerInlineQuery, \
+                                answerCallbackQuery
 from tools_collection import message_format_for_postgres, \
                              get_calender, \
                              get_next_period_of_time, \
@@ -192,7 +193,7 @@ def handle_inline_query(inline_query_id, message_info):
     print(r)
 
 def handle_callback_query(chat_id, message_info):
-    message_id, callback_query_data, callback_query_message_id = message_info
+    callback_query_id, message_id, callback_query_data, callback_query_message_id = message_info
     reply_markup = ''
     page_number = 1
     is_pagenumber_in_callback_query = callback_query_data.split()[0] == 'page'
@@ -210,6 +211,7 @@ def handle_callback_query(chat_id, message_info):
     reply_markup_page, reply = message_and_reply_markup_format(page_number, queries, command)
     if reply_markup_page:
         reply_markup = reply_markup_page
+    asyncio.run(answerCallbackQuery(callback_query_id, text=""))
     r = asyncio.run(
         editMessageText(
             chat_id=chat_id,

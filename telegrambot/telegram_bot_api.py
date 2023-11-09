@@ -91,6 +91,12 @@ class Message:
     @property
     def my_chat_member_from_first_name(self):
         return self._getitem(self.my_chat_member_from, 'first_name')
+    @property
+    def callback_query_message_info(self):
+        return (self.callback_query_id, 
+                self.callback_query_reply_to_message_message_id,
+                self.callback_query_data,
+                self.callback_query_message_id)
 
 def parse_message(msg):
     """
@@ -108,10 +114,7 @@ def parse_message(msg):
     if msg.inline_query:
         return msg.query_id, msg.query, 'inline_query'
     if msg.callback_query:
-        message_info = [msg.callback_query_reply_to_message_message_id,
-                        msg.callback_query_data,
-                        msg.callback_query_message_id]
-        return msg.callback_query_message_chat_id, message_info, 'callback_query'
+        return msg.callback_query_message_chat_id, msg.callback_query_message_info, 'callback_query'
     if msg.chat_type == 'private':
         return msg.chat_id, msg.message_info, 'private'
     if msg.chat_type == 'group':
@@ -202,5 +205,11 @@ async def editMessageText(chat_id, message_id, text, reply_markup=None):
 async def answerInlineQuery(inline_query_id, results):
     url = f"{base_link}/answerInlineQuery"
     payload = {'inline_query_id': inline_query_id, 'results': results, 'cache_time': 200}
+    r = asyncio.create_task(post_json(url, payload))
+    return await r
+
+async def answerCallbackQuery(callback_query_id, text):
+    url = f"{base_link}/answerCallbackQuery"
+    payload = {'callback_query_id': callback_query_id, 'text': text}
     r = asyncio.create_task(post_json(url, payload))
     return await r

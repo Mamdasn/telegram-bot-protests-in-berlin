@@ -139,7 +139,7 @@ With the following command you can search and select a specific protest info in 
 For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
             queries = [reply]
 
-        elif message == "🔎":
+        elif (message == "🔎") or (message == "/search"):
             queries = ["Send me a text to search:"]
         elif not message.startswith("/"):
             message = f"/search {message}"

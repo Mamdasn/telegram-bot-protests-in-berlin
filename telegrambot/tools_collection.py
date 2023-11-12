@@ -12,13 +12,13 @@ def get_next_period_of_time(number_of_days, start_date=None):
 
 
 def get_calender(start_date):
-    number_of_days = 24
+    number_of_days = 20
     days = [[]]
     years = []
     for i, d in enumerate(
         get_next_period_of_time(number_of_days=number_of_days, start_date=start_date)
     ):
-        row = i // 4
+        row = i // 5
         if len(days) == row:
             days.append([])
         exact_date = start_date + datetime.timedelta(days=i)

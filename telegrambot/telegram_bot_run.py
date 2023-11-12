@@ -144,7 +144,7 @@ For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
         elif not message.startswith("/"):
             message = f"/search {message}"
 
-        if message.startswith("/search"):
+        if message.startswith("/search") and (message != "/search"):
             search_query = message.split(" ", 1)[-1].split(",")
             print(search_query)
             queries = fetcher.get_query_any_column(

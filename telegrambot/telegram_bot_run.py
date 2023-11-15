@@ -274,15 +274,10 @@ def handle_callback_query(chat_id, message_info):
 
 
 @app.before_request
-def block_method():
+def abortion_method():
+    # use the ip for future patches
     ip = str(request.environ.get("HTTP_X_REAL_IP", request.remote_addr))
-    if request.method == "GET":
-        with open("blocked-ips.txt", "a") as f:
-            f.write(ip)
-            f.write("\n")
-            f.close()
-        abort(403)
-    elif request.args != {}:
+    if (request.method == "GET") or (request.args != {}):
         abort(403)
 
 

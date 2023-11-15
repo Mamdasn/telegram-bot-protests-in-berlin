@@ -195,7 +195,7 @@ async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=Non
     Return:
         Request response
     """
-    asyncio.create_task(sendChatAction(chat_id, action="typing"))
+    await asyncio.create_task(sendChatAction(chat_id, action="typing"))
     url = f"{base_link}/sendMessage"
     payload = {
         "chat_id": chat_id,

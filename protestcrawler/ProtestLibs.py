@@ -6,7 +6,30 @@ from time import sleep
 
 
 class ProtestGrabber:
+    """
+    A class for grabbing and parsing protest information from a specified URL.
+
+    This class contains methods for fetching protest event data from a webpage and parsing the HTML content to extract relevant information about each protest event.
+
+    Methods:
+        | get_protest_list(url): Fetches the list of protests from a given URL and parses the HTML to extract protest data.
+        | parse_protest_list(event): Parses individual protest event data from the HTML content of a webpage.
+
+    The class relies on the `requests` and `BeautifulSoup` libraries for fetching and parsing web content, respectively.
+    """
+
     def get_protest_list(url):
+        """
+        Fetches the list of protests from the specified URL and returns a BeautifulSoup object containing the parsed protest data.
+
+        :param url: The URL to fetch the protest information from.
+        :type url: str
+
+        :return: A list of BeautifulSoup objects, each representing a protest event.
+        :rtype: list of bs4.element.Tag
+
+        :raises ValueError: If there's an issue with the internet connection or the request to the URL fails.
+        """
         with Session() as session:
             req = session.get(url)
             if req.status_code != 200:
@@ -21,6 +44,17 @@ class ProtestGrabber:
             return protests
 
     def parse_protest_list(event):
+        """
+        Parses an individual protest event's HTML content and extracts relevant details.
+
+        :param event: A BeautifulSoup object representing an individual protest event.
+        :type event: bs4.element.Tag
+
+        :return: A dictionary with parsed data of the protest event or False if parsing fails.
+        :rtype: dict or bool
+
+        The function attempts to extract details such as date, time, theme, postal code, and location of the protest. In case of an error during parsing, it returns False.
+        """
         try:
             Datum = event.find("td", {"headers": "Datum"}).get_text().strip()
             Von = event.find("td", {"headers": "Von"}).get_text().strip()
@@ -50,8 +84,32 @@ class ProtestGrabber:
 
 
 class ProtestPostgres:
+    """
+    A class for handling the storage of protest information into a PostgreSQL database.
+
+    This class includes methods for creating the necessary database table and inserting protest data into it. It interacts with a PostgreSQL database using the psycopg2 library.
+
+    Methods:
+        | write_to_database(data): Creates the 'events' table if it doesn't exist and writes protest data to the database.
+        | _insert_event(...): A helper method for inserting a single event into the database.
+    """
+
     def write_to_database(data):
-        """create tables in the PostgreSQL database and insert data into it"""
+        """
+        Creates the 'events' table in the PostgreSQL database and inserts the given data into it.
+
+        This method checks for the existence of the 'events' table, creates it if necessary, and then proceeds to insert the provided data into the table.
+
+        :param data: A list of dictionaries, each containing data about a protest event to be inserted into the database.
+        :type data: list of dict
+
+        :return: True if the operation is successful, False otherwise.
+        :rtype: bool
+
+        :raises Exception: If any error occurs during database connection or operation.
+
+        The method utilizes a nested function `_insert_event` to handle the insertion of each individual event.
+        """
 
         def _insert_event(
             cursor,
@@ -64,7 +122,31 @@ class ProtestPostgres:
             Aufzugsstrecke=None,
         ):
             """
-            insert a new event into the events table
+            Inserts a new event into the 'events' table.
+
+            This helper function is used by 'write_to_database' to insert individual protest events into the database.
+
+            :param cursor: The database cursor to execute the query.
+            :type cursor: psycopg2.extensions.cursor
+            :param Datum: Date of the event.
+            :type Datum: str, optional
+            :param Von: Start time of the event.
+            :type Von: str, optional
+            :param Bis: End time of the event.
+            :type Bis: str, optional
+            :param Thema: Theme or topic of the event.
+            :type Thema: str, optional
+            :param PLZ: Postal code of the event location.
+            :type PLZ: str, optional
+            :param Versammlungsort: Assembly location of the event.
+            :type Versammlungsort: str, optional
+            :param Aufzugsstrecke: Route of the protest march.
+            :type Aufzugsstrecke: str, optional
+
+            :return: The ID of the inserted event.
+            :rtype: int
+
+            The function executes an SQL command to insert the event data, handling conflicts by updating existing records.
             """
 
             sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)

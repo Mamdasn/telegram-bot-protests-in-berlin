@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Telegram Bot API Module &mdash; A simple telegram bot  documentation</title>
+  <title>Telegram Bot API Module &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,7 +31,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            A simple telegram bot
+            A Telegram Bot For Protests in Berlin
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -68,6 +68,22 @@
 <li class="toctree-l2"><a class="reference internal" href="#credentials.config"><code class="docutils literal notranslate"><span class="pre">config</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#module-protestcrawler">Protest Crawler Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#protestcrawler.EventCrawler"><code class="docutils literal notranslate"><span class="pre">EventCrawler</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ProtestLibs">Protest Library Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestGrabber"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.get_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.get_protest_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.parse_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.parse_protest_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestPostgres"><code class="docutils literal notranslate"><span class="pre">ProtestPostgres</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestPostgres.write_to_database"><code class="docutils literal notranslate"><span class="pre">ProtestPostgres.write_to_database()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -76,7 +92,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">A simple telegram bot</a>
+          <a href="index.html">A Telegram Bot For Protests in Berlin</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -485,6 +501,132 @@ deployment environments.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-protestcrawler">
+<span id="protest-crawler-module"></span><h1>Protest Crawler Module<a class="headerlink" href="#module-protestcrawler" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="protestcrawler.EventCrawler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protestcrawler.</span></span><span class="sig-name descname"><span class="pre">EventCrawler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methods</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protestcrawler.html#EventCrawler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#protestcrawler.EventCrawler" title="Link to this definition"></a></dt>
+<dd><p>A class for crawling events from specified URLs and processing them.</p>
+<blockquote>
+<div><p>This class is designed to crawl event data from various websites, parse the information, and optionally store it in a database. It supports crawling from a set of predefined URLs, each with its own methods for fetching and parsing data.</p>
+<dl>
+<dt>Attributes:</dt><dd><div class="line-block">
+<div class="line">url (str): The URL from which the event data will be crawled.</div>
+<div class="line">_supported_methods (dict): A dictionary mapping supported URLs to their respective crawling, parsing, and database-writing methods.</div>
+</div>
+</dd>
+<dt>Methods:</dt><dd><div class="line-block">
+<div class="line">crawl(url, number_of_threads=1, save_to_database=True, **kwargs): Main method to start the crawling process for a given URL.</div>
+<div class="line">_run_in_parallel(parser, data, number_of_threads, **kwargs): Static method to parse data in parallel using threading.</div>
+<div class="line">_is_supported(): Checks if the provided URL is supported based on _supported_methods.</div>
+<div class="line">_url_base(): Property that returns the base hostname of the provided URL.</div>
+</div>
+</dd>
+</dl>
+<p>The class provides a high-level interface for crawling events from various sources, parsing the details, and optionally storing them in a database. It handles parallel processing to optimize data retrieval and parsing.</p>
+<dl>
+<dt>Example Usage:</dt><dd><div class="line-block">
+<div class="line">crawler = EventCrawler(supported_methods)</div>
+<div class="line">crawled_data = crawler.crawl(”<a class="reference external" href="http://example.com/events">http://example.com/events</a>”, number_of_threads=5)</div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</section>
+<section id="module-ProtestLibs">
+<span id="protest-library-module"></span><h1>Protest Library Module<a class="headerlink" href="#module-ProtestLibs" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestGrabber</span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber" title="Link to this definition"></a></dt>
+<dd><p>A class for grabbing and parsing protest information from a specified URL.</p>
+<p>This class contains methods for fetching protest event data from a webpage and parsing the HTML content to extract relevant information about each protest event.</p>
+<dl>
+<dt>Methods:</dt><dd><div class="line-block">
+<div class="line">get_protest_list(url): Fetches the list of protests from a given URL and parses the HTML to extract protest data.</div>
+<div class="line">parse_protest_list(event): Parses individual protest event data from the HTML content of a webpage.</div>
+</div>
+</dd>
+</dl>
+<p>The class relies on the <cite>requests</cite> and <cite>BeautifulSoup</cite> libraries for fetching and parsing web content, respectively.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.get_protest_list">
+<span class="sig-name descname"><span class="pre">get_protest_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.get_protest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.get_protest_list" title="Link to this definition"></a></dt>
+<dd><p>Fetches the list of protests from the specified URL and returns a BeautifulSoup object containing the parsed protest data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – The URL to fetch the protest information from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of BeautifulSoup objects, each representing a protest event.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of bs4.element.Tag</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If there’s an issue with the internet connection or the request to the URL fails.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.parse_protest_list">
+<span class="sig-name descname"><span class="pre">parse_protest_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.parse_protest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.parse_protest_list" title="Link to this definition"></a></dt>
+<dd><p>Parses an individual protest event’s HTML content and extracts relevant details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> (<em>bs4.element.Tag</em>) – A BeautifulSoup object representing an individual protest event.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with parsed data of the protest event or False if parsing fails.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or bool</p>
+</dd>
+</dl>
+<p>The function attempts to extract details such as date, time, theme, postal code, and location of the protest. In case of an error during parsing, it returns False.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestPostgres">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestPostgres</span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestPostgres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestPostgres" title="Link to this definition"></a></dt>
+<dd><p>A class for handling the storage of protest information into a PostgreSQL database.</p>
+<p>This class includes methods for creating the necessary database table and inserting protest data into it. It interacts with a PostgreSQL database using the psycopg2 library.</p>
+<dl>
+<dt>Methods:</dt><dd><div class="line-block">
+<div class="line">write_to_database(data): Creates the ‘events’ table if it doesn’t exist and writes protest data to the database.</div>
+<div class="line">_insert_event(…): A helper method for inserting a single event into the database.</div>
+</div>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestPostgres.write_to_database">
+<span class="sig-name descname"><span class="pre">write_to_database</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestPostgres.write_to_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestPostgres.write_to_database" title="Link to this definition"></a></dt>
+<dd><p>Creates the ‘events’ table in the PostgreSQL database and inserts the given data into it.</p>
+<p>This method checks for the existence of the ‘events’ table, creates it if necessary, and then proceeds to insert the provided data into the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em><em> of </em><em>dict</em>) – A list of dictionaries, each containing data about a protest event to be inserted into the database.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the operation is successful, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – If any error occurs during database connection or operation.</p>
+</dd>
+</dl>
+<p>The method utilizes a nested function <cite>_insert_event</cite> to handle the insertion of each individual event.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

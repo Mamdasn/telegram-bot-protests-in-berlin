@@ -1,0 +1,62 @@
+name: Build and Deploy Sphinx Documentation
+
+on:
+  push:
+    branches:
+      - main  # Set this to the branch you want to trigger the workflow
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main Branch
+        uses: actions/checkout@v3
+        with:
+          path: 'main_repo'
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'  # Set your Python version here
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sphinx
+
+      - name: Build Documentation
+        env:
+          REPO: telegrambot
+          SPHINX_SOURCE: docs/source
+        run: |
+          cd main_repo
+          pip install -r ${{env.REPO}}/requirements.txt
+          pip install -r S{{SPHINX_SOURCE}}/requirements.txt
+          sphinx-build -b html docs/source docs/build
+
+      - name: Checkout Documentation Branch
+        uses: actions/checkout@v3
+        with:
+          ref: 'gh-pages'
+          path: 'gh_pages_repo'
+
+      - name: Copy Documentation Htmls to Documentation Branch
+        run: |
+          cp -r main_repo/docs/build/* gh_pages_repo/
+          touch gh_pages_repo/.nojekyll
+      
+      - name: Commit and Push Changes
+        run: |
+          cd gh_pages_repo
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          if git diff --cached --quiet; then
+              echo "No changes to commit. Skipping git push."
+          else
+              # Commit and push if there are staged changes
+              git commit -m "Update documentation"
+              git push origin gh-pages
+          fi
+
+

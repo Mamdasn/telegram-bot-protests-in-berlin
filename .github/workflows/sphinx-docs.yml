@@ -48,7 +48,7 @@ jobs:
       
       - name: Modify Index Html to Include Google Statistics
         run: |
-          sed -i '/<\/head>/i <!-- Google tag (gtag.js) -->\n\t <script async src="https://www.googletagmanager.com/gtag/js?id=G-9FZDGMS44N"></script> \n\t<script>\n\t window.dataLayer = window.dataLayer || [];\n\t function gtag(){dataLayer.push(arguments);} \n\t gtag("js", new Date());\n\t gtag("config", "G-9FZDGMS44N");\n\t</script>'  gh_pages_repo/index.html
+          sed -i '/<\/head>/i <!-- Google tag (gtag.js) -->\n\t <script async src="https://www.googletagmanager.com/gtag/js?id=G-9FZDGMS44N"></script> \n\t<script>\n\t window.dataLayer = window.dataLayer || [];\n\t function gtag(){dataLayer.push(arguments);} \n\t gtag("js", new Date());\n\t gtag("config", "G-QMVE2811KF");\n\t</script>'  gh_pages_repo/index.html
       
       - name: Commit and Push Changes
         run: |

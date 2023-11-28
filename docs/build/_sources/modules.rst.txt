@@ -16,3 +16,15 @@ Credentials Module
 .. automodule:: credentials
    :members:
 
+Protest Crawler Module
+======================
+
+.. automodule:: protestcrawler
+   :members:
+
+Protest Library Module
+======================
+
+.. automodule:: ProtestLibs
+   :members:
+

@@ -46,6 +46,7 @@ class Message:
     Methods:
         _getitem(dic, key): A static method to safely extract a nested value from a dictionary using a key or a tuple of nested keys.
     """
+
     def __init__(self, message: dict):
         self._message = message
 
@@ -210,7 +211,6 @@ def parse_message(msg):
         return msg.chat_id, msg.message_info, "group"
 
 
-
 async def post_json(url, json_data):
     """
     Asynchronously sends a POST request with JSON data.
@@ -342,6 +342,7 @@ async def answerCallbackQuery(callback_query_id, text):
     r = asyncio.create_task(post_json(url, payload))
     return await r
 
+
 async def answerInlineQuery(inline_query_id, results):
     """
     Asynchronously sends a response to an inline query in Telegram.
@@ -366,4 +367,3 @@ async def answerInlineQuery(inline_query_id, results):
     }
     r = asyncio.create_task(post_json(url, payload))
     return await r
-

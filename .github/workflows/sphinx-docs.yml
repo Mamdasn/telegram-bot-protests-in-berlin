@@ -26,10 +26,12 @@ jobs:
 
       - name: Build Documentation
         env:
-          REPO: telegrambot
+          REPO1: telegrambot
+          REPO2: protestcrawler
         run: |
           cd main_repo
-          pip install -r ${{env.REPO}}/requirements.txt
+          pip install -r ${{env.REPO1}}/requirements.txt
+          pip install -r ${{env.REPO2}}/requirements.txt
           pip install -r docs/source/requirements.txt
           sphinx-build -b html docs/source docs/build
 

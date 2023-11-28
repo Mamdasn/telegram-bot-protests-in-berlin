@@ -11,16 +11,18 @@ cwd = os.getcwd()
 # going two dirs back to reach the root dir
 project_root = os.path.dirname(os.path.dirname(cwd))
 
-py_root = os.path.join(project_root, "telegrambot")
+protestcrawler_root = os.path.join(project_root, "protestcrawler")
+telegrambot_root = os.path.join(project_root, "telegrambot")
 
 # Add the root dir to the system path
-sys.path.insert(0, py_root)
 sys.path.insert(0, project_root)
+sys.path.insert(0, protestcrawler_root)
+sys.path.insert(0, telegrambot_root)
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "A simple telegram bot"
+project = "A Telegram Bot For Protests in Berlin"
 copyright = "2023, Farhad Sabrian"
 author = "Farhad Sabrian"
 

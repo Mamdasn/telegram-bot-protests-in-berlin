@@ -5,7 +5,7 @@ from flask import request, abort
 from postgresconf.config import config as pconfig
 from postgres_api import Fetchpostgres
 
-from incoming_message_handler import manage_messages
+import incoming_message_handler
 
 from time import sleep
 import json
@@ -46,7 +46,7 @@ def index():
     msg_http_code = str(msg)
     print(msg_str)
     print(msg_http_code)
-    manage_messages(msg)
+    incoming_message_handler.manage_messages(msg)
     return Response("Ok", status=200)
 
 

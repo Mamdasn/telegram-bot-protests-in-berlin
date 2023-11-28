@@ -27,11 +27,10 @@ jobs:
       - name: Build Documentation
         env:
           REPO: telegrambot
-          SPHINX_SOURCE: docs/source
         run: |
           cd main_repo
           pip install -r ${{env.REPO}}/requirements.txt
-          pip install -r S{{env.SPHINX_SOURCE}}/requirements.txt
+          pip install -r docs/source/requirements.txt
           sphinx-build -b html docs/source docs/build
 
       - name: Checkout Documentation Branch

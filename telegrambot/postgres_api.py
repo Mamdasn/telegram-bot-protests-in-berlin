@@ -20,7 +20,7 @@ class Fetchpostgres:
             self.connection.close()
             print("PostgreSQL connection is closed")
 
-    def create_clients_table(self):
+    def store_client_data(self, data):
         with self.connection(**self.params).cursor() as cursor:
             check_existence = """
                 SELECT EXISTS (
@@ -45,10 +45,7 @@ class Fetchpostgres:
 
             if not tables_exists:
                 cursor.execute(create_command)
-            return True
 
-    def store_client_data(self, data):
-        with self.connection(**self.params).cursor() as cursor:
             (Date, Message_Text, Message_ID, Chat_ID, Chat_Type) = data
             sql_insert = """INSERT INTO clients (Date, Message_Text, Message_ID, Chat_ID, Chat_Type)
                             VALUES(%s::BIGINT, %s, %s, %s, %s) ON CONFLICT (Date, Message_ID, Chat_ID) DO UPDATE 
@@ -65,7 +62,7 @@ class Fetchpostgres:
                 ),
             )
             fetched_result = cursor.fetchone()
-            return fetched_result
+        return self.connection(**self.params).commit()
 
     def getBySpecificDate(self, date):
         with self.connection(**self.params).cursor() as cursor:

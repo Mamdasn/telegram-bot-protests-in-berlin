@@ -145,6 +145,11 @@
             <span class="k">if</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;callback_query&quot;</span><span class="p">:</span>
                 <span class="n">handle_callback_query</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">chat_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">message_text</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">message_info</span>
+                    <span class="n">fetcher</span><span class="o">.</span><span class="n">store_client_data</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">message_text</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">chat_id</span><span class="p">,</span> <span class="n">chat_type</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="n">handle_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;inline_query&quot;</span><span class="p">:</span>
                 <span class="n">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="o">=</span><span class="n">message_info</span><span class="p">)</span>
@@ -297,7 +302,7 @@
 <span class="sd">    Note:</span>
 <span class="sd">        In group chats, the function only processes messages that start with &quot;/&quot; (commands).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span> <span class="o">=</span> <span class="n">message_info</span>
+    <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">message_info</span>
     <span class="n">keyboard</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span><span class="s2">&quot;Today 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="s2">&quot;This Week 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">],</span>

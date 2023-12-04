@@ -20,6 +20,53 @@ class Fetchpostgres:
             self.connection.close()
             print("PostgreSQL connection is closed")
 
+    def create_clients_table(self):
+        with self.connection(**self.params).cursor() as cursor:
+            check_existence = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM information_schema.tables
+                    WHERE table_name = 'clients'
+                );
+                """
+            create_command = """
+                CREATE TABLE clients (
+                    id BIGSERIAL NOT NULL PRIMARY KEY,
+                    Date BIGINT NOT NULL,
+                    Message_Text VARCHAR,
+                    Message_ID VARCHAR(15) NOT NULL,
+                    Chat_ID VARCHAR(15) NOT NULL,
+                    Chat_Type VARCHAR(10) NOT NULL,
+                    UNIQUE(Date, Message_ID, Chat_ID)
+                )
+                """
+            cursor.execute(check_existence)
+            tables_exists = cursor.fetchone()[0]
+
+            if not tables_exists:
+                cursor.execute(create_command)
+            return True
+
+    def store_client_data(self, data):
+        with self.connection(**self.params).cursor() as cursor:
+            (Date, Message_Text, Message_ID, Chat_ID, Chat_Type) = data
+            sql_insert = """INSERT INTO clients (Date, Message_Text, Message_ID, Chat_ID, Chat_Type)
+                            VALUES(%s::BIGINT, %s, %s, %s, %s) ON CONFLICT (Date, Message_ID, Chat_ID) DO UPDATE 
+                            SET Message_Text = EXCLUDED.Message_Text 
+                            RETURNING id;"""
+            cursor.execute(
+                sql_insert,
+                (
+                    Date,
+                    Message_Text,
+                    Message_ID,
+                    Chat_ID,
+                    Chat_Type,
+                ),
+            )
+            fetched_result = cursor.fetchone()
+            return fetched_result
+
     def getBySpecificDate(self, date):
         with self.connection(**self.params).cursor() as cursor:
             postgreSQL_select_Query = "select * from events where Datum = %s::date"

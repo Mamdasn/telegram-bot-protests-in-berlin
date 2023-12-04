@@ -65,6 +65,10 @@ class Message:
         return self._getitem(self._message, "message")
 
     @property
+    def message_date(self):
+        return self._getitem(self.message, "date")
+
+    @property
     def chat(self):
         return self._getitem(self.message, "chat")
 
@@ -86,7 +90,7 @@ class Message:
 
     @property
     def message_info(self):
-        return (self.message_text, self.message_id)
+        return (self.message_text, self.message_id, self.message_date)
 
     @property
     def inline_query(self):

@@ -26,8 +26,6 @@ for _ in range(100):
         print("Waiting for the postgres to load!")
     sleep(3)
 
-fetcher.create_clients_table()
-
 incoming_message_handler.fetcher = fetcher
 
 app = Flask(__name__)

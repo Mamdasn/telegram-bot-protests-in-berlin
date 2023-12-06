@@ -32,16 +32,27 @@ class ProtestGrabber:
         """
         with Session() as session:
             req = session.get(url)
-            if req.status_code != 200:
+            print("This is the status code:", req.status_code)
+            if not req.status_code in [200, 418]:
                 raise ValueError(
                     "It seems like there is a problem with internet connection. Please check your internet connection and try again!"
                 )
+            if req.status_code != 200:
+                print(f"The request status code is {req.status_code}, now relaying to a proxy configuration...")
+                proxies = {
+                        'http': 'http://host.docker.internal:8118',
+                        'https': 'http://host.docker.internal:8118'
+                    }
+                req = session.get(url, proxies=proxies)
             content = req.content
-            parsed_content = BeautifulSoup(content, "html.parser")
-            tabel_of_content = parsed_content.find("div", {"id": "results"})
-            protests = tabel_of_content.find("tbody").find_all("tr", {"class": True})
-
-            return protests
+            if content:
+                parsed_content = BeautifulSoup(content, "html.parser")
+                tabel_of_content = parsed_content.find("div", {"id": "results"})
+                protests = tabel_of_content.find("tbody").find_all("tr", {"class": True})
+                return protests
+            else:
+                print(f"With the status_code: {req.status_code}, the page respond content is empty.")
+                return None
 
     def parse_protest_list(event):
         """

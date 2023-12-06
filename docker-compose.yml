@@ -22,6 +22,8 @@ services:
      - "host.docker.internal:host-gateway"
     environment:
      - PROXY=http://host.docker.internal:8118
+    volumes:
+      - ./protestcrawler/output:/app/output
   telegrambot:
     container_name: telegrambot
     build: "telegrambot"

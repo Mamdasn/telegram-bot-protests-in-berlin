@@ -118,9 +118,9 @@ if __name__ == "__main__":
         url = "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
         data = ecrawler.crawl(
             url,
-            number_of_threads=8,
+            number_of_threads=2,
             save_to_database=True,
         )
         print("Number of protests:", len(data))
         print("Scraping data finished.")
-        time.sleep(21600)
+        time.sleep(86400)

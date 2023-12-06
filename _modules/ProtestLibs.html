@@ -122,7 +122,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The request status code is </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, now relaying to a proxy configuration...&quot;</span><span class="p">)</span>
                 <span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="s1">&#39;http://host.docker.internal:8118&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;https&#39;</span><span class="p">:</span> <span class="s1">&#39;http://host.docker.internal:8118&#39;</span>
+                        <span class="s1">&#39;https&#39;</span><span class="p">:</span> <span class="s1">&#39;https://host.docker.internal:8118&#39;</span>
                     <span class="p">}</span>
                 <span class="n">req</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">proxies</span><span class="p">)</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">content</span>

@@ -25,6 +25,7 @@ jobs:
         CONTAINER_NAME_1: postgres_db
         CONTAINER_NAME_2: protestcrawler
         CONTAINER_NAME_3: telegrambot
+        CONTAINER_NAME_4: tor_privoxy
         TG_BOT_TOKEN: ${{secrets.TG_BOT_TOKEN}}
         IP_ADDRESS: ${{secrets.SSH_HOST}}
         SSL_PORT: ${{secrets.SSL_PORT}}
@@ -38,6 +39,7 @@ jobs:
                 && export CONTAINER_NAME_1=${{env.CONTAINER_NAME_1}} \
                 && export CONTAINER_NAME_2=${{env.CONTAINER_NAME_2}} \
                 && export CONTAINER_NAME_3=${{env.CONTAINER_NAME_3}} \
+                && export CONTAINER_NAME_4=${{env.CONTAINER_NAME_4}} \
                 && export SSL_PORT=${{env.SSL_PORT}} \
                 && export TG_BOT_TOKEN=${{env.TG_BOT_TOKEN}} \
                 && export IP_ADDRESS=${{env.IP_ADDRESS}} \
@@ -52,4 +54,5 @@ jobs:
                 && docker ps -q --filter name=^${CONTAINER_NAME_1}$ | grep -q . \
                 && docker ps -q --filter name=^${CONTAINER_NAME_2}$ | grep -q . \
                 && docker ps -q --filter name=^${CONTAINER_NAME_3}$ | grep -q . \
+                && docker ps -q --filter name=^${CONTAINER_NAME_4}$ | grep -q . \
                 && echo All docker containers are running."

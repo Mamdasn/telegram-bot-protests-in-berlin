@@ -40,8 +40,8 @@ class ProtestGrabber:
             if req.status_code != 200:
                 print(f"The request status code is {req.status_code}, now relaying to a proxy configuration...")
                 proxies = {
-                        'http': 'http://host.docker.internal:8118',
-                        'https': 'https://host.docker.internal:8118'
+                        'http': 'http://0.0.0.0:8118',
+                        'https': 'https://0.0.0.0:8118'
                     }
                 req = session.get(url, proxies=proxies)
             content = req.content

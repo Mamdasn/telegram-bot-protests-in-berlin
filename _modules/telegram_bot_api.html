@@ -411,7 +411,6 @@
 <span class="sd">        str: The text response of the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">sendChatAction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;typing&quot;</span><span class="p">))</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/editMessageText&quot;</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;chat_id&quot;</span><span class="p">:</span> <span class="n">chat_id</span><span class="p">,</span>

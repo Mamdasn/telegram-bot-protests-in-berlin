@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+  tor_privoxy:  
+    container_name: tor_privoxy  
+    restart: always                  
+    image: dockage/tor-privoxy:latest
+    ports:                     
+      - "9051:9051" # Tor control port
+      - "8118:8118" # Privoxy   
   postgres_db:
     image: 'postgres:14.1-alpine'
     restart: 'always'
@@ -13,12 +20,11 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - '5432:5432' # postgresql
   protestcrawler:
     container_name: protestcrawler
     build: "protestcrawler"
     image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:0.0.0}
-    network_mode: ${NETWORK_MODE:-bridge}
     volumes:
       - ./protestcrawler/output:/app/output
   telegrambot:
@@ -26,7 +32,7 @@ services:
     build: "telegrambot"
     image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:0.0.0}
     ports:
-      - '443:443'
+      - '443:443' # telegram server communication
     environment:
       - IP_ADDRESS=${IP_ADDRESS}
       - TG_BOT_TOKEN=${TG_BOT_TOKEN}

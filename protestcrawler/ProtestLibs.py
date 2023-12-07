@@ -38,20 +38,35 @@ class ProtestGrabber:
                     "It seems like there is a problem with internet connection. Please check your internet connection and try again!"
                 )
             if req.status_code != 200:
-                print(f"The request status code is {req.status_code}, now relaying to a proxy configuration...")
-                proxies = {
-                        'http': 'http://tor_privoxy:8118',
-                        'https': 'http://tor_privoxy:8118'
-                    }
-                req = session.get(url, proxies=proxies)
+                print(
+                    f"The request status code is {req.status_code}, now relaying to a proxy configuration..."
+                )
+                print("Trying to connect to tor_privoxy.")
+                for i in range(10):
+                    try:
+                        print(".", end="")
+                        proxies = {
+                            "http": "http://tor_privoxy:8118",
+                            "https": "http://tor_privoxy:8118",
+                        }
+                        req = session.get(url, proxies=proxies)
+                        break
+                    except:
+                        pass
+                    sleep(5)
+                print()
             content = req.content
             if content:
                 parsed_content = BeautifulSoup(content, "html.parser")
                 tabel_of_content = parsed_content.find("div", {"id": "results"})
-                protests = tabel_of_content.find("tbody").find_all("tr", {"class": True})
+                protests = tabel_of_content.find("tbody").find_all(
+                    "tr", {"class": True}
+                )
                 return protests
             else:
-                print(f"With the status_code: {req.status_code}, the page respond content is empty.")
+                print(
+                    f"With the status_code: {req.status_code}, the page respond content is empty."
+                )
                 return None
 
     def parse_protest_list(event):

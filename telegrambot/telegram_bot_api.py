@@ -314,7 +314,6 @@ async def editMessageText(chat_id, message_id, text, reply_markup=None):
         str: The text response of the request.
     """
 
-    await asyncio.create_task(sendChatAction(chat_id, action="typing"))
     url = f"{base_link}/editMessageText"
     payload = {
         "chat_id": chat_id,

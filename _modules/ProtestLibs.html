@@ -119,20 +119,35 @@
                     <span class="s2">&quot;It seems like there is a problem with internet connection. Please check your internet connection and try again!&quot;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The request status code is </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, now relaying to a proxy configuration...&quot;</span><span class="p">)</span>
-                <span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="s1">&#39;http://tor_privoxy:8118&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;https&#39;</span><span class="p">:</span> <span class="s1">&#39;http://tor_privoxy:8118&#39;</span>
-                    <span class="p">}</span>
-                <span class="n">req</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">proxies</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The request status code is </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, now relaying to a proxy configuration...&quot;</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trying to connect to tor_privoxy.&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                        <span class="n">proxies</span> <span class="o">=</span> <span class="p">{</span>
+                            <span class="s2">&quot;http&quot;</span><span class="p">:</span> <span class="s2">&quot;http://tor_privoxy:8118&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;https&quot;</span><span class="p">:</span> <span class="s2">&quot;http://tor_privoxy:8118&quot;</span><span class="p">,</span>
+                        <span class="p">}</span>
+                        <span class="n">req</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">proxies</span><span class="p">)</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">()</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">content</span>
             <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
                 <span class="n">parsed_content</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
                 <span class="n">tabel_of_content</span> <span class="o">=</span> <span class="n">parsed_content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;results&quot;</span><span class="p">})</span>
-                <span class="n">protests</span> <span class="o">=</span> <span class="n">tabel_of_content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;tbody&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+                <span class="n">protests</span> <span class="o">=</span> <span class="n">tabel_of_content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;tbody&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span>
+                    <span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="n">protests</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;With the status_code: </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, the page respond content is empty.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;With the status_code: </span><span class="si">{</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">, the page respond content is empty.&quot;</span>
+                <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span></div>
 
 

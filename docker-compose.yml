@@ -18,10 +18,7 @@ services:
     container_name: protestcrawler
     build: "protestcrawler"
     image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:0.0.0}
-    extra_hosts:
-     - "host.docker.internal:host-gateway"
-    environment:
-     - PROXY=http://host.docker.internal:8118
+    network_mode: ${NETWORK_MODE:-bridge}
     volumes:
       - ./protestcrawler/output:/app/output
   telegrambot:

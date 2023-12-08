@@ -24,13 +24,13 @@ services:
   protestcrawler:
     container_name: protestcrawler
     build: "protestcrawler"
-    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:0.0.0}
+    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:1.0.0}
     volumes:
       - ./protestcrawler/output:/app/output
   telegrambot:
     container_name: telegrambot
     build: "telegrambot"
-    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:0.0.0}
+    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:1.0.0}
     ports:
       - '443:443' # telegram server communication
     environment:

@@ -9,5 +9,13 @@ To run the Telegram bot container, make sure you have already installed docker a
 
 You can find an instance of this bot on telegram here: [@ProtestsBerlinBot:](https://t.me/ProtestsBerlinBot)
 
+| PORT | USAGE |
+|------|-------|
+| 443  | Establish a connection with telegram server |
+| 9051 | Send a request to tor control for a new ip |
+
+IP rotation can be automated using crontab (in this case every 24 hours):
+`0 */24 * * * echo -e 'AUTHENTICATE ""\r\nsignal NEWNYM\r\nQUIT' | nc localhost 9051`
+
 ## Documentation
 The documentation can be found here: [Docs](https://mamdasn.github.io/telegram-bot-protests-in-berlin/)

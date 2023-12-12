@@ -1,7 +1,8 @@
-from urllib.parse import urlparse
-from queue import Queue
 import threading
 import time
+from queue import Queue
+from urllib.parse import urlparse
+
 from ProtestLibs import ProtestGrabber, ProtestPostgres
 
 
@@ -17,8 +18,8 @@ class EventCrawler:
 
 
      Methods:
-         | crawl(url, number_of_threads=1, save_to_database=True, \*\*kwargs): Main method to start the crawling process for a given URL.
-         | _run_in_parallel(parser, data, number_of_threads, \*\*kwargs): Static method to parse data in parallel using threading.
+         | crawl(url, number_of_threads=1, save_to_database=True, **kwargs): Main method to start the crawling process for a given URL.
+         | _run_in_parallel(parser, data, number_of_threads, **kwargs): Static method to parse data in parallel using threading.
          | _is_supported(): Checks if the provided URL is supported based on _supported_methods.
          | _url_base(): Property that returns the base hostname of the provided URL.
 

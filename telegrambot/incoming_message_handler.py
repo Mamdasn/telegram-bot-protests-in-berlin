@@ -1,19 +1,17 @@
+import asyncio
+import datetime
+
+from telegram_bot_api import answerCallbackQuery  # deleteMessage,
 from telegram_bot_api import (
+    answerInlineQuery,
+    editMessageText,
     parse_message,
     send_message,
-    deleteMessage,
-    editMessageText,
-    answerInlineQuery,
-    answerCallbackQuery,
 )
-from tools_collection import (
-    message_format_for_postgres,
-    get_calender,
-    get_next_period_of_time,
-    make_reply_markup_page_control,
-)
-import datetime
-import asyncio
+from tools_collection import get_calender  # get_next_period_of_time,
+from tools_collection import make_reply_markup_page_control, message_format_for_postgres
+
+fetcher = None
 
 
 def message_and_reply_markup_format(page_number, queries, command):

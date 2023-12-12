@@ -1,15 +1,11 @@
-from flask.wrappers import Response
-from flask import Flask
-from flask import request, abort
-
-from postgresconf.config import config as pconfig
-from postgres_api import Fetchpostgres
+import json
+from time import sleep
 
 import incoming_message_handler
-
-from time import sleep
-import json
-
+from flask import Flask, abort, request
+from flask.wrappers import Response
+from postgres_api import Fetchpostgres
+from postgresconf.config import config as pconfig
 
 params = pconfig()
 print("Trying to connect to the postgres backend.", end="")

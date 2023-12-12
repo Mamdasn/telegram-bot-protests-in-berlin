@@ -27,4 +27,3 @@ Protest Library Module
 
 .. automodule:: ProtestLibs
    :members:
-

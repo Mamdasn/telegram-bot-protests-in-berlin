@@ -16,13 +16,12 @@ for _ in range(100):
         print()
         print("Postgres connection established.")
         break
-    except:
-        pass
-        print()
+    except Exception as e:
+        print(e)
         print("Waiting for the postgres to load!")
     sleep(3)
 
-incoming_message_handler.fetcher = fetcher
+incoming_message_handler.set_fetcher(fetcher)
 
 app = Flask(__name__)
 
@@ -31,6 +30,7 @@ app = Flask(__name__)
 def abortion_method():
     # use the ip for future patches
     ip = str(request.environ.get("HTTP_X_REAL_IP", request.remote_addr))
+    print(ip)
     if (request.method == "GET") or (request.args != {}):
         abort(403)
 

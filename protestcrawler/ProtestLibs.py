@@ -1,8 +1,9 @@
-from requests import Session
-from bs4 import BeautifulSoup
-import psycopg2
-from postgresconf.config import config
 from time import sleep
+
+import psycopg2
+from bs4 import BeautifulSoup
+from postgresconf.config import config
+from requests import Session
 
 
 class ProtestGrabber:
@@ -33,7 +34,7 @@ class ProtestGrabber:
         with Session() as session:
             req = session.get(url)
             print("This is the status code:", req.status_code)
-            if not req.status_code in [200, 418]:
+            if req.status_code not in [200, 418]:
                 raise ValueError(
                     "It seems like there is a problem with internet connection. Please check your internet connection and try again!"
                 )
@@ -51,7 +52,8 @@ class ProtestGrabber:
                         }
                         req = session.get(url, proxies=proxies)
                         break
-                    except:
+                    except Exception as e:
+                        print(e)
                         pass
                     sleep(5)
                 print()
@@ -105,7 +107,8 @@ class ProtestGrabber:
                 "Versammlungsort": Versammlungsort,
                 "Aufzugsstrecke": Aufzugsstrecke,
             }
-        except:
+        except Exception as e:
+            print(e)
             return False
 
 
@@ -176,8 +179,8 @@ class ProtestPostgres:
             """
 
             sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)
-                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE 
-                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis 
+                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE
+                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis
                             RETURNING id;"""
 
             cursor.execute(
@@ -192,7 +195,7 @@ class ProtestPostgres:
                     Aufzugsstrecke,
                 ),
             )
-            id_protest = cursor.fetchone()
+            cursor.fetchone()
 
         check_existence = """
             SELECT EXISTS (
@@ -242,7 +245,7 @@ class ProtestPostgres:
                 cursor.execute(create_command)
 
             for d in data:
-                if d != False:
+                if d:
                     _insert_event(cursor=cursor, **d)
 
             cursor.close()

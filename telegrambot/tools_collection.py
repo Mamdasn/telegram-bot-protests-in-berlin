@@ -23,7 +23,7 @@ def get_calender(start_date):
             days.append([])
         exact_date = start_date + datetime.timedelta(days=i)
         date = exact_date.strftime("%d.%m.%Y")
-        month = date.split(".")[1]
+        # month = date.split(".")[1]
         day = date.split(".")[0]
         years.append(str(exact_date.year))
         short_month_name = exact_date.strftime("%b")
@@ -41,13 +41,13 @@ def get_calender(start_date):
     if start_date.strftime("%d.%m.%Y") != today.strftime("%d.%m.%Y"):
         previous_start_date = start_date + datetime.timedelta(days=-number_of_days)
         days[-1].append(
-            {"text": f"<", "callback_data": f"/calender {previous_start_date}"}
+            {"text": "<", "callback_data": f"/calender {previous_start_date}"}
         )
     days[-1].append(
         {"text": f"{', '.join(set(years))}", "callback_data": f"/calender {start_date}"}
     )
     next_start_date = start_date + datetime.timedelta(days=number_of_days)
-    days[-1].append({"text": f">", "callback_data": f"/calender {next_start_date}"})
+    days[-1].append({"text": ">", "callback_data": f"/calender {next_start_date}"})
     reply_markup = {"inline_keyboard": days}
     print("reply_markup:", reply_markup)
     return reply_markup, set(years)

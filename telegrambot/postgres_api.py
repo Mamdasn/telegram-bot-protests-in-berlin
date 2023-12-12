@@ -1,8 +1,7 @@
-import psycopg2
-from postgresconf.config import config
-from functools import partial
 import datetime
-import urllib.parse
+from functools import partial
+
+import psycopg2
 
 
 class Fetchpostgres:
@@ -48,8 +47,8 @@ class Fetchpostgres:
 
             (Date, Message_Text, Message_ID, Chat_ID, Chat_Type) = data
             sql_insert = """INSERT INTO clients (Date, Message_Text, Message_ID, Chat_ID, Chat_Type)
-                            VALUES(%s::BIGINT, %s, %s, %s, %s) ON CONFLICT (Date, Message_ID, Chat_ID) DO UPDATE 
-                            SET Message_Text = EXCLUDED.Message_Text 
+                            VALUES(%s::BIGINT, %s, %s, %s, %s) ON CONFLICT (Date, Message_ID, Chat_ID) DO UPDATE
+                            SET Message_Text = EXCLUDED.Message_Text
                             RETURNING id;"""
             cursor.execute(
                 sql_insert,
@@ -61,7 +60,7 @@ class Fetchpostgres:
                     Chat_Type,
                 ),
             )
-            fetched_result = cursor.fetchone()
+            cursor.fetchone()
         return self.connection(**self.params).commit()
 
     def getBySpecificDate(self, date):
@@ -139,7 +138,7 @@ class Fetchpostgres:
         return f(query=query)
 
     def format_postgres_output(self, q):
-        if type(q) == str:
+        if isinstance(q, str):
             return q
         newline = "\n"
         date = f'<b>On {q[1].strftime("%d.%m.%Y")}</b>' if q[1] else ""

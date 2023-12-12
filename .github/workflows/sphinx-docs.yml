@@ -63,5 +63,3 @@ jobs:
               git commit -m "Update documentation"
               git push origin gh-pages
           fi
-
-

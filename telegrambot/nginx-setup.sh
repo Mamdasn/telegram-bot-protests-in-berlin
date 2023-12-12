@@ -17,4 +17,3 @@ echo
 echo Setting up the white listed IPs in the nginx configuration file
 sed -i "s#WHITE_LISTED_IPS#$WHITE_LISTED_IPS_ESCAPED#g" /etc/nginx/nginx.conf
 echo Done.
-

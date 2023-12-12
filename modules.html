@@ -64,6 +64,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#incoming_message_handler.handle_message"><code class="docutils literal notranslate"><span class="pre">handle_message()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#incoming_message_handler.manage_messages"><code class="docutils literal notranslate"><span class="pre">manage_messages()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#incoming_message_handler.message_and_reply_markup_format"><code class="docutils literal notranslate"><span class="pre">message_and_reply_markup_format()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#incoming_message_handler.set_fetcher"><code class="docutils literal notranslate"><span class="pre">set_fetcher()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#module-credentials">Credentials Module</a><ul>
@@ -483,6 +484,23 @@ Structure: (callback_query_id, message_id, callback_query_data, callback_query_m
 </dd>
 </dl>
 <p>The function utilizes a ‘fetcher’ module to format query results and handles the pagination logic internally, returning both the paginated text and the navigation controls.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="incoming_message_handler.set_fetcher">
+<span class="sig-prename descclassname"><span class="pre">incoming_message_handler.</span></span><span class="sig-name descname"><span class="pre">set_fetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">created_fetcher</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/incoming_message_handler.html#set_fetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#incoming_message_handler.set_fetcher" title="Link to this definition"></a></dt>
+<dd><p>Sets the global fetcher by the given fetcher value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>created_fetcher</strong> – The created fetcher in the main thread for the communication with postgresql.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

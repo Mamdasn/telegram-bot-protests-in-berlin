@@ -91,6 +91,23 @@
 <span class="n">fetcher</span> <span class="o">=</span> <span class="kc">None</span>
 
 
+<div class="viewcode-block" id="set_fetcher">
+<a class="viewcode-back" href="../modules.html#incoming_message_handler.set_fetcher">[docs]</a>
+<span class="k">def</span> <span class="nf">set_fetcher</span><span class="p">(</span><span class="n">created_fetcher</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets the global fetcher by the given fetcher value</span>
+
+<span class="sd">    :param created_fetcher: The created fetcher in the main thread for the communication with postgresql.</span>
+<span class="sd">    :type page_number: Fetchpostgres</span>
+
+<span class="sd">    :return: None</span>
+<span class="sd">    :rtype: NoneType</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">fetcher</span>
+    <span class="n">fetcher</span> <span class="o">=</span> <span class="n">created_fetcher</span></div>
+
+
+
 <div class="viewcode-block" id="message_and_reply_markup_format">
 <a class="viewcode-back" href="../modules.html#incoming_message_handler.message_and_reply_markup_format">[docs]</a>
 <span class="k">def</span> <span class="nf">message_and_reply_markup_format</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
@@ -236,7 +253,8 @@
                     <span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
                 <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date_query</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                 <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="s2">&quot;This command should be used as follows:</span><span class="se">\n</span><span class="s2">/date Day.Month.Year&quot;</span>
                 <span class="p">]</span>

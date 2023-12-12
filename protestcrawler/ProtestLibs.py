@@ -83,18 +83,21 @@ class ProtestGrabber:
 
         The function attempts to extract details such as date, time, theme, postal code, and location of the protest. In case of an error during parsing, it returns False.
         """
+
+        def get_text(soup):
+            if soup:
+                return soup.get_text().strip()
+            else:
+                return "Empty"
+
         try:
-            Datum = event.find("td", {"headers": "Datum"}).get_text().strip()
-            Von = event.find("td", {"headers": "Von"}).get_text().strip()
-            Bis = event.find("td", {"headers": "Bis"}).get_text().strip()
-            Thema = event.find("td", {"headers": "Thema"}).get_text().strip()
-            PLZ = event.find("td", {"headers": "PLZ"}).get_text().strip()
-            Versammlungsort = (
-                event.find("td", {"headers": "Versammlungsort"}).get_text().strip()
-            )
-            Aufzugsstrecke = (
-                event.find("td", {"headers": "Aufzugsstrecke"}).get_text().strip()
-            )
+            Datum = get_text(event.find("td", {"headers": "Datum"}))
+            Von = get_text(event.find("td", {"headers": "Von"}))
+            Bis = get_text(event.find("td", {"headers": "Bis"}))
+            Thema = get_text(event.find("td", {"headers": "Thema"}))
+            PLZ = get_text(event.find("td", {"headers": "PLZ"}))
+            Versammlungsort = get_text(event.find("td", {"headers": "Versammlungsort"}))
+            Aufzugsstrecke = get_text(event.find("td", {"headers": "Aufzugsstrecke"}))
 
             Datum = ".".join(Datum.split(".")[::-1])
 
@@ -245,7 +248,7 @@ class ProtestPostgres:
                 cursor.execute(create_command)
 
             for d in data:
-                if d:
+                if d is not False:
                     _insert_event(cursor=cursor, **d)
 
             cursor.close()

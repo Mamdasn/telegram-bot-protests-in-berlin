@@ -14,6 +14,20 @@ from tools_collection import make_reply_markup_page_control, message_format_for_
 fetcher = None
 
 
+def set_fetcher(created_fetcher):
+    """
+    Sets the global fetcher by the given fetcher value
+
+    :param created_fetcher: The created fetcher in the main thread for the communication with postgresql.
+    :type page_number: Fetchpostgres
+
+    :return: None
+    :rtype: NoneType
+    """
+    global fetcher
+    fetcher = created_fetcher
+
+
 def message_and_reply_markup_format(page_number, queries, command):
     """
     Formats the given queries into a paginated message and generates reply markup for page control.
@@ -151,7 +165,8 @@ def handle_commands(message):
                     "%Y.%m.%d"
                 )
                 queries = fetcher.getBySpecificDate(date_query)
-            except:
+            except Exception as e:
+                print(e)
                 queries = [
                     "This command should be used as follows:\n/date Day.Month.Year"
                 ]

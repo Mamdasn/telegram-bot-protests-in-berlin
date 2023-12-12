@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ProtestLibs &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5946139a" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=c5aca1ce" />
 
   
   <!--[if lt IE 9]>
@@ -14,7 +14,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/documentation_options.js?v=c4370934"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -75,11 +75,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for ProtestLibs</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+
 <span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
 <span class="kn">from</span> <span class="nn">postgresconf.config</span> <span class="kn">import</span> <span class="n">config</span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Session</span>
 
 
 <div class="viewcode-block" id="ProtestGrabber">
@@ -114,7 +115,7 @@
         <span class="k">with</span> <span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">req</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is the status code:&quot;</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">418</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">418</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;It seems like there is a problem with internet connection. Please check your internet connection and try again!&quot;</span>
                 <span class="p">)</span>
@@ -132,7 +133,8 @@
                         <span class="p">}</span>
                         <span class="n">req</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="n">proxies</span><span class="p">)</span>
                         <span class="k">break</span>
-                    <span class="k">except</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                         <span class="k">pass</span>
                     <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">()</span>
@@ -189,7 +191,8 @@
                 <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">:</span> <span class="n">Versammlungsort</span><span class="p">,</span>
                 <span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">:</span> <span class="n">Aufzugsstrecke</span><span class="p">,</span>
             <span class="p">}</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 </div>
 
@@ -266,8 +269,8 @@
 <span class="sd">            &quot;&quot;&quot;</span>
 
             <span class="n">sql_protest</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)</span>
-<span class="s2">                            VALUES(</span><span class="si">%s</span><span class="s2">::DATE, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE </span>
-<span class="s2">                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis </span>
+<span class="s2">                            VALUES(</span><span class="si">%s</span><span class="s2">::DATE, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE</span>
+<span class="s2">                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis</span>
 <span class="s2">                            RETURNING id;&quot;&quot;&quot;</span>
 
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
@@ -282,7 +285,7 @@
                     <span class="n">Aufzugsstrecke</span><span class="p">,</span>
                 <span class="p">),</span>
             <span class="p">)</span>
-            <span class="n">id_protest</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
 
         <span class="n">check_existence</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">            SELECT EXISTS (</span>
@@ -332,7 +335,7 @@
                 <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">create_command</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">d</span><span class="p">:</span>
                     <span class="n">_insert_event</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="o">**</span><span class="n">d</span><span class="p">)</span>
 
             <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>

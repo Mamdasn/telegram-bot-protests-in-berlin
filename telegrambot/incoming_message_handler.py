@@ -106,6 +106,7 @@ def handle_commands(message):
        | - "/week", "This Week 🪧": Fetches events for the current week.
        | - "/weekend", "Weekend 🪧": Fetches events for the upcoming weekend.
        | - "/date [dd.mm.yyyy]": Fetches events for a specific date.
+       | - "Versammlungsanzeige": Provides a like to register a protest meeting notice.
        | - "/info", "Info 💁": Provides contact information.
        | - "/help", "Help ❔": Displays help information.
        | - "/search", "🔎": Initiates a search based on the provided query.
@@ -157,6 +158,10 @@ def handle_commands(message):
         elif (message == "/info") or (message == "Info 💁"):
             queries = [
                 "If you have any suggestions, comments, or questions, please don't hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com"
+            ]
+        elif message == "Versammlungsanzeige":
+            queries = [
+                "Register a Versammlungsanzeige here: https://www.berlin.de/polizei/service/versammlungsbehoerde"
             ]
         elif message.startswith("/date"):
             date = message.split(" ", 1)[-1]
@@ -231,7 +236,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
     keyboard = [
         ["Today 🪧", "Tomorrow 🪧", "🔎"],
         ["This Week 🪧", "Weekend 🪧", "Calender 🗓️"],
-        ["Help ❔", "Info 💁"],
+        ["Help ❔", "Versammlungsanzeige", "Info 💁"],
     ]
     reply_keyboard_markup = {
         "keyboard": keyboard,

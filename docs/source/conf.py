@@ -49,3 +49,5 @@ pygments_style = "sphinx"
 # html_theme = "default"
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+# set a favicon
+html_favicon = "_static/favicon.ico"

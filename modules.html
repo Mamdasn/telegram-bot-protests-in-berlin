@@ -49,7 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="github_link.html">GitHub Repository</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Telegram Bot API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#handle-incoming-messages-module">Handle Incoming Messages Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#credentials-module">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-credentials">Credentials Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#credentials.config"><code class="docutils literal notranslate"><span class="pre">config</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="#module-protestcrawler">Protest Crawler Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#protestcrawler.EventCrawler"><code class="docutils literal notranslate"><span class="pre">EventCrawler</span></code></a></li>
 </ul>
@@ -98,8 +101,25 @@
 <section id="handle-incoming-messages-module">
 <h1>Handle Incoming Messages Module<a class="headerlink" href="#handle-incoming-messages-module" title="Link to this heading"></a></h1>
 </section>
-<section id="credentials-module">
-<h1>Credentials Module<a class="headerlink" href="#credentials-module" title="Link to this heading"></a></h1>
+<section id="module-credentials">
+<span id="credentials-module"></span><h1>Credentials Module<a class="headerlink" href="#module-credentials" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="credentials.config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">credentials.</span></span><span class="sig-name descname"><span class="pre">config</span></span><a class="reference internal" href="_modules/credentials.html#config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#credentials.config" title="Link to this definition"></a></dt>
+<dd><p>A configuration class for storing environment-specific settings.</p>
+<p>This class is designed to hold configuration variables that are essential
+for the application, such as tokens and keys. These variables are typically
+loaded from the environment to ensure security and flexibility across different
+deployment environments.</p>
+<dl class="simple">
+<dt>Class Attributes:</dt><dd><dl class="simple">
+<dt>TG_BOT_TOKEN (str): Telegram Bot Token, fetched from the environment variable ‘TG_BOT_TOKEN’.</dt><dd><p>This token is used to authenticate and interact with the Telegram Bot API.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-protestcrawler">
 <span id="protest-crawler-module"></span><h1>Protest Crawler Module<a class="headerlink" href="#module-protestcrawler" title="Link to this heading"></a></h1>

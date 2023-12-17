@@ -1,21 +1,18 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>incoming_message_handler &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5946139a" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=c5aca1ce" />
-
-  
-    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <title>incoming_message_handler &mdash; A simple telegram bot  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=c4370934"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +29,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            A Telegram Bot For Protests in Berlin
+            A simple telegram bot
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -44,12 +41,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../github_link.html">GitHub Repository</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Telegram Bot API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-incoming_message_handler">Handle Incoming Messages Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-credentials">Credentials Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html#module-ProtestLibs">Protest Library Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#protest-library-module">Protest Library Module</a></li>
 </ul>
 
         </div>
@@ -58,7 +54,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">A Telegram Bot For Protests in Berlin</a>
+          <a href="../index.html">A simple telegram bot</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -77,37 +73,22 @@
            <div itemprop="articleBody">
              
   <h1>Source code for incoming_message_handler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-
-<span class="kn">from</span> <span class="nn">telegram_bot_api</span> <span class="kn">import</span> <span class="n">answerCallbackQuery</span>  <span class="c1"># deleteMessage,</span>
-<span class="kn">from</span> <span class="nn">telegram_bot_api</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">answerInlineQuery</span><span class="p">,</span>
-    <span class="n">editMessageText</span><span class="p">,</span>
+<span></span><span class="kn">from</span> <span class="nn">telegram_bot_api</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">parse_message</span><span class="p">,</span>
     <span class="n">send_message</span><span class="p">,</span>
+    <span class="n">deleteMessage</span><span class="p">,</span>
+    <span class="n">editMessageText</span><span class="p">,</span>
+    <span class="n">answerInlineQuery</span><span class="p">,</span>
+    <span class="n">answerCallbackQuery</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">tools_collection</span> <span class="kn">import</span> <span class="n">get_calender</span>  <span class="c1"># get_next_period_of_time,</span>
-<span class="kn">from</span> <span class="nn">tools_collection</span> <span class="kn">import</span> <span class="n">make_reply_markup_page_control</span><span class="p">,</span> <span class="n">message_format_for_postgres</span>
-
-<span class="n">fetcher</span> <span class="o">=</span> <span class="kc">None</span>
-
-
-<div class="viewcode-block" id="set_fetcher">
-<a class="viewcode-back" href="../modules.html#incoming_message_handler.set_fetcher">[docs]</a>
-<span class="k">def</span> <span class="nf">set_fetcher</span><span class="p">(</span><span class="n">created_fetcher</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets the global fetcher by the given fetcher value</span>
-
-<span class="sd">    :param created_fetcher: The created fetcher in the main thread for the communication with postgresql.</span>
-<span class="sd">    :type page_number: Fetchpostgres</span>
-
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: NoneType</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">fetcher</span>
-    <span class="n">fetcher</span> <span class="o">=</span> <span class="n">created_fetcher</span></div>
-
+<span class="kn">from</span> <span class="nn">tools_collection</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">message_format_for_postgres</span><span class="p">,</span>
+    <span class="n">get_calender</span><span class="p">,</span>
+    <span class="n">get_next_period_of_time</span><span class="p">,</span>
+    <span class="n">make_reply_markup_page_control</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
 
 
 <div class="viewcode-block" id="message_and_reply_markup_format">
@@ -162,11 +143,6 @@
             <span class="k">if</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;callback_query&quot;</span><span class="p">:</span>
                 <span class="n">handle_callback_query</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">chat_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">):</span>
-                <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">message_text</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">message_info</span>
-                    <span class="n">fetcher</span><span class="o">.</span><span class="n">store_client_data</span><span class="p">(</span>
-                        <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">message_text</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">chat_id</span><span class="p">,</span> <span class="n">chat_type</span><span class="p">)</span>
-                    <span class="p">)</span>
                 <span class="n">handle_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;inline_query&quot;</span><span class="p">:</span>
                 <span class="n">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="o">=</span><span class="n">message_info</span><span class="p">)</span>
@@ -196,7 +172,6 @@
 <span class="sd">       | - &quot;/week&quot;, &quot;This Week 🪧&quot;: Fetches events for the current week.</span>
 <span class="sd">       | - &quot;/weekend&quot;, &quot;Weekend 🪧&quot;: Fetches events for the upcoming weekend.</span>
 <span class="sd">       | - &quot;/date [dd.mm.yyyy]&quot;: Fetches events for a specific date.</span>
-<span class="sd">       | - &quot;Register a Protest&quot;: Provides a like to register a protest meeting notice.</span>
 <span class="sd">       | - &quot;/info&quot;, &quot;Info 💁&quot;: Provides contact information.</span>
 <span class="sd">       | - &quot;/help&quot;, &quot;Help ❔&quot;: Displays help information.</span>
 <span class="sd">       | - &quot;/search&quot;, &quot;🔎&quot;: Initiates a search based on the provided query.</span>
@@ -249,10 +224,6 @@
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;If you have any suggestions, comments, or questions, please don&#39;t hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com&quot;</span>
             <span class="p">]</span>
-        <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">:</span>
-            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">&quot;For instructions on registering a Versammlungsanzeige refer to here: https://www.berlin.de/polizei/service/versammlungsbehoerde&quot;</span>
-            <span class="p">]</span>
         <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/date&quot;</span><span class="p">):</span>
             <span class="n">date</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
@@ -260,8 +231,7 @@
                     <span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
                 <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date_query</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
                 <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="s2">&quot;This command should be used as follows:</span><span class="se">\n</span><span class="s2">/date Day.Month.Year&quot;</span>
                 <span class="p">]</span>
@@ -325,11 +295,11 @@
 <span class="sd">    Note:</span>
 <span class="sd">        In group chats, the function only processes messages that start with &quot;/&quot; (commands).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">message_info</span>
+    <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span> <span class="o">=</span> <span class="n">message_info</span>
     <span class="n">keyboard</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span><span class="s2">&quot;Today 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="s2">&quot;This Week 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">],</span>
-        <span class="p">[</span><span class="s2">&quot;Help ❔&quot;</span><span class="p">,</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">,</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Help ❔&quot;</span><span class="p">,</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">],</span>
     <span class="p">]</span>
     <span class="n">reply_keyboard_markup</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;keyboard&quot;</span><span class="p">:</span> <span class="n">keyboard</span><span class="p">,</span>

@@ -6,20 +6,40 @@ import psycopg2
 
 class Fetchpostgres:
     def __init__(self, params) -> None:
+        """
+        Initialize the Fetchpostgres class with connection parameters for PostgreSQL.
+
+        :param params: Parameters to establish a PostgreSQL connection.
+        :type params: dict
+        """
         self.params = params
         self.connection = psycopg2.connect
 
     def start(self):
+        """
+        Establish a cursor for the PostgreSQL connection.
+        """
         self.cursor = self.connection.cursor()
         print("PostgreSQL connection is started")
 
     def close(self):
+        """
+        Close the cursor and the PostgreSQL connection if open.
+        """
         if self.connection:
             self.cursor.close()
             self.connection.close()
             print("PostgreSQL connection is closed")
 
     def store_client_data(self, data):
+        """
+        Store client data in the PostgreSQL database, creating the table if it does not exist.
+
+        :param data: Client data to be stored.
+        :type data: tuple
+        :return: Commit status of the connection.
+        :rtype: None
+        """
         with self.connection(**self.params).cursor() as cursor:
             check_existence = """
                 SELECT EXISTS (
@@ -64,6 +84,14 @@ class Fetchpostgres:
         return self.connection(**self.params).commit()
 
     def getBySpecificDate(self, date):
+        """
+        Retrieve records from the PostgreSQL database by a specific date.
+
+        :param date: The specific date to retrieve records.
+        :type date: datetime.datetime
+        :return: Fetched records from the database.
+        :rtype: list
+        """
         with self.connection(**self.params).cursor() as cursor:
             postgreSQL_select_Query = "select * from events where Datum = %s::date"
             cursor.execute(postgreSQL_select_Query, (date,))
@@ -71,6 +99,16 @@ class Fetchpostgres:
             return fetched_records
 
     def getBySpecificTime(self, column, time):
+        """
+        Retrieve records from the PostgreSQL database by a specific time.
+
+        :param column: The column name to match the specific time.
+        :type column: str
+        :param time: The specific time to retrieve records.
+        :type time: datetime.time
+        :return: Fetched records from the database.
+        :rtype: list
+        """
         with self.connection(**self.params).cursor() as cursor:
             postgreSQL_select_Query = f"select * from events where {column} = %s::time"
             cursor.execute(postgreSQL_select_Query, (time,))
@@ -80,6 +118,13 @@ class Fetchpostgres:
     def get_query_column(self, column, query):
         """
         Retrieve rows from the 'events' table where the specified column contains the specified query.
+
+        :param column: The column to be queried.
+        :type column: str
+        :param query: The query value to search in the column.
+        :type query: str
+        :return: Rows from the database where the column contains the query.
+        :rtype: list
         """
         with self.connection(**self.params).cursor() as cursor:
             query_statement = f"{column} ILIKE ANY(%s)"
@@ -95,6 +140,13 @@ class Fetchpostgres:
     ):
         """
         Retrieve non-repetitive rows from the 'events' table where any of the specified columns contains the specified query.
+
+        :param query: The query value to search in the columns.
+        :type query: str
+        :param columns: List of column names to search the query in, defaults to ['Aufzugsstrecke', 'Versammlungsort', 'Thema', 'PLZ'].
+        :type columns: list[str], optional
+        :return: Distinct rows from the database where any of the specified columns contains the query.
+        :rtype: list
         """
         with self.connection(**self.params).cursor() as cursor:
             query_statement = " OR ".join([f"{column} ILIKE %s" for column in columns])
@@ -114,30 +166,86 @@ class Fetchpostgres:
             return fetched_records
 
     def getVonQuery(self, time):
+        """
+        Retrieve rows from the 'events' table where the 'Von' column matches a specific time.
+
+        :param time: The specific time to match in the 'Von' column.
+        :type time: datetime.time
+        :return: Rows from the database matching the specified time in the 'Von' column.
+        :rtype: list
+        """
         f = partial(self.getBySpecificTime, column="Von")
         return f(time=time)
 
     def getBisQuery(self, time):
+        """
+        Retrieve rows from the 'events' table where the 'Bis' column matches a specific time.
+
+        :param time: The specific time to match in the 'Bis' column.
+        :type time: datetime.time
+        :return: Rows from the database matching the specified time in the 'Bis' column.
+        :rtype: list
+        """
         f = partial(self.getBySpecificTime, column="Bis")
         return f(time=time)
 
     def getThemaQuery(self, query):
+        """
+        Retrieve rows from the 'events' table where the 'Thema' column contains a specific query.
+
+        :param query: The query value to search in the 'Thema' column.
+        :type query: str
+        :return: Rows from the database where the 'Thema' column contains the query.
+        :rtype: list
+        """
         f = partial(self.get_query_column, column="Thema")
         return f(query=query)
 
     def getPLZQuery(self, query):
+        """
+        Retrieve rows from the 'events' table where the 'PLZ' column contains a specific query.
+
+        :param query: The query value to search in the 'PLZ' column.
+        :type query: str
+        :return: Rows from the database where the 'PLZ' column contains the query.
+        :rtype: list
+        """
         f = partial(self.get_query_column, column="PLZ")
         return f(query=query[0])
 
     def getVersammlungsortQuery(self, query):
+        """
+        Retrieve rows from the 'events' table where the 'Versammlungsort' column contains a specific query.
+
+        :param query: The query value to search in the 'Versammlungsort' column.
+        :type query: str
+        :return: Rows from the database where the 'Versammlungsort' column contains the query.
+        :rtype: list
+        """
         f = partial(self.get_query_column, column="Versammlungsort")
         return f(query=query)
 
     def getAufzugsstreckeQuery(self, query):
+        """
+        Retrieve rows from the 'events' table where the 'Aufzugsstrecke' column contains a specific query.
+
+        :param query: The query value to search in the 'Aufzugsstrecke' column.
+        :type query: str
+        :return: Rows from the database where the 'Aufzugsstrecke' column contains the query.
+        :rtype: list
+        """
         f = partial(self.get_query_column, column="Aufzugsstrecke")
         return f(query=query)
 
     def format_postgres_output(self, q):
+        """
+        Format the output from a PostgreSQL query for display.
+
+        :param q: The query result to be formatted.
+        :type q: tuple or str
+        :return: A formatted string representation of the query result.
+        :rtype: str
+        """
         if isinstance(q, str):
             return q
         newline = "\n"

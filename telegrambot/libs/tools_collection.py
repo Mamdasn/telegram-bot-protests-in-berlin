@@ -2,6 +2,16 @@ import datetime
 
 
 def get_next_period_of_time(number_of_days, start_date=None):
+    """
+    Generate a list of dates for a given number of days starting from a specified date.
+
+    :param number_of_days: The number of days to include in the list.
+    :type number_of_days: int
+    :param start_date: The date to start from. If None, today's date is used.
+    :type start_date: datetime.datetime, optional
+    :return: A list of dates in the format 'DD.MM.YY'.
+    :rtype: list[str]
+    """
     if not start_date:
         start_date = datetime.datetime.today()
     date_list = [
@@ -12,6 +22,14 @@ def get_next_period_of_time(number_of_days, start_date=None):
 
 
 def get_calender(start_date):
+    """
+    Generate a calendar layout for a 24-day period starting from a given date.
+
+    :param start_date: The date to start the calendar from.
+    :type start_date: datetime.datetime
+    :return: A tuple containing the calendar layout and the set of years in the period.
+    :rtype: (dict, set[str])
+    """
     number_of_days = 24
     days = [[]]
     years = []
@@ -32,12 +50,6 @@ def get_calender(start_date):
         )
     days.append([])
     today = datetime.datetime.today()
-    print(
-        "start_date:",
-        start_date.strftime("%d.%m.%Y"),
-        "today:",
-        today.strftime("%d.%m.%Y"),
-    )
     if start_date.strftime("%d.%m.%Y") != today.strftime("%d.%m.%Y"):
         previous_start_date = start_date + datetime.timedelta(days=-number_of_days)
         days[-1].append(
@@ -49,11 +61,16 @@ def get_calender(start_date):
     next_start_date = start_date + datetime.timedelta(days=number_of_days)
     days[-1].append({"text": ">", "callback_data": f"/calender {next_start_date}"})
     reply_markup = {"inline_keyboard": days}
-    print("reply_markup:", reply_markup)
     return reply_markup, set(years)
 
 
 def get_remaining_days_in_current_month():
+    """
+    Calculate the remaining days in the current month from today.
+
+    :return: A list of remaining days in the current month.
+    :rtype: list[int]
+    """
     now = datetime.datetime.now()
     next_month = (
         datetime.datetime(now.year, now.month + 1, 1)
@@ -66,6 +83,18 @@ def get_remaining_days_in_current_month():
 
 
 def message_format_for_postgres(queries, page_number=1, length_of_message=4000):
+    """
+    Format a list of queries for display, splitting into pages if necessary.
+
+    :param queries: A list of SQL queries.
+    :type queries: list[str]
+    :param page_number: The page number to display, defaults to 1.
+    :type page_number: int, optional
+    :param length_of_message: The maximum length of the message, defaults to 4000.
+    :type length_of_message: int, optional
+    :return: A tuple containing the formatted page of queries and the total number of pages.
+    :rtype: (str, int)
+    """
     queries = [f"{q}\n" for q in queries]
     queries_len = [len(q) for q in queries]
     query_indexes_for_current_page = [[]]
@@ -91,6 +120,18 @@ def message_format_for_postgres(queries, page_number=1, length_of_message=4000):
 
 
 def make_reply_markup_page_control(page_number, number_of_pages, command):
+    """
+    Create a reply markup for page control in an interactive interface.
+
+    :param page_number: The current page number.
+    :type page_number: int
+    :param number_of_pages: The total number of pages available.
+    :type number_of_pages: int
+    :param command: The command to execute when a page control is activated.
+    :type command: str
+    :return: The reply markup for controlling pages.
+    :rtype: dict
+    """
     reply_markup = ""
     next_page = {"text": ">", "callback_data": f"page {page_number+1} {command}"}
     previous_page = {"text": "<", "callback_data": f"page {page_number-1} {command}"}

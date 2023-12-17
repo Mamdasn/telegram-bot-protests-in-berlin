@@ -13,7 +13,7 @@ project_root = os.path.dirname(os.path.dirname(cwd))
 
 protestcrawler_root = os.path.join(project_root, "protestcrawler")
 telegrambot_root = os.path.join(project_root, "telegrambot")
-telegrambot_libs = os.path.join(project_root, "telegrambot", "libs")
+telegrambot_libs = os.path.join(telegrambot_root, "libs")
 
 # Add the root dir to the system path
 sys.path.insert(0, project_root)

@@ -1,10 +1,10 @@
 import json
 from time import sleep
 
-import incoming_message_handler
+import libs.incoming_message_handler as incoming_message_handler
 from flask import Flask, abort, request
 from flask.wrappers import Response
-from postgres_api import Fetchpostgres
+from libs.postgres_api import Fetchpostgres
 from postgresconf.config import config as pconfig
 
 params = pconfig()

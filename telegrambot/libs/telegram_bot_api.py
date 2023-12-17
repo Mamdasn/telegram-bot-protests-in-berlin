@@ -1,7 +1,8 @@
 import asyncio
 
 import aiohttp
-from credentials import config
+
+from .credentials import config
 
 token = config.TG_BOT_TOKEN
 base_link = f"https://api.telegram.org/bot{token}"

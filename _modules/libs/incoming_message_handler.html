@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>libs.incoming_message_handler &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5946139a" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=c5aca1ce" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=c4370934"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            A Telegram Bot For Protests in Berlin
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../github_link.html">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Telegram Bot API Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.incoming_message_handler">Handle Incoming Messages Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.tools_collection">Tools collections Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.postgres_api">Postgresql API Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-ProtestLibs">Protest Library Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">A Telegram Bot For Protests in Berlin</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">libs.incoming_message_handler</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for libs.incoming_message_handler</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">.telegram_bot_api</span> <span class="kn">import</span> <span class="n">answerCallbackQuery</span>  <span class="c1"># deleteMessage,</span>
+<span class="kn">from</span> <span class="nn">.telegram_bot_api</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">answerInlineQuery</span><span class="p">,</span>
+    <span class="n">editMessageText</span><span class="p">,</span>
+    <span class="n">parse_message</span><span class="p">,</span>
+    <span class="n">send_message</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.tools_collection</span> <span class="kn">import</span> <span class="n">get_calender</span>  <span class="c1"># get_next_period_of_time,</span>
+<span class="kn">from</span> <span class="nn">.tools_collection</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">make_reply_markup_page_control</span><span class="p">,</span>
+    <span class="n">message_format_for_postgres</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">fetcher</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="set_fetcher">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.set_fetcher">[docs]</a>
+<span class="k">def</span> <span class="nf">set_fetcher</span><span class="p">(</span><span class="n">created_fetcher</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sets the global fetcher by the given fetcher value</span>
+
+<span class="sd">    :param created_fetcher: The created fetcher in the main thread for the communication with postgresql.</span>
+<span class="sd">    :type page_number: Fetchpostgres</span>
+
+<span class="sd">    :return: None</span>
+<span class="sd">    :rtype: NoneType</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">fetcher</span>
+    <span class="n">fetcher</span> <span class="o">=</span> <span class="n">created_fetcher</span></div>
+
+
+
+<div class="viewcode-block" id="message_and_reply_markup_format">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.message_and_reply_markup_format">[docs]</a>
+<span class="k">def</span> <span class="nf">message_and_reply_markup_format</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Formats the given queries into a paginated message and generates reply markup for page control.</span>
+
+<span class="sd">    This function takes a list of queries, formats them for display, and organizes them into a paginated structure. It also generates a reply markup for navigating between pages.</span>
+
+<span class="sd">    :param page_number: The current page number in the pagination.</span>
+<span class="sd">    :type page_number: int</span>
+<span class="sd">    :param queries: A list of query results to be formatted and displayed.</span>
+<span class="sd">    :type queries: list</span>
+<span class="sd">    :param command: The original command or query that initiated the request.</span>
+<span class="sd">    :type command: str</span>
+
+<span class="sd">    :return: A tuple containing the reply markup for pagination and the formatted message string.</span>
+<span class="sd">    :rtype: tuple</span>
+
+<span class="sd">    The function utilizes a &#39;fetcher&#39; module to format query results and handles the pagination logic internally, returning both the paginated text and the navigation controls.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queries_formatted</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">format_postgre_queries</span><span class="p">(</span><span class="n">queries</span><span class="p">)</span>
+    <span class="n">page</span><span class="p">,</span> <span class="n">number_of_pages</span> <span class="o">=</span> <span class="n">message_format_for_postgres</span><span class="p">(</span><span class="n">queries_formatted</span><span class="p">,</span> <span class="n">page_number</span><span class="p">)</span>
+    <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">make_reply_markup_page_control</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">number_of_pages</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">reply_markup</span><span class="p">,</span> <span class="n">page</span></div>
+
+
+
+<div class="viewcode-block" id="manage_messages">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.manage_messages">[docs]</a>
+<span class="k">def</span> <span class="nf">manage_messages</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages incoming messages, parses them, and routes them to appropriate handlers based on chat type.</span>
+
+<span class="sd">    This function acts as a central message handler in a Telegram bot, processing incoming messages and directing them to specific functions based on the type of chat or query.</span>
+
+<span class="sd">    :param msg: The incoming message from Telegram.</span>
+<span class="sd">    :type msg: dict</span>
+
+<span class="sd">    :return: None. The function processes messages and triggers other functions without returning a value.</span>
+<span class="sd">    :rtype: NoneType</span>
+
+<span class="sd">    The function handles different types of interactions like callback queries, private messages, group messages, and inline queries. It uses a &#39;parse_message&#39; function to extract necessary information and then calls the relevant handler such as &#39;handle_callback_query&#39;, &#39;handle_message&#39;, or &#39;handle_inline_query&#39;.</span>
+
+<span class="sd">    Exception handling is implemented to catch and log any errors during message processing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed_message</span> <span class="o">=</span> <span class="n">parse_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parsed_message</span><span class="p">:</span>
+            <span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span> <span class="o">=</span> <span class="n">parsed_message</span>
+            <span class="k">if</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;callback_query&quot;</span><span class="p">:</span>
+                <span class="n">handle_callback_query</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">chat_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">,</span> <span class="s2">&quot;group&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">message_text</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">message_info</span>
+                    <span class="n">fetcher</span><span class="o">.</span><span class="n">store_client_data</span><span class="p">(</span>
+                        <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">message_text</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">chat_id</span><span class="p">,</span> <span class="n">chat_type</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="n">handle_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;inline_query&quot;</span><span class="p">:</span>
+                <span class="n">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="o">=</span><span class="n">message_info</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_commands">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_commands">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_commands</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the commands received in a message and generates responses for a Telegram bot.</span>
+
+<span class="sd">    This function interprets the input message as a command and provides appropriate responses, which can include fetching data from a database, generating a custom keyboard, or sending predefined responses. It supports a variety of commands for different functionalities.</span>
+
+<span class="sd">    :param message: The message text received from the user, which may contain commands or other queries.</span>
+<span class="sd">    :type message: str</span>
+
+<span class="sd">    :return: A tuple containing a list of response strings (queries) and a reply markup if applicable.</span>
+<span class="sd">    :rtype: tuple</span>
+
+<span class="sd">    Supported Commands:</span>
+<span class="sd">       | - &quot;/start&quot;: Greeting message and bot introduction.</span>
+<span class="sd">       | - &quot;/today&quot;, &quot;Today 🪧&quot;: Fetches events for the current day.</span>
+<span class="sd">       | - &quot;/tomorrow&quot;, &quot;Tomorrow 🪧&quot;: Fetches events for the next day.</span>
+<span class="sd">       | - &quot;/week&quot;, &quot;This Week 🪧&quot;: Fetches events for the current week.</span>
+<span class="sd">       | - &quot;/weekend&quot;, &quot;Weekend 🪧&quot;: Fetches events for the upcoming weekend.</span>
+<span class="sd">       | - &quot;/date [dd.mm.yyyy]&quot;: Fetches events for a specific date.</span>
+<span class="sd">       | - &quot;Register a Protest&quot;: Provides a like to register a protest meeting notice.</span>
+<span class="sd">       | - &quot;/info&quot;, &quot;Info 💁&quot;: Provides contact information.</span>
+<span class="sd">       | - &quot;/help&quot;, &quot;Help ❔&quot;: Displays help information.</span>
+<span class="sd">       | - &quot;/search&quot;, &quot;🔎&quot;: Initiates a search based on the provided query.</span>
+<span class="sd">       | - Any other text: Treated as a search query.</span>
+
+<span class="sd">    The function also handles date-specific queries and provides a mechanism for calendar-based event selection.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The function relies on an external &#39;fetcher&#39; module to retrieve data from a database based on the commands.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queries</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">reply_markup</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/start&quot;</span><span class="p">:</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;Hey there,</span><span class="se">\n</span><span class="s2">This bot is made to provide you access to the up-to-date protest events in Berlin.&quot;</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/today&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Today 🪧&quot;</span><span class="p">):</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/tomorrow&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Tomorrow 🪧&quot;</span><span class="p">):</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+                <span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/calender&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">):</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/calender&quot;</span><span class="p">):</span>
+                <span class="n">start_date_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="n">start_date_string</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="n">reply_markup</span><span class="p">,</span> <span class="n">years</span> <span class="o">=</span> <span class="n">get_calender</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Choose a date in </span><span class="si">{</span><span class="s1">&#39; or &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">years</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/weekend&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">):</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">date</span><span class="o">.</span><span class="n">weekday</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+                    <span class="n">date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">queries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/week&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;This Week 🪧&quot;</span><span class="p">):</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">queries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/info&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">):</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;If you have any suggestions, comments, or questions, please don&#39;t hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com&quot;</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">:</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;For instructions on registering a Versammlungsanzeige refer to here: https://www.berlin.de/polizei/service/versammlungsbehoerde&quot;</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/date&quot;</span><span class="p">):</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">date_query</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+                    <span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date_query</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="s2">&quot;This command should be used as follows:</span><span class="se">\n</span><span class="s2">/date Day.Month.Year&quot;</span>
+                <span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/help&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Help ❔&quot;</span><span class="p">):</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;◾️What can this bot do?</span>
+<span class="s2">&lt;b&gt;/start&lt;/b&gt;: start the bot</span>
+<span class="s2">&lt;b&gt;[query]&lt;/b&gt;: get a list of protests with the query in their description.</span>
+<span class="s2">&lt;b&gt;/search [query]&lt;/b&gt;: get a list of protests with the query in their description. (The same as the one above)</span>
+<span class="s2">For example: &lt;i&gt;&#39;/search ukraine&#39;&lt;/i&gt; or &lt;i&gt;&#39;ukraine&#39;&lt;/i&gt;</span>
+<span class="s2">&lt;b&gt;/today&lt;/b&gt;: get a list of today&#39;s protests</span>
+<span class="s2">&lt;b&gt;/tomorrow&lt;/b&gt;: get a list of tomorrow&#39;s protests</span>
+<span class="s2">&lt;b&gt;/saturday&lt;/b&gt;: get a list of the upcoming saturday&#39;s protests</span>
+<span class="s2">&lt;b&gt;/week&lt;/b&gt;: get a list of this week&#39;s protests</span>
+<span class="s2">&lt;b&gt;/date [dd.mm.yyyy]&lt;/b&gt;: get a list of protests on that specific date.</span>
+<span class="s2">For example: &lt;i&gt;&#39;/date 01.05.2030&#39;&lt;/i&gt;</span>
+<span class="s2">&lt;b&gt;/help&lt;/b&gt;: see the manual</span>
+<span class="s2">&lt;b&gt;/info&lt;/b&gt;: contact me</span>
+<span class="s2">With the following command you can search and select a specific protest info in any chat:</span>
+<span class="s2">&lt;b&gt;@ProtestsBerlinBot [query]&lt;/b&gt;: get the protest records with the query in their description or if the query is a date, the records on that date.</span>
+<span class="s2">For example: &lt;i&gt;&#39;@ProtestsBerlinBot ukraine&#39;&lt;/i&gt;&quot;&quot;&quot;</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="n">reply</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;🔎&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/search&quot;</span><span class="p">):</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Send me a text to search:&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/search </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/search&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">message</span> <span class="o">!=</span> <span class="s2">&quot;/search&quot;</span><span class="p">):</span>
+            <span class="n">search_query</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">search_query</span><span class="p">)</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">get_query_any_column</span><span class="p">(</span>
+                <span class="n">search_query</span><span class="p">,</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">,</span> <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">,</span> <span class="s2">&quot;Thema&quot;</span><span class="p">,</span> <span class="s2">&quot;PLZ&quot;</span><span class="p">,</span> <span class="s2">&quot;Datum&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">queries</span><span class="p">:</span>
+                <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;There&#39;s nothing to show.&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">queries</span><span class="p">,</span> <span class="n">reply_markup</span></div>
+
+
+
+<div class="viewcode-block" id="handle_message">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_message">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes and responds to a message received in a Telegram chat.</span>
+
+<span class="sd">    This function handles user messages, generates a custom keyboard for interaction, and sends a response message. It has different behaviors for private and group chats.</span>
+
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel.</span>
+<span class="sd">    :type chat_id: int</span>
+<span class="sd">    :param message_info: Tuple containing the message text and message ID.</span>
+<span class="sd">    :type message_info: tuple</span>
+<span class="sd">    :param chat_type: Type of the chat, defaults to &quot;private&quot;. Can also be &quot;group&quot;.</span>
+<span class="sd">    :type chat_type: str, optional</span>
+
+<span class="sd">    The function generates a custom keyboard layout for private chats and handles commands differently in group chats. It uses the `handle_commands` and `send_message` functions to process the commands and send responses.</span>
+
+<span class="sd">    :return: None. The function sends messages and handles responses asynchronously.</span>
+<span class="sd">    :rtype: NoneType</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        In group chats, the function only processes messages that start with &quot;/&quot; (commands).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">message_info</span>
+    <span class="n">keyboard</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s2">&quot;Today 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;This Week 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Help ❔&quot;</span><span class="p">,</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">,</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">],</span>
+    <span class="p">]</span>
+    <span class="n">reply_keyboard_markup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;keyboard&quot;</span><span class="p">:</span> <span class="n">keyboard</span><span class="p">,</span>
+        <span class="s2">&quot;resize_keyboard&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;input_field_placeholder&quot;</span><span class="p">:</span> <span class="s2">&quot;Select one:&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;group&quot;</span><span class="p">:</span>
+        <span class="n">reply_keyboard_markup</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="k">return</span>
+
+    <span class="n">queries</span><span class="p">,</span> <span class="n">reply_markup_main</span> <span class="o">=</span> <span class="n">handle_commands</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">queries</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">reply_markup_page</span><span class="p">,</span> <span class="n">page</span> <span class="o">=</span> <span class="n">message_and_reply_markup_format</span><span class="p">(</span>
+            <span class="n">page_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">queries</span><span class="o">=</span><span class="n">queries</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">message</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reply_markup_main</span><span class="p">:</span>
+            <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_markup_main</span>
+        <span class="k">elif</span> <span class="n">reply_markup_page</span><span class="p">:</span>
+            <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_markup_page</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_keyboard_markup</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">send_message</span><span class="p">(</span>
+                <span class="n">chat_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
+                <span class="n">reply_to_message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">,</span>
+                <span class="n">reply_markup</span><span class="o">=</span><span class="n">reply_markup</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_inline_query">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_inline_query">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes an inline query received in a Telegram chat and sends back results.</span>
+
+<span class="sd">    The function is used for handling inline queries that allow users to search for and select from a list of results within the Telegram chat interface.</span>
+
+<span class="sd">    :param inline_query_id: Unique identifier for the received inline query.</span>
+<span class="sd">    :type inline_query_id: str</span>
+<span class="sd">    :param message_info: The query string that the user has entered in the inline query.</span>
+<span class="sd">    :type message_info: str</span>
+
+<span class="sd">    The function processes the search query, fetches relevant results from a database, formats them, and sends them back to the user as inline query results.</span>
+
+<span class="sd">    :return: None. The function sends inline query responses asynchronously.</span>
+<span class="sd">    :rtype: NoneType</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The function formats the fetched data into a specific structure required by Telegram for inline query results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">search_query</span> <span class="o">=</span> <span class="n">message_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">get_query_any_column</span><span class="p">(</span>
+        <span class="n">search_query</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">,</span> <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">,</span> <span class="s2">&quot;Thema&quot;</span><span class="p">,</span> <span class="s2">&quot;PLZ&quot;</span><span class="p">,</span> <span class="s2">&quot;Datum&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">queries</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">[:</span><span class="mi">45</span><span class="p">]:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;article&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;input_message_content&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;message_text&quot;</span><span class="p">:</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">format_postgres_output</span><span class="p">(</span><span class="n">q</span><span class="p">),</span>
+                        <span class="s2">&quot;parse_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;HTML&quot;</span><span class="p">,</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">.%m.%Y.&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;to&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s1">; </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;article&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;There&#39;s nothing to show.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;input_message_content&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;message_text&quot;</span><span class="p">:</span> <span class="s2">&quot;There&#39;s nothing to show.&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;parse_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;HTML&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">answerInlineQuery</span><span class="p">(</span><span class="n">inline_query_id</span><span class="o">=</span><span class="n">inline_query_id</span><span class="p">,</span> <span class="n">results</span><span class="o">=</span><span class="n">results</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="handle_callback_query">
+<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_callback_query">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_callback_query</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes a callback query received from a Telegram chat interaction.</span>
+
+<span class="sd">    This function handles the callback query by extracting relevant information from it, determining the appropriate response, and then sending this response back to the Telegram chat. It also supports pagination through callback queries.</span>
+
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername).</span>
+<span class="sd">    :type chat_id: int</span>
+<span class="sd">    :param message_info: Tuple containing information about the callback query and the related message.</span>
+<span class="sd">                         Structure: (callback_query_id, message_id, callback_query_data, callback_query_message_id).</span>
+<span class="sd">    :type message_info: tuple</span>
+
+<span class="sd">    The function parses the callback query data, checks if it contains pagination information, and processes the command accordingly. It then formats a reply message and updates the message text in the Telegram chat using the &#39;editMessageText&#39; function.</span>
+
+<span class="sd">    :return: None. The function performs its operations asynchronously and sends responses directly to the Telegram chat.</span>
+<span class="sd">    :rtype: NoneType</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The function relies on &#39;answerCallbackQuery&#39; to send an acknowledgement to the callback query and &#39;editMessageText&#39; to modify the message based on the callback query&#39;s data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="p">(</span>
+        <span class="n">callback_query_id</span><span class="p">,</span>
+        <span class="n">message_id</span><span class="p">,</span>
+        <span class="n">callback_query_data</span><span class="p">,</span>
+        <span class="n">callback_query_message_id</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">message_info</span>
+    <span class="n">reply_markup</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">page_number</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">is_pagenumber_in_callback_query</span> <span class="o">=</span> <span class="n">callback_query_data</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;page&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">callback_query_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_pagenumber_in_callback_query</span><span class="p">:</span>
+        <span class="n">page_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">callback_query_data</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">is_pagenumber_in_callback_query</span><span class="p">:</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">callback_query_data</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="n">queries</span><span class="p">,</span> <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">handle_commands</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">callback_query_data</span>
+        <span class="n">queries</span><span class="p">,</span> <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">handle_commands</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;callback_query_data:&quot;</span><span class="p">,</span> <span class="n">callback_query_data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;command:&quot;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+    <span class="n">reply_markup_page</span><span class="p">,</span> <span class="n">reply</span> <span class="o">=</span> <span class="n">message_and_reply_markup_format</span><span class="p">(</span>
+        <span class="n">page_number</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">command</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">reply_markup_page</span><span class="p">:</span>
+        <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_markup_page</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">answerCallbackQuery</span><span class="p">(</span><span class="n">callback_query_id</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+        <span class="n">editMessageText</span><span class="p">(</span>
+            <span class="n">chat_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span>
+            <span class="n">message_id</span><span class="o">=</span><span class="n">callback_query_message_id</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="n">reply</span><span class="p">,</span>
+            <span class="n">reply_markup</span><span class="o">=</span><span class="n">reply_markup</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Farhad Sabrian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

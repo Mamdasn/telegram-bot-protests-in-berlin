@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>libs.tools_collection &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5946139a" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=c5aca1ce" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=c4370934"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            A Telegram Bot For Protests in Berlin
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../github_link.html">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Telegram Bot API Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.incoming_message_handler">Handle Incoming Messages Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.tools_collection">Tools collections Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.postgres_api">Postgresql API Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-ProtestLibs">Protest Library Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">A Telegram Bot For Protests in Berlin</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">libs.tools_collection</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for libs.tools_collection</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<div class="viewcode-block" id="get_next_period_of_time">
+<a class="viewcode-back" href="../../modules.html#libs.tools_collection.get_next_period_of_time">[docs]</a>
+<span class="k">def</span> <span class="nf">get_next_period_of_time</span><span class="p">(</span><span class="n">number_of_days</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a list of dates for a given number of days starting from a specified date.</span>
+
+<span class="sd">    :param number_of_days: The number of days to include in the list.</span>
+<span class="sd">    :type number_of_days: int</span>
+<span class="sd">    :param start_date: The date to start from. If None, today&#39;s date is used.</span>
+<span class="sd">    :type start_date: datetime.datetime, optional</span>
+<span class="sd">    :return: A list of dates in the format &#39;DD.MM.YY&#39;.</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">start_date</span><span class="p">:</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    <span class="n">date_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">start_date</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">i</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%y&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_days</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">date_list</span></div>
+
+
+
+<div class="viewcode-block" id="get_calender">
+<a class="viewcode-back" href="../../modules.html#libs.tools_collection.get_calender">[docs]</a>
+<span class="k">def</span> <span class="nf">get_calender</span><span class="p">(</span><span class="n">start_date</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a calendar layout for a 24-day period starting from a given date.</span>
+
+<span class="sd">    :param start_date: The date to start the calendar from.</span>
+<span class="sd">    :type start_date: datetime.datetime</span>
+<span class="sd">    :return: A tuple containing the calendar layout and the set of years in the period.</span>
+<span class="sd">    :rtype: (dict, set[str])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">number_of_days</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="p">[[]]</span>
+    <span class="n">years</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+        <span class="n">get_next_period_of_time</span><span class="p">(</span><span class="n">number_of_days</span><span class="o">=</span><span class="n">number_of_days</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">i</span> <span class="o">//</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">days</span><span class="p">)</span> <span class="o">==</span> <span class="n">row</span><span class="p">:</span>
+            <span class="n">days</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="n">exact_date</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">exact_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span>
+        <span class="c1"># month = date.split(&quot;.&quot;)[1]</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">years</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exact_date</span><span class="o">.</span><span class="n">year</span><span class="p">))</span>
+        <span class="n">short_month_name</span> <span class="o">=</span> <span class="n">exact_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%b&quot;</span><span class="p">)</span>
+        <span class="n">days</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">short_month_name</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">day</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;callback_data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/date </span><span class="si">{</span><span class="n">date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="n">days</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+    <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">start_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">):</span>
+        <span class="n">previous_start_date</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=-</span><span class="n">number_of_days</span><span class="p">)</span>
+        <span class="n">days</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;callback_data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/calender </span><span class="si">{</span><span class="n">previous_start_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+    <span class="n">days</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">years</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;callback_data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/calender </span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">next_start_date</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">number_of_days</span><span class="p">)</span>
+    <span class="n">days</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;callback_data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;/calender </span><span class="si">{</span><span class="n">next_start_date</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+    <span class="n">reply_markup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;inline_keyboard&quot;</span><span class="p">:</span> <span class="n">days</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">reply_markup</span><span class="p">,</span> <span class="nb">set</span><span class="p">(</span><span class="n">years</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_remaining_days_in_current_month">
+<a class="viewcode-back" href="../../modules.html#libs.tools_collection.get_remaining_days_in_current_month">[docs]</a>
+<span class="k">def</span> <span class="nf">get_remaining_days_in_current_month</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the remaining days in the current month from today.</span>
+
+<span class="sd">    :return: A list of remaining days in the current month.</span>
+<span class="sd">    :rtype: list[int]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">next_month</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span> <span class="o">!=</span> <span class="mi">12</span>
+        <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">last_day_of_current_month</span> <span class="o">=</span> <span class="n">next_month</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">remaining_days</span> <span class="o">=</span> <span class="p">[</span><span class="n">day</span> <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">now</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">last_day_of_current_month</span><span class="o">.</span><span class="n">day</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">remaining_days</span></div>
+
+
+
+<div class="viewcode-block" id="message_format_for_postgres">
+<a class="viewcode-back" href="../../modules.html#libs.tools_collection.message_format_for_postgres">[docs]</a>
+<span class="k">def</span> <span class="nf">message_format_for_postgres</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="n">page_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_of_message</span><span class="o">=</span><span class="mi">4000</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format a list of queries for display, splitting into pages if necessary.</span>
+
+<span class="sd">    :param queries: A list of SQL queries.</span>
+<span class="sd">    :type queries: list[str]</span>
+<span class="sd">    :param page_number: The page number to display, defaults to 1.</span>
+<span class="sd">    :type page_number: int, optional</span>
+<span class="sd">    :param length_of_message: The maximum length of the message, defaults to 4000.</span>
+<span class="sd">    :type length_of_message: int, optional</span>
+<span class="sd">    :return: A tuple containing the formatted page of queries and the total number of pages.</span>
+<span class="sd">    :rtype: (str, int)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">]</span>
+    <span class="n">queries_len</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">]</span>
+    <span class="n">query_indexes_for_current_page</span> <span class="o">=</span> <span class="p">[[]]</span>
+    <span class="n">number_of_pages</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ql</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">queries_len</span><span class="p">):</span>
+        <span class="n">length_of_current_page</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">queries_len</span><span class="p">[</span><span class="n">qicp</span><span class="p">]</span> <span class="k">for</span> <span class="n">qicp</span> <span class="ow">in</span> <span class="n">query_indexes_for_current_page</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">length_of_current_page</span> <span class="o">+</span> <span class="n">ql</span> <span class="o">&gt;</span> <span class="n">length_of_message</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">number_of_pages</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">query_indexes_for_current_page</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+        <span class="n">query_indexes_for_current_page</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="n">page</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">queries</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">query_indexes_for_current_page</span><span class="p">[</span><span class="n">page_number</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">page_number</span> <span class="o">&lt;=</span> <span class="n">number_of_pages</span>
+        <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">page</span><span class="p">,</span> <span class="n">number_of_pages</span></div>
+
+
+
+<div class="viewcode-block" id="make_reply_markup_page_control">
+<a class="viewcode-back" href="../../modules.html#libs.tools_collection.make_reply_markup_page_control">[docs]</a>
+<span class="k">def</span> <span class="nf">make_reply_markup_page_control</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">number_of_pages</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a reply markup for page control in an interactive interface.</span>
+
+<span class="sd">    :param page_number: The current page number.</span>
+<span class="sd">    :type page_number: int</span>
+<span class="sd">    :param number_of_pages: The total number of pages available.</span>
+<span class="sd">    :type number_of_pages: int</span>
+<span class="sd">    :param command: The command to execute when a page control is activated.</span>
+<span class="sd">    :type command: str</span>
+<span class="sd">    :return: The reply markup for controlling pages.</span>
+<span class="sd">    :rtype: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reply_markup</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">next_page</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;callback_data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;page </span><span class="si">{</span><span class="n">page_number</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+    <span class="n">previous_page</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;callback_data&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;page </span><span class="si">{</span><span class="n">page_number</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+    <span class="k">if</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">page_number</span> <span class="o">&lt;</span> <span class="n">number_of_pages</span><span class="p">:</span>
+        <span class="n">reply_markup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;inline_keyboard&quot;</span><span class="p">:</span> <span class="p">[[</span><span class="n">previous_page</span><span class="p">,</span> <span class="n">next_page</span><span class="p">]]}</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">page_number</span> <span class="o">==</span> <span class="n">number_of_pages</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">number_of_pages</span><span class="p">):</span>
+        <span class="n">reply_markup</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;inline_keyboard&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">previous_page</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">page_number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">number_of_pages</span><span class="p">):</span>
+        <span class="n">reply_markup</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;inline_keyboard&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">[</span><span class="n">next_page</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="n">reply_markup</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Farhad Sabrian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

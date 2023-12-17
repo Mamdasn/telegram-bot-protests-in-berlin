@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo Setting up the nginx configuration file
+cp /app/initial-setup-files/portforwarding.conf /etc/nginx/nginx.conf
+
 echo Copying the ssl file to the /etc/nginx dir
 SSL_PUBLIC=$(realpath SSLFILES/YOURPUBLIC.pem)
 SSL_PRIVATE=$(realpath SSLFILES/YOURPRIVATE.key)

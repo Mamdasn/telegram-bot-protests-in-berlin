@@ -5,6 +5,15 @@ import psycopg2
 
 
 class Fetchpostgres:
+    """
+    A class to handle interactions with a PostgreSQL database.
+
+    This class provides methods for connecting to, querying, and managing data in a PostgreSQL database. It includes functionality for establishing and closing database connections, storing and retrieving data, and formatting the output of queries for display.
+
+    :param params: Parameters to establish a PostgreSQL connection.
+    :type params: dict
+    """
+
     def __init__(self, params) -> None:
         """
         Initialize the Fetchpostgres class with connection parameters for PostgreSQL.
@@ -287,4 +296,12 @@ class Fetchpostgres:
         return f"▪️{date}{' - ' if date and time_range else ''}{time_range}{newline}{thema}{plz}{versammlungsort}{aufzugsstrecke}"
 
     def format_postgre_queries(self, queries):
+        """
+        Format multiple PostgreSQL query results for display.
+
+        :param queries: A list of query results to be formatted.
+        :type queries: list
+        :return: A list of formatted string representations of the query results.
+        :rtype: list
+        """
         return [self.format_postgres_output(q) for q in queries]

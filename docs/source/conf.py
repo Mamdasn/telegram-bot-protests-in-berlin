@@ -13,13 +13,11 @@ project_root = os.path.dirname(os.path.dirname(cwd))
 
 protestcrawler_root = os.path.join(project_root, "protestcrawler")
 telegrambot_root = os.path.join(project_root, "telegrambot")
-telegrambot_libs = os.path.join(telegrambot_root, "libs")
 
 # Add the root dir to the system path
 sys.path.insert(0, project_root)
 sys.path.insert(0, protestcrawler_root)
 sys.path.insert(0, telegrambot_root)
-sys.path.insert(0, telegrambot_libs)
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -44,6 +42,9 @@ master_doc = "index"
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
+
+# Set sorting of methods based on the source (default is alphabetical)
+autodoc_member_order = "bysource"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

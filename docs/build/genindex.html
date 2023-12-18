@@ -6,13 +6,14 @@
   <title>Index &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/documentation_options.js?v=c4370934"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -39,11 +40,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Github:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Mamdasn/telegram-bot-protests-in-berlin/">Github source</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Telegram Bot API Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html#module-incoming_message_handler">Handle Incoming Messages Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html#module-credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.incoming_message_handler">Handle Incoming Messages Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.tools_collection">Tools collections Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.postgres_api">Postgres API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-protestcrawler">Protest Crawler Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-ProtestLibs">Protest Library Module</a></li>
 </ul>
@@ -79,24 +86,24 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
- | <a href="#I"><strong>I</strong></a>
+ | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#S"><strong>S</strong></a>
- | <a href="#T"><strong>T</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.answerCallbackQuery">answerCallbackQuery() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.answerCallbackQuery">answerCallbackQuery() (in module libs.telegram_bot_api)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.answerInlineQuery">answerInlineQuery() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.answerInlineQuery">answerInlineQuery() (in module libs.telegram_bot_api)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -104,24 +111,19 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#credentials.config">config (class in credentials)</a>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.close">close() (libs.postgres_api.Fetchpostgres method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    credentials
-
-      <ul>
-        <li><a href="modules.html#module-credentials">module</a>
+      <li><a href="modules.html#libs.credentials.config">config (class in libs.credentials)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.deleteMessage">deleteMessage() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.deleteMessage">deleteMessage() (in module libs.telegram_bot_api)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -129,7 +131,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.editMessageText">editMessageText() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.editMessageText">editMessageText() (in module libs.telegram_bot_api)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -138,10 +140,52 @@
   </ul></td>
 </tr></table>
 
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres">Fetchpostgres (class in libs.postgres_api)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.format_postgre_queries">format_postgre_queries() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.format_postgres_output">format_postgres_output() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.tools_collection.get_calender">get_calender() (in module libs.tools_collection)</a>
+</li>
+      <li><a href="modules.html#libs.tools_collection.get_next_period_of_time">get_next_period_of_time() (in module libs.tools_collection)</a>
+</li>
       <li><a href="modules.html#ProtestLibs.ProtestGrabber.get_protest_list">get_protest_list() (ProtestLibs.ProtestGrabber method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.get_query_any_column">get_query_any_column() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.get_query_column">get_query_column() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.tools_collection.get_remaining_days_in_current_month">get_remaining_days_in_current_month() (in module libs.tools_collection)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery">getAufzugsstreckeQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getBisQuery">getBisQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getBySpecificDate">getBySpecificDate() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getBySpecificTime">getBySpecificTime() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getPLZQuery">getPLZQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getThemaQuery">getThemaQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery">getVersammlungsortQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getVonQuery">getVonQuery() (libs.postgres_api.Fetchpostgres method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -149,27 +193,57 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#incoming_message_handler.handle_callback_query">handle_callback_query() (in module incoming_message_handler)</a>
+      <li><a href="modules.html#libs.incoming_message_handler.handle_callback_query">handle_callback_query() (in module libs.incoming_message_handler)</a>
 </li>
-      <li><a href="modules.html#incoming_message_handler.handle_commands">handle_commands() (in module incoming_message_handler)</a>
+      <li><a href="modules.html#libs.incoming_message_handler.handle_commands">handle_commands() (in module libs.incoming_message_handler)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#incoming_message_handler.handle_inline_query">handle_inline_query() (in module incoming_message_handler)</a>
+      <li><a href="modules.html#libs.incoming_message_handler.handle_inline_query">handle_inline_query() (in module libs.incoming_message_handler)</a>
 </li>
-      <li><a href="modules.html#incoming_message_handler.handle_message">handle_message() (in module incoming_message_handler)</a>
+      <li><a href="modules.html#libs.incoming_message_handler.handle_message">handle_message() (in module libs.incoming_message_handler)</a>
 </li>
   </ul></td>
 </tr></table>
 
-<h2 id="I">I</h2>
+<h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    incoming_message_handler
+    libs.credentials
 
       <ul>
-        <li><a href="modules.html#module-incoming_message_handler">module</a>
+        <li><a href="modules.html#module-libs.credentials">module</a>
+</li>
+      </ul></li>
+      <li>
+    libs.incoming_message_handler
+
+      <ul>
+        <li><a href="modules.html#module-libs.incoming_message_handler">module</a>
+</li>
+      </ul></li>
+      <li>
+    libs.postgres_api
+
+      <ul>
+        <li><a href="modules.html#module-libs.postgres_api">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    libs.telegram_bot_api
+
+      <ul>
+        <li><a href="modules.html#module-libs.telegram_bot_api">module</a>
+</li>
+      </ul></li>
+      <li>
+    libs.tools_collection
+
+      <ul>
+        <li><a href="modules.html#module-libs.tools_collection">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -178,25 +252,33 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#incoming_message_handler.manage_messages">manage_messages() (in module incoming_message_handler)</a>
+      <li><a href="modules.html#libs.tools_collection.make_reply_markup_page_control">make_reply_markup_page_control() (in module libs.tools_collection)</a>
 </li>
-      <li><a href="modules.html#telegram_bot_api.Message">Message (class in telegram_bot_api)</a>
+      <li><a href="modules.html#libs.incoming_message_handler.manage_messages">manage_messages() (in module libs.incoming_message_handler)</a>
 </li>
-      <li><a href="modules.html#incoming_message_handler.message_and_reply_markup_format">message_and_reply_markup_format() (in module incoming_message_handler)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.Message">Message (class in libs.telegram_bot_api)</a>
+</li>
+      <li><a href="modules.html#libs.incoming_message_handler.message_and_reply_markup_format">message_and_reply_markup_format() (in module libs.incoming_message_handler)</a>
+</li>
+      <li><a href="modules.html#libs.tools_collection.message_format_for_postgres">message_format_for_postgres() (in module libs.tools_collection)</a>
 </li>
       <li>
     module
 
       <ul>
-        <li><a href="modules.html#module-credentials">credentials</a>
+        <li><a href="modules.html#module-libs.credentials">libs.credentials</a>
 </li>
-        <li><a href="modules.html#module-incoming_message_handler">incoming_message_handler</a>
+        <li><a href="modules.html#module-libs.incoming_message_handler">libs.incoming_message_handler</a>
+</li>
+        <li><a href="modules.html#module-libs.postgres_api">libs.postgres_api</a>
+</li>
+        <li><a href="modules.html#module-libs.telegram_bot_api">libs.telegram_bot_api</a>
+</li>
+        <li><a href="modules.html#module-libs.tools_collection">libs.tools_collection</a>
 </li>
         <li><a href="modules.html#module-protestcrawler">protestcrawler</a>
 </li>
         <li><a href="modules.html#module-ProtestLibs">ProtestLibs</a>
-</li>
-        <li><a href="modules.html#module-telegram_bot_api">telegram_bot_api</a>
 </li>
       </ul></li>
   </ul></td>
@@ -205,11 +287,11 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.parse_message">parse_message() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.parse_message">parse_message() (in module libs.telegram_bot_api)</a>
 </li>
       <li><a href="modules.html#ProtestLibs.ProtestGrabber.parse_protest_list">parse_protest_list() (ProtestLibs.ProtestGrabber method)</a>
 </li>
-      <li><a href="modules.html#telegram_bot_api.post_json">post_json() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.post_json">post_json() (in module libs.telegram_bot_api)</a>
 </li>
       <li>
     protestcrawler
@@ -237,25 +319,18 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.send_message">send_message() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.telegram_bot_api.send_message">send_message() (in module libs.telegram_bot_api)</a>
+</li>
+      <li><a href="modules.html#libs.telegram_bot_api.sendChatAction">sendChatAction() (in module libs.telegram_bot_api)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules.html#telegram_bot_api.sendChatAction">sendChatAction() (in module telegram_bot_api)</a>
+      <li><a href="modules.html#libs.incoming_message_handler.set_fetcher">set_fetcher() (in module libs.incoming_message_handler)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="T">T</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    telegram_bot_api
-
-      <ul>
-        <li><a href="modules.html#module-telegram_bot_api">module</a>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.start">start() (libs.postgres_api.Fetchpostgres method)</a>
 </li>
-      </ul></li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.store_client_data">store_client_data() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
   </ul></td>
 </tr></table>
 

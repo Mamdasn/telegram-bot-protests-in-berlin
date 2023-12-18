@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>libs.postgres_api &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=5946139a" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=c5aca1ce" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=c4370934"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            A Telegram Bot For Protests in Berlin
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Github:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Mamdasn/telegram-bot-protests-in-berlin/">Github source</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Telegram Bot API Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.incoming_message_handler">Handle Incoming Messages Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.tools_collection">Tools collections Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.postgres_api">Postgres API Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-ProtestLibs">Protest Library Module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">A Telegram Bot For Protests in Berlin</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">libs.postgres_api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for libs.postgres_api</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">psycopg2</span>
+
+
+<div class="viewcode-block" id="Fetchpostgres">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres">[docs]</a>
+<span class="k">class</span> <span class="nc">Fetchpostgres</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to handle interactions with a PostgreSQL database.</span>
+
+<span class="sd">    This class provides methods for connecting to, querying, and managing data in a PostgreSQL database. It includes functionality for establishing and closing database connections, storing and retrieving data, and formatting the output of queries for display.</span>
+
+<span class="sd">    :param params: Parameters to establish a PostgreSQL connection.</span>
+<span class="sd">    :type params: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Fetchpostgres class with connection parameters for PostgreSQL.</span>
+
+<span class="sd">        :param params: Parameters to establish a PostgreSQL connection.</span>
+<span class="sd">        :type params: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span>
+
+<div class="viewcode-block" id="Fetchpostgres.start">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.start">[docs]</a>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Establish a cursor for the PostgreSQL connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PostgreSQL connection is started&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.close">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close the cursor and the PostgreSQL connection if open.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PostgreSQL connection is closed&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.store_client_data">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.store_client_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">store_client_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store client data in the PostgreSQL database, creating the table if it does not exist.</span>
+
+<span class="sd">        :param data: Client data to be stored.</span>
+<span class="sd">        :type data: tuple</span>
+<span class="sd">        :return: Commit status of the connection.</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">check_existence</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                SELECT EXISTS (</span>
+<span class="s2">                    SELECT 1</span>
+<span class="s2">                    FROM information_schema.tables</span>
+<span class="s2">                    WHERE table_name = &#39;clients&#39;</span>
+<span class="s2">                );</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+            <span class="n">create_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                CREATE TABLE clients (</span>
+<span class="s2">                    id BIGSERIAL NOT NULL PRIMARY KEY,</span>
+<span class="s2">                    Date BIGINT NOT NULL,</span>
+<span class="s2">                    Message_Text VARCHAR,</span>
+<span class="s2">                    Message_ID VARCHAR(15) NOT NULL,</span>
+<span class="s2">                    Chat_ID VARCHAR(15) NOT NULL,</span>
+<span class="s2">                    Chat_Type VARCHAR(10) NOT NULL,</span>
+<span class="s2">                    UNIQUE(Date, Message_ID, Chat_ID)</span>
+<span class="s2">                )</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">check_existence</span><span class="p">)</span>
+            <span class="n">tables_exists</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tables_exists</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">create_command</span><span class="p">)</span>
+
+            <span class="p">(</span><span class="n">Date</span><span class="p">,</span> <span class="n">Message_Text</span><span class="p">,</span> <span class="n">Message_ID</span><span class="p">,</span> <span class="n">Chat_ID</span><span class="p">,</span> <span class="n">Chat_Type</span><span class="p">)</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">sql_insert</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO clients (Date, Message_Text, Message_ID, Chat_ID, Chat_Type)</span>
+<span class="s2">                            VALUES(</span><span class="si">%s</span><span class="s2">::BIGINT, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) ON CONFLICT (Date, Message_ID, Chat_ID) DO UPDATE</span>
+<span class="s2">                            SET Message_Text = EXCLUDED.Message_Text</span>
+<span class="s2">                            RETURNING id;&quot;&quot;&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="n">sql_insert</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="n">Date</span><span class="p">,</span>
+                    <span class="n">Message_Text</span><span class="p">,</span>
+                    <span class="n">Message_ID</span><span class="p">,</span>
+                    <span class="n">Chat_ID</span><span class="p">,</span>
+                    <span class="n">Chat_Type</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getBySpecificDate">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getBySpecificDate">[docs]</a>
+    <span class="k">def</span> <span class="nf">getBySpecificDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve records from the PostgreSQL database by a specific date.</span>
+
+<span class="sd">        :param date: The specific date to retrieve records.</span>
+<span class="sd">        :type date: datetime.datetime</span>
+<span class="sd">        :return: Fetched records from the database.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">postgreSQL_select_Query</span> <span class="o">=</span> <span class="s2">&quot;select * from events where Datum = </span><span class="si">%s</span><span class="s2">::date&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">postgreSQL_select_Query</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span><span class="p">,))</span>
+            <span class="n">fetched_records</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">fetched_records</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getBySpecificTime">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getBySpecificTime">[docs]</a>
+    <span class="k">def</span> <span class="nf">getBySpecificTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve records from the PostgreSQL database by a specific time.</span>
+
+<span class="sd">        :param column: The column name to match the specific time.</span>
+<span class="sd">        :type column: str</span>
+<span class="sd">        :param time: The specific time to retrieve records.</span>
+<span class="sd">        :type time: datetime.time</span>
+<span class="sd">        :return: Fetched records from the database.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">postgreSQL_select_Query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;select * from events where </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> = %s::time&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">postgreSQL_select_Query</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="p">,))</span>
+            <span class="n">fetched_records</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">fetched_records</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.get_query_column">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_query_column">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_query_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the specified column contains the specified query.</span>
+
+<span class="sd">        :param column: The column to be queried.</span>
+<span class="sd">        :type column: str</span>
+<span class="sd">        :param query: The query value to search in the column.</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :return: Rows from the database where the column contains the query.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">query_statement</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> ILIKE ANY(%s)&quot;</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="s2">&quot;SELECT * FROM events WHERE &quot;</span> <span class="o">+</span> <span class="n">query_statement</span><span class="p">,</span>
+                <span class="p">([</span><span class="sa">f</span><span class="s2">&quot;%</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">%&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">query</span><span class="p">],),</span>
+            <span class="p">)</span>
+            <span class="n">fetched_records</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">fetched_records</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.get_query_any_column">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_query_any_column">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_query_any_column</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">,</span> <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">,</span> <span class="s2">&quot;Thema&quot;</span><span class="p">,</span> <span class="s2">&quot;PLZ&quot;</span><span class="p">]</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve non-repetitive rows from the &#39;events&#39; table where any of the specified columns contains the specified query.</span>
+
+<span class="sd">        :param query: The query value to search in the columns.</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :param columns: List of column names to search the query in, defaults to [&#39;Aufzugsstrecke&#39;, &#39;Versammlungsort&#39;, &#39;Thema&#39;, &#39;PLZ&#39;].</span>
+<span class="sd">        :type columns: list[str], optional</span>
+<span class="sd">        :return: Distinct rows from the database where any of the specified columns contains the query.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+            <span class="n">query_statement</span> <span class="o">=</span> <span class="s2">&quot; OR &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> ILIKE %s&quot;</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;Datum&quot;</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+                <span class="n">query_statement</span> <span class="o">=</span> <span class="n">query_statement</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s2">&quot;Datum&quot;</span><span class="p">,</span> <span class="s2">&quot;TO_CHAR(Datum, &#39;DD.MM.YYYY&#39;)&quot;</span>
+                <span class="p">)</span>
+            <span class="n">query_statement</span> <span class="o">=</span> <span class="s2">&quot; AND &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">query_statement</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">query</span><span class="p">])</span>
+            <span class="n">query_condition</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;%</span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">%&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">query</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">]</span>
+            <span class="n">today_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;SELECT DISTINCT ON (</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">) * FROM events WHERE ((Datum &gt;= &#39;</span><span class="si">{</span><span class="n">today_date</span><span class="si">}</span><span class="s2">&#39;) AND </span><span class="si">{</span><span class="n">query_statement</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="n">query_condition</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">fetched_records</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+            <span class="n">fetched_records</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">fetched_records</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getVonQuery">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getVonQuery">[docs]</a>
+    <span class="k">def</span> <span class="nf">getVonQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Von&#39; column matches a specific time.</span>
+
+<span class="sd">        :param time: The specific time to match in the &#39;Von&#39; column.</span>
+<span class="sd">        :type time: datetime.time</span>
+<span class="sd">        :return: Rows from the database matching the specified time in the &#39;Von&#39; column.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getBySpecificTime</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Von&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getBisQuery">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getBisQuery">[docs]</a>
+    <span class="k">def</span> <span class="nf">getBisQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Bis&#39; column matches a specific time.</span>
+
+<span class="sd">        :param time: The specific time to match in the &#39;Bis&#39; column.</span>
+<span class="sd">        :type time: datetime.time</span>
+<span class="sd">        :return: Rows from the database matching the specified time in the &#39;Bis&#39; column.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getBySpecificTime</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Bis&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getThemaQuery">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getThemaQuery">[docs]</a>
+    <span class="k">def</span> <span class="nf">getThemaQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Thema&#39; column contains a specific query.</span>
+
+<span class="sd">        :param query: The query value to search in the &#39;Thema&#39; column.</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :return: Rows from the database where the &#39;Thema&#39; column contains the query.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_query_column</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Thema&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getPLZQuery">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getPLZQuery">[docs]</a>
+    <span class="k">def</span> <span class="nf">getPLZQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;PLZ&#39; column contains a specific query.</span>
+
+<span class="sd">        :param query: The query value to search in the &#39;PLZ&#39; column.</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :return: Rows from the database where the &#39;PLZ&#39; column contains the query.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_query_column</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;PLZ&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getVersammlungsortQuery">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery">[docs]</a>
+    <span class="k">def</span> <span class="nf">getVersammlungsortQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Versammlungsort&#39; column contains a specific query.</span>
+
+<span class="sd">        :param query: The query value to search in the &#39;Versammlungsort&#39; column.</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :return: Rows from the database where the &#39;Versammlungsort&#39; column contains the query.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_query_column</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Versammlungsort&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.getAufzugsstreckeQuery">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery">[docs]</a>
+    <span class="k">def</span> <span class="nf">getAufzugsstreckeQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Aufzugsstrecke&#39; column contains a specific query.</span>
+
+<span class="sd">        :param query: The query value to search in the &#39;Aufzugsstrecke&#39; column.</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :return: Rows from the database where the &#39;Aufzugsstrecke&#39; column contains the query.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_query_column</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.format_postgres_output">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.format_postgres_output">[docs]</a>
+    <span class="k">def</span> <span class="nf">format_postgres_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format the output from a PostgreSQL query for display.</span>
+
+<span class="sd">        :param q: The query result to be formatted.</span>
+<span class="sd">        :type q: tuple or str</span>
+<span class="sd">        :return: A formatted string representation of the query result.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">q</span>
+        <span class="n">newline</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;b&gt;On </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/b&gt;&#39;</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">time_range</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">thema</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;Thema&lt;/b&gt;: </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">plz</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;PLZ&lt;/b&gt;: </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">}{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">google_maps_url_base</span> <span class="o">=</span> <span class="s2">&quot;https://www.google.com/maps/search/?api=1&amp;query=&quot;</span>
+        <span class="n">google_maps_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">google_maps_url_base</span><span class="si">}{</span><span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2"> Berlin&quot;</span>
+        <span class="n">versammlungsort</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;b&gt;Versammlungsort&lt;/b&gt;: &lt;a href=&quot;</span><span class="si">{</span><span class="n">google_maps_url</span><span class="si">}</span><span class="s1">&quot;&gt;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">}{</span><span class="n">newline</span><span class="si">}</span><span class="s1">&lt;/a&gt;&#39;</span>
+            <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">route_with_google_maps_urls</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]:</span>
+            <span class="n">find_indexes</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span> <span class="k">for</span> <span class="n">sep</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot; - &quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">find_indexes</span><span class="p">:</span>
+                <span class="n">first_location_index</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">find_indexes</span><span class="p">)</span>
+                <span class="n">first_location</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">][:</span><span class="n">first_location_index</span><span class="p">]</span>
+                <span class="n">route_with_google_maps_urls</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{</span><span class="n">google_maps_url_base</span><span class="si">}{</span><span class="n">first_location</span><span class="si">}</span><span class="s1"> Berlin&quot;&gt;</span><span class="si">{</span><span class="n">first_location</span><span class="si">}</span><span class="s1">&lt;/a&gt;</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="n">first_location_index</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">first_location</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+                <span class="n">route_with_google_maps_urls</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;a href=&quot;</span><span class="si">{</span><span class="n">google_maps_url_base</span><span class="si">}{</span><span class="n">first_location</span><span class="si">}</span><span class="s1"> Berlin&quot;&gt;</span><span class="si">{</span><span class="n">first_location</span><span class="si">}</span><span class="s1">&lt;/a&gt;&#39;</span>
+        <span class="n">aufzugsstrecke</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;Aufzugsstrecke&lt;/b&gt;: </span><span class="si">{</span><span class="n">route_with_google_maps_urls</span><span class="si">}{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># return f&quot;&lt;b&gt;id: {q[0]}&lt;/b&gt;{newline}{date}{&#39; - &#39; if date and time_range else &#39;&#39;}{time_range}{newline}{thema}{plz}{versammlungsort}{aufzugsstrecke}&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;▪️</span><span class="si">{</span><span class="n">date</span><span class="si">}{</span><span class="s1">&#39; - &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">date</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">time_range</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">time_range</span><span class="si">}{</span><span class="n">newline</span><span class="si">}{</span><span class="n">thema</span><span class="si">}{</span><span class="n">plz</span><span class="si">}{</span><span class="n">versammlungsort</span><span class="si">}{</span><span class="n">aufzugsstrecke</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="Fetchpostgres.format_postgre_queries">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.format_postgre_queries">[docs]</a>
+    <span class="k">def</span> <span class="nf">format_postgre_queries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format multiple PostgreSQL query results for display.</span>
+
+<span class="sd">        :param queries: A list of query results to be formatted.</span>
+<span class="sd">        :type queries: list</span>
+<span class="sd">        :return: A list of formatted string representations of the query results.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">format_postgres_output</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">queries</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Farhad Sabrian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

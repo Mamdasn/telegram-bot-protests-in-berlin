@@ -42,14 +42,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Github:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="github_link.html">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Mamdasn/telegram-bot-protests-in-berlin/">Github source</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Telegram Bot API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.incoming_message_handler">Handle Incoming Messages Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.tools_collection">Tools collections Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.postgres_api">Postgresql API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html#module-libs.postgres_api">Postgres API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-protestcrawler">Protest Crawler Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html#module-ProtestLibs">Protest Library Module</a></li>
 </ul>
@@ -85,6 +88,7 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#L"><strong>L</strong></a>
@@ -108,6 +112,10 @@
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.close">close() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules.html#libs.credentials.config">config (class in libs.credentials)</a>
 </li>
@@ -134,6 +142,20 @@
   </ul></td>
 </tr></table>
 
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres">Fetchpostgres (class in libs.postgres_api)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.format_postgre_queries">format_postgre_queries() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.format_postgres_output">format_postgres_output() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -141,11 +163,31 @@
 </li>
       <li><a href="modules.html#libs.tools_collection.get_next_period_of_time">get_next_period_of_time() (in module libs.tools_collection)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules.html#ProtestLibs.ProtestGrabber.get_protest_list">get_protest_list() (ProtestLibs.ProtestGrabber method)</a>
 </li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.get_query_any_column">get_query_any_column() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.get_query_column">get_query_column() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
       <li><a href="modules.html#libs.tools_collection.get_remaining_days_in_current_month">get_remaining_days_in_current_month() (in module libs.tools_collection)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery">getAufzugsstreckeQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getBisQuery">getBisQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getBySpecificDate">getBySpecificDate() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getBySpecificTime">getBySpecificTime() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getPLZQuery">getPLZQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getThemaQuery">getThemaQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery">getVersammlungsortQuery() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.getVonQuery">getVonQuery() (libs.postgres_api.Fetchpostgres method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -281,11 +323,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules.html#libs.telegram_bot_api.send_message">send_message() (in module libs.telegram_bot_api)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules.html#libs.telegram_bot_api.sendChatAction">sendChatAction() (in module libs.telegram_bot_api)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules.html#libs.incoming_message_handler.set_fetcher">set_fetcher() (in module libs.incoming_message_handler)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.start">start() (libs.postgres_api.Fetchpostgres method)</a>
+</li>
+      <li><a href="modules.html#libs.postgres_api.Fetchpostgres.store_client_data">store_client_data() (libs.postgres_api.Fetchpostgres method)</a>
 </li>
   </ul></td>
 </tr></table>

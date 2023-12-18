@@ -42,14 +42,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Github:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../github_link.html">GitHub Repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/Mamdasn/telegram-bot-protests-in-berlin/">Github source</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Telegram Bot API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-libs.incoming_message_handler">Handle Incoming Messages Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-libs.tools_collection">Tools collections Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html#module-libs.postgres_api">Postgresql API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-libs.credentials">Credentials Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#module-libs.postgres_api">Postgres API Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html#module-ProtestLibs">Protest Library Module</a></li>
 </ul>
@@ -93,25 +96,25 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for crawling events from specified URLs and processing them.</span>
 
-<span class="sd">     This class is designed to crawl event data from various websites, parse the information, and optionally store it in a database. It supports crawling from a set of predefined URLs, each with its own methods for fetching and parsing data.</span>
+<span class="sd">    This class is designed to crawl event data from various websites, parse the information, and optionally store it in a database. It supports crawling from a set of predefined URLs, each with its own methods for fetching and parsing data.</span>
 
-<span class="sd">     Attributes:</span>
-<span class="sd">         | url (str): The URL from which the event data will be crawled.</span>
-<span class="sd">         | _supported_methods (dict): A dictionary mapping supported URLs to their respective crawling, parsing, and database-writing methods.</span>
-
-
-<span class="sd">     Methods:</span>
-<span class="sd">         | crawl(url, number_of_threads=1, save_to_database=True, **kwargs): Main method to start the crawling process for a given URL.</span>
-<span class="sd">         | _run_in_parallel(parser, data, number_of_threads, **kwargs): Static method to parse data in parallel using threading.</span>
-<span class="sd">         | _is_supported(): Checks if the provided URL is supported based on _supported_methods.</span>
-<span class="sd">         | _url_base(): Property that returns the base hostname of the provided URL.</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        | url (str): The URL from which the event data will be crawled.</span>
+<span class="sd">        | _supported_methods (dict): A dictionary mapping supported URLs to their respective crawling, parsing, and database-writing methods.</span>
 
 
-<span class="sd">     The class provides a high-level interface for crawling events from various sources, parsing the details, and optionally storing them in a database. It handles parallel processing to optimize data retrieval and parsing.</span>
+<span class="sd">    Methods:</span>
+<span class="sd">        | crawl(url, number_of_threads=1, save_to_database=True, \\*\\*kwargs): Main method to start the crawling process for a given URL.</span>
+<span class="sd">        | _run_in_parallel(parser, data, number_of_threads, \\*\\*kwargs): Static method to parse data in parallel using threading.</span>
+<span class="sd">        | _is_supported(): Checks if the provided URL is supported based on _supported_methods.</span>
+<span class="sd">        | _url_base(): Property that returns the base hostname of the provided URL.</span>
 
-<span class="sd">     Example Usage:</span>
-<span class="sd">         | crawler = EventCrawler(supported_methods)</span>
-<span class="sd">         | crawled_data = crawler.crawl(&quot;http://example.com/events&quot;, number_of_threads=5)</span>
+
+<span class="sd">    The class provides a high-level interface for crawling events from various sources, parsing the details, and optionally storing them in a database. It handles parallel processing to optimize data retrieval and parsing.</span>
+
+<span class="sd">    Example Usage:</span>
+<span class="sd">        | crawler = EventCrawler(supported_methods)</span>
+<span class="sd">        | crawled_data = crawler.crawl(&quot;http://example.com/events&quot;, number_of_threads=5)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

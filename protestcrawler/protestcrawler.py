@@ -10,25 +10,25 @@ class EventCrawler:
     """
     A class for crawling events from specified URLs and processing them.
 
-     This class is designed to crawl event data from various websites, parse the information, and optionally store it in a database. It supports crawling from a set of predefined URLs, each with its own methods for fetching and parsing data.
+    This class is designed to crawl event data from various websites, parse the information, and optionally store it in a database. It supports crawling from a set of predefined URLs, each with its own methods for fetching and parsing data.
 
-     Attributes:
-         | url (str): The URL from which the event data will be crawled.
-         | _supported_methods (dict): A dictionary mapping supported URLs to their respective crawling, parsing, and database-writing methods.
-
-
-     Methods:
-         | crawl(url, number_of_threads=1, save_to_database=True, **kwargs): Main method to start the crawling process for a given URL.
-         | _run_in_parallel(parser, data, number_of_threads, **kwargs): Static method to parse data in parallel using threading.
-         | _is_supported(): Checks if the provided URL is supported based on _supported_methods.
-         | _url_base(): Property that returns the base hostname of the provided URL.
+    Attributes:
+        | url (str): The URL from which the event data will be crawled.
+        | _supported_methods (dict): A dictionary mapping supported URLs to their respective crawling, parsing, and database-writing methods.
 
 
-     The class provides a high-level interface for crawling events from various sources, parsing the details, and optionally storing them in a database. It handles parallel processing to optimize data retrieval and parsing.
+    Methods:
+        | crawl(url, number_of_threads=1, save_to_database=True, \\*\\*kwargs): Main method to start the crawling process for a given URL.
+        | _run_in_parallel(parser, data, number_of_threads, \\*\\*kwargs): Static method to parse data in parallel using threading.
+        | _is_supported(): Checks if the provided URL is supported based on _supported_methods.
+        | _url_base(): Property that returns the base hostname of the provided URL.
 
-     Example Usage:
-         | crawler = EventCrawler(supported_methods)
-         | crawled_data = crawler.crawl("http://example.com/events", number_of_threads=5)
+
+    The class provides a high-level interface for crawling events from various sources, parsing the details, and optionally storing them in a database. It handles parallel processing to optimize data retrieval and parsing.
+
+    Example Usage:
+        | crawler = EventCrawler(supported_methods)
+        | crawled_data = crawler.crawl("http://example.com/events", number_of_threads=5)
 
     """
 

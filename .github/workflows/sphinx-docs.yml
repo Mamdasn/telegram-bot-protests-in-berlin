@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main  # Set this to the branch you want to trigger the workflow
+    paths:
+      - 'protestcrawler/**'
+      - 'telegrambot/libs/**'
 
 jobs:
   update-docs:

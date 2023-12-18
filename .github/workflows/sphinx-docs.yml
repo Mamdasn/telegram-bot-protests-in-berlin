@@ -33,7 +33,7 @@ jobs:
           pip install -r ${{env.REPO1}}/requirements.txt
           pip install -r ${{env.REPO2}}/requirements.txt
           pip install -r docs/source/requirements.txt
-          sphinx-build -b html docs/source docs/build
+          sphinx-build -b html -a docs/source docs/build
 
       - name: Checkout Documentation Branch
         uses: actions/checkout@v3
@@ -45,11 +45,11 @@ jobs:
         run: |
           cp -r main_repo/docs/build/* gh_pages_repo/
           touch gh_pages_repo/.nojekyll
-      
+
       - name: Modify Index Html to Include Google Statistics
         run: |
           sed -i '/<\/head>/i <!-- Google tag (gtag.js) -->\n\t <script async src="https://www.googletagmanager.com/gtag/js?id=G-9FZDGMS44N"></script> \n\t<script>\n\t window.dataLayer = window.dataLayer || [];\n\t function gtag(){dataLayer.push(arguments);} \n\t gtag("js", new Date());\n\t gtag("config", "G-QMVE2811KF");\n\t</script>'  gh_pages_repo/index.html
-      
+
       - name: Commit and Push Changes
         run: |
           cd gh_pages_repo

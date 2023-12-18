@@ -16,16 +16,16 @@ Tools collections Module
 .. automodule:: libs.tools_collection
    :members:
 
-Postgresql API Module
-=====================
-
-.. automodule:: libs.postgres_api
-   :members:
-
 Credentials Module
 ==================
 
 .. automodule:: libs.credentials
+   :members:
+
+Postgres API Module
+===================
+
+.. automodule:: libs.postgres_api
    :members:
 
 Protest Crawler Module

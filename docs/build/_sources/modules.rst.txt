@@ -1,19 +1,31 @@
 Telegram Bot API Module
 =======================
 
-.. automodule:: telegram_bot_api
+.. automodule:: libs.telegram_bot_api
    :members:
 
 Handle Incoming Messages Module
 ===============================
 
-.. automodule:: incoming_message_handler
+.. automodule:: libs.incoming_message_handler
+   :members:
+
+Tools collections Module
+========================
+
+.. automodule:: libs.tools_collection
    :members:
 
 Credentials Module
 ==================
 
-.. automodule:: credentials
+.. automodule:: libs.credentials
+   :members:
+
+Postgres API Module
+===================
+
+.. automodule:: libs.postgres_api
    :members:
 
 Protest Crawler Module

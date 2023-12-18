@@ -7,10 +7,15 @@ Welcome to my telegram bot's documentation!
 ===========================================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
+   :caption: Github:
+
+   Github source <https://github.com/Mamdasn/telegram-bot-protests-in-berlin/>
+
+.. toctree::
+   :maxdepth: 2
    :caption: Contents:
 
-   github_link
    modules
 
 Indices and tables

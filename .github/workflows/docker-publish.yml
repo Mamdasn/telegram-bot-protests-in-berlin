@@ -3,9 +3,13 @@ name: Dockerhub Publish
 on:
   push:
     branches:
-      - main  # Set this to the branch you want to trigger the workflow
-    tags:
-      - 'v*'  # This will trigger the workflow for any pushed tags with the 'v' prefix
+      - main
+    paths-ignore:
+      - '.gitignore'
+      - '.pre-commit-config.yaml'
+      - '.github/**'
+      - 'docs/**'
+      - 'README.md'
 
 jobs:
   build-and-push:

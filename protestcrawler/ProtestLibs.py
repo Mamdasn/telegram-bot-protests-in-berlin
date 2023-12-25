@@ -1,9 +1,9 @@
 from time import sleep
 
+import aiohttp
 import psycopg2
 from bs4 import BeautifulSoup
 from postgresconf.config import config
-from requests import Session
 
 
 class ProtestGrabber:
@@ -16,10 +16,10 @@ class ProtestGrabber:
         | get_protest_list(url): Fetches the list of protests from a given URL and parses the HTML to extract protest data.
         | parse_protest_list(event): Parses individual protest event data from the HTML content of a webpage.
 
-    The class relies on the `requests` and `BeautifulSoup` libraries for fetching and parsing web content, respectively.
+    The class relies on the `aiohttp` and `BeautifulSoup` libraries for fetching and parsing web content, respectively.
     """
 
-    def get_protest_list(url):
+    async def get_protest_list(url):
         """
         Fetches the list of protests from the specified URL and returns a BeautifulSoup object containing the parsed protest data.
 
@@ -31,16 +31,16 @@ class ProtestGrabber:
 
         :raises ValueError: If there's an issue with the internet connection or the request to the URL fails.
         """
-        with Session() as session:
-            req = session.get(url)
-            print("This is the status code:", req.status_code)
-            if req.status_code not in [200, 418]:
+        async with aiohttp.ClientSession() as session:
+            req = await session.get(url)
+            print("This is the status code:", req.status)
+            if req.status not in [200, 418]:
                 raise ValueError(
                     "It seems like there is a problem with internet connection. Please check your internet connection and try again!"
                 )
-            if req.status_code != 200:
+            if req.status != 200:
                 print(
-                    f"The request status code is {req.status_code}, now relaying to a proxy configuration..."
+                    f"The request status code is {req.status}, now relaying to a proxy configuration..."
                 )
                 print("Trying to connect to tor_privoxy.")
                 for i in range(10):
@@ -50,14 +50,14 @@ class ProtestGrabber:
                             "http": "http://tor_privoxy:8118",
                             "https": "http://tor_privoxy:8118",
                         }
-                        req = session.get(url, proxies=proxies)
+                        req = await session.get(url, proxies=proxies)
                         break
                     except Exception as e:
                         print(e)
                         pass
                     sleep(5)
                 print()
-            content = req.content
+            content = await req.text()
             if content:
                 parsed_content = BeautifulSoup(content, "html.parser")
                 tabel_of_content = parsed_content.find("div", {"id": "results"})
@@ -67,7 +67,7 @@ class ProtestGrabber:
                 return protests
             else:
                 print(
-                    f"With the status_code: {req.status_code}, the page respond content is empty."
+                    f"With the status_code: {req.status}, the page respond content is empty."
                 )
                 return None
 

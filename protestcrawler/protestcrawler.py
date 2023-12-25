@@ -1,3 +1,4 @@
+import asyncio
 import threading
 import time
 from queue import Queue
@@ -83,7 +84,7 @@ class EventCrawler:
             "parse_event_list"
         ]
 
-        event_list = get_event_list(self.url)
+        event_list = asyncio.run(get_event_list(self.url))
         concurrent_threads = number_of_threads
         crawled_data = self._run_in_parallel(
             parse_event_list, event_list, concurrent_threads, **kwargs

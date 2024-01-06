@@ -1,7 +1,7 @@
 import asyncio
 import threading
-import time
 from queue import Queue
+from time import sleep
 from urllib.parse import urlparse
 
 from ProtestLibs import ProtestGrabber, ProtestPostgres
@@ -116,13 +116,18 @@ ecrawler = EventCrawler(method)
 
 if __name__ == "__main__":
     while True:
-        print("Scraping data from berlin.de")
-        url = "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
-        data = ecrawler.crawl(
-            url,
-            number_of_threads=8,
-            save_to_database=True,
-        )
-        print("Number of protests:", len(data))
-        print("Scraping data finished.")
-        time.sleep(21600)
+        try:
+            print("Scraping data from berlin.de")
+            url = "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
+            data = ecrawler.crawl(
+                url,
+                number_of_threads=8,
+                save_to_database=True,
+            )
+            print("Number of protests:", len(data))
+            print("Scraping data finished.")
+            sleep(21600)
+        except Exception as e:
+            print("An error occured when retrieving data from the internet.")
+            print(e)
+            sleep(10)

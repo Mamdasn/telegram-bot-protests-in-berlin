@@ -503,9 +503,13 @@
 <span class="sd">        str: A response indicating the success or failure of the reaction setting request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/setMessageReaction&quot;</span>
-    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chat_id&quot;</span><span class="p">:</span> <span class="n">chat_id</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">message_id</span><span class="p">,</span> <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reaction</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">is_big</span><span class="p">:</span>
-        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;is_big&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_big</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;chat_id&quot;</span><span class="p">:</span> <span class="n">chat_id</span><span class="p">,</span>
+        <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">message_id</span><span class="p">,</span>
+        <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reaction</span><span class="p">,</span>
+        <span class="s2">&quot;is_big&quot;</span><span class="p">:</span> <span class="n">is_big</span><span class="p">,</span>
+    <span class="p">}</span>
+
     <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">))</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">r</span></div>
 

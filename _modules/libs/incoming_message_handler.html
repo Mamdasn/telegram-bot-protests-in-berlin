@@ -376,8 +376,7 @@
             <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_keyboard_markup</span>
 
         <span class="n">reaction</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;emoji&quot;</span><span class="p">,</span> <span class="s2">&quot;emoji&quot;</span><span class="p">:</span> <span class="n">pick_randomly</span><span class="p">(</span><span class="n">emojies</span><span class="p">)}]</span>
-        <span class="n">is_big</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">setMessageReaction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">reaction</span><span class="p">,</span> <span class="n">is_big</span><span class="p">))</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">setMessageReaction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">reaction</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;React response:&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
             <span class="n">send_message</span><span class="p">(</span>

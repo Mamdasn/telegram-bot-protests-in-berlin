@@ -372,3 +372,26 @@ async def answerInlineQuery(inline_query_id, results):
     }
     r = asyncio.create_task(post_json(url, payload))
     return await r
+
+
+async def setMessageReaction(chat_id, message_id, reaction, is_big=False):
+    """
+    Asynchronously sets a reaction emoji to a specific message in a Telegram chat.
+
+    This function enables a Telegram bot to react to a message within a chat using a specified emoji. The `is_big` parameter allows the choice of a larger animation for the reaction, enhancing the visibility of the reaction.
+
+    Args:
+        | chat_id (str): The unique identifier for the target chat or the username of the target channel.
+        | message_id (str): The identifier of the message to react to.
+        | reaction (str): The emoji used for the reaction, represented by a value from `ReactionTypeEmoji`.
+        | is_big (bool, optional): Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.
+
+    Returns:
+        str: A response indicating the success or failure of the reaction setting request.
+    """
+    url = f"{base_link}/setMessageReaction"
+    payload = {"chat_id": chat_id, "message_id": message_id, "reaction": reaction}
+    if is_big:
+        payload["is_big"] = is_big
+    r = asyncio.create_task(post_json(url, payload))
+    return await r

@@ -390,8 +390,12 @@ async def setMessageReaction(chat_id, message_id, reaction, is_big=False):
         str: A response indicating the success or failure of the reaction setting request.
     """
     url = f"{base_link}/setMessageReaction"
-    payload = {"chat_id": chat_id, "message_id": message_id, "reaction": reaction}
-    if is_big:
-        payload["is_big"] = is_big
+    payload = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+        "reaction": reaction,
+        "is_big": is_big,
+    }
+
     r = asyncio.create_task(post_json(url, payload))
     return await r

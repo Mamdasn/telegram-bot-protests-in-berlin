@@ -60,6 +60,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.editMessageText"><code class="docutils literal notranslate"><span class="pre">editMessageText()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.answerCallbackQuery"><code class="docutils literal notranslate"><span class="pre">answerCallbackQuery()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.answerInlineQuery"><code class="docutils literal notranslate"><span class="pre">answerInlineQuery()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.setMessageReaction"><code class="docutils literal notranslate"><span class="pre">setMessageReaction()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#module-libs.incoming_message_handler">Handle Incoming Messages Module</a><ul>
@@ -346,6 +347,24 @@ The structure of the returned tuple varies depending on the message type.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If the results are not properly formatted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libs.telegram_bot_api.setMessageReaction">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">setMessageReaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_big</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#setMessageReaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.setMessageReaction" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously sets a reaction emoji to a specific message in a Telegram chat.</p>
+<p>This function enables a Telegram bot to react to a message within a chat using a specified emoji. The <cite>is_big</cite> parameter allows the choice of a larger animation for the reaction, enhancing the visibility of the reaction.</p>
+<dl>
+<dt>Args:</dt><dd><div class="line-block">
+<div class="line">chat_id (str): The unique identifier for the target chat or the username of the target channel.</div>
+<div class="line">message_id (str): The identifier of the message to react to.</div>
+<div class="line">reaction (str): The emoji used for the reaction, represented by a value from <cite>ReactionTypeEmoji</cite>.</div>
+<div class="line">is_big (bool, optional): Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.</div>
+</div>
+</dd>
+<dt>Returns:</dt><dd><p>str: A response indicating the success or failure of the reaction setting request.</p>
 </dd>
 </dl>
 </dd></dl>

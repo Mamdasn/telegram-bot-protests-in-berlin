@@ -84,13 +84,15 @@
   <h1>Source code for libs.incoming_message_handler</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span> <span class="k">as</span> <span class="n">pick_randomly</span>
 
-<span class="kn">from</span> <span class="nn">.telegram_bot_api</span> <span class="kn">import</span> <span class="n">answerCallbackQuery</span>  <span class="c1"># deleteMessage,</span>
 <span class="kn">from</span> <span class="nn">.telegram_bot_api</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">answerCallbackQuery</span><span class="p">,</span>
     <span class="n">answerInlineQuery</span><span class="p">,</span>
     <span class="n">editMessageText</span><span class="p">,</span>
     <span class="n">parse_message</span><span class="p">,</span>
     <span class="n">send_message</span><span class="p">,</span>
+    <span class="n">setMessageReaction</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.tools_collection</span> <span class="kn">import</span> <span class="n">get_calender</span>  <span class="c1"># get_next_period_of_time,</span>
 <span class="kn">from</span> <span class="nn">.tools_collection</span> <span class="kn">import</span> <span class="p">(</span>
@@ -339,6 +341,15 @@
         <span class="p">[</span><span class="s2">&quot;This Week 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="s2">&quot;Help ❔&quot;</span><span class="p">,</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">,</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">],</span>
     <span class="p">]</span>
+    <span class="n">emojies</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;👍&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;🕊&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;🐳&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;⚡&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;✍&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;🫡&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
     <span class="n">reply_keyboard_markup</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;keyboard&quot;</span><span class="p">:</span> <span class="n">keyboard</span><span class="p">,</span>
         <span class="s2">&quot;resize_keyboard&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -363,6 +374,11 @@
             <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_markup_page</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_keyboard_markup</span>
+
+        <span class="n">reaction</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;emoji&quot;</span><span class="p">,</span> <span class="s2">&quot;emoji&quot;</span><span class="p">:</span> <span class="n">pick_randomly</span><span class="p">(</span><span class="n">emojies</span><span class="p">)}]</span>
+        <span class="n">is_big</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">setMessageReaction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">reaction</span><span class="p">,</span> <span class="n">is_big</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;React response:&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
             <span class="n">send_message</span><span class="p">(</span>
                 <span class="n">chat_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span>
@@ -371,7 +387,7 @@
                 <span class="n">reply_markup</span><span class="o">=</span><span class="n">reply_markup</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sent response:&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
 
 
 

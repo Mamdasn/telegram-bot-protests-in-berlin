@@ -483,6 +483,32 @@
     <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">))</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">r</span></div>
 
+
+
+<div class="viewcode-block" id="setMessageReaction">
+<a class="viewcode-back" href="../../modules.html#libs.telegram_bot_api.setMessageReaction">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">setMessageReaction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">reaction</span><span class="p">,</span> <span class="n">is_big</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Asynchronously sets a reaction emoji to a specific message in a Telegram chat.</span>
+
+<span class="sd">    This function enables a Telegram bot to react to a message within a chat using a specified emoji. The `is_big` parameter allows the choice of a larger animation for the reaction, enhancing the visibility of the reaction.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        | chat_id (str): The unique identifier for the target chat or the username of the target channel.</span>
+<span class="sd">        | message_id (str): The identifier of the message to react to.</span>
+<span class="sd">        | reaction (str): The emoji used for the reaction, represented by a value from `ReactionTypeEmoji`.</span>
+<span class="sd">        | is_big (bool, optional): Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A response indicating the success or failure of the reaction setting request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/setMessageReaction&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chat_id&quot;</span><span class="p">:</span> <span class="n">chat_id</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">message_id</span><span class="p">,</span> <span class="s2">&quot;reaction&quot;</span><span class="p">:</span> <span class="n">reaction</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">is_big</span><span class="p">:</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;is_big&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is_big</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">))</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">r</span></div>
+
 </pre></div>
 
            </div>

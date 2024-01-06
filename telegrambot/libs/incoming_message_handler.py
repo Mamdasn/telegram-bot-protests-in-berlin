@@ -1,12 +1,14 @@
 import asyncio
 import datetime
+from random import choice as pick_randomly
 
-from .telegram_bot_api import answerCallbackQuery  # deleteMessage,
 from .telegram_bot_api import (
+    answerCallbackQuery,
     answerInlineQuery,
     editMessageText,
     parse_message,
     send_message,
+    setMessageReaction,
 )
 from .tools_collection import get_calender  # get_next_period_of_time,
 from .tools_collection import (
@@ -241,6 +243,15 @@ def handle_message(chat_id, message_info, chat_type="private"):
         ["This Week 🪧", "Weekend 🪧", "Calender 🗓️"],
         ["Help ❔", "Register a Protest", "Info 💁"],
     ]
+    emojies = [
+        "👍",
+        "🕊",
+        "🐳",
+        "⚡",
+        "✍",
+        "🫡",
+    ]
+
     reply_keyboard_markup = {
         "keyboard": keyboard,
         "resize_keyboard": True,
@@ -265,6 +276,11 @@ def handle_message(chat_id, message_info, chat_type="private"):
             reply_markup = reply_markup_page
         else:
             reply_markup = reply_keyboard_markup
+
+        reaction = [{"type": "emoji", "emoji": pick_randomly(emojies)}]
+        is_big = False
+        r = asyncio.run(setMessageReaction(chat_id, message_id, reaction, is_big))
+        print("React response:", r)
         r = asyncio.run(
             send_message(
                 chat_id=chat_id,
@@ -273,7 +289,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
                 reply_markup=reply_markup,
             )
         )
-        print(r)
+        print("Sent response:", r)
 
 
 def handle_inline_query(inline_query_id, message_info):

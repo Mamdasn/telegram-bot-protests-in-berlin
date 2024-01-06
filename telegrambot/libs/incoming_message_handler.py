@@ -278,8 +278,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
             reply_markup = reply_keyboard_markup
 
         reaction = [{"type": "emoji", "emoji": pick_randomly(emojies)}]
-        is_big = False
-        r = asyncio.run(setMessageReaction(chat_id, message_id, reaction, is_big))
+        r = asyncio.run(setMessageReaction(chat_id, message_id, reaction))
         print("React response:", r)
         r = asyncio.run(
             send_message(

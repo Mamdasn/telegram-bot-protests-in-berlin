@@ -201,9 +201,9 @@
 
 <span class="sd">    Supported Commands:</span>
 <span class="sd">       | - &quot;/start&quot;: Greeting message and bot introduction.</span>
-<span class="sd">       | - &quot;/today&quot;, &quot;Today 🪧&quot;: Fetches events for the current day.</span>
-<span class="sd">       | - &quot;/tomorrow&quot;, &quot;Tomorrow 🪧&quot;: Fetches events for the next day.</span>
-<span class="sd">       | - &quot;/week&quot;, &quot;This Week 🪧&quot;: Fetches events for the current week.</span>
+<span class="sd">       | - &quot;/today&quot;, &quot;Today ✊&quot;: Fetches events for the current day.</span>
+<span class="sd">       | - &quot;/tomorrow&quot;, &quot;Tomorrow 📢&quot;: Fetches events for the next day.</span>
+<span class="sd">       | - &quot;/week&quot;, &quot;Week 📣&quot;: Fetches events for the current week.</span>
 <span class="sd">       | - &quot;/weekend&quot;, &quot;Weekend 🪧&quot;: Fetches events for the upcoming weekend.</span>
 <span class="sd">       | - &quot;/date [dd.mm.yyyy]&quot;: Fetches events for a specific date.</span>
 <span class="sd">       | - &quot;Register a Protest&quot;: Provides a like to register a protest meeting notice.</span>
@@ -224,15 +224,15 @@
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;Hey there,</span><span class="se">\n</span><span class="s2">This bot is made to provide you access to the up-to-date protest events in Berlin.&quot;</span>
             <span class="p">]</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/today&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Today 🪧&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/today&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Today ✊&quot;</span><span class="p">):</span>
             <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/tomorrow&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Tomorrow 🪧&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/tomorrow&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Tomorrow 📢&quot;</span><span class="p">):</span>
             <span class="n">date</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
                 <span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/calender&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/calender&quot;</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Calendar 🗓️&quot;</span><span class="p">):</span>
             <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/calender&quot;</span><span class="p">):</span>
                 <span class="n">start_date_string</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
@@ -248,7 +248,7 @@
                 <span class="k">if</span> <span class="n">date</span><span class="o">.</span><span class="n">weekday</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
                     <span class="n">date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">queries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/week&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;This Week 🪧&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/week&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Week 📣&quot;</span><span class="p">):</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
                 <span class="n">date</span> <span class="o">=</span> <span class="p">(</span>
@@ -337,9 +337,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">message_info</span>
     <span class="n">keyboard</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">[</span><span class="s2">&quot;Today 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
-        <span class="p">[</span><span class="s2">&quot;This Week 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calender 🗓️&quot;</span><span class="p">],</span>
-        <span class="p">[</span><span class="s2">&quot;Help ❔&quot;</span><span class="p">,</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">,</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Today ✊&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 📢&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Week 📣&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calendar 🗓️&quot;</span><span class="p">],</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;Info 💁&quot;</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Source Code 📟&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;web_app&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/Mamdasn/telegram-bot-protests-in-berlin&quot;</span>
+                <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
     <span class="p">]</span>
     <span class="n">emojies</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;👍&quot;</span><span class="p">,</span>

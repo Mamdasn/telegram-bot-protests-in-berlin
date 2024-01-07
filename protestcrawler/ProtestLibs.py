@@ -99,7 +99,15 @@ class ProtestGrabber:
             Versammlungsort = get_text(event.find("td", {"headers": "Versammlungsort"}))
             Aufzugsstrecke = get_text(event.find("td", {"headers": "Aufzugsstrecke"}))
 
-            Datum = ".".join(Datum.split(".")[::-1])
+            if Datum:
+                Datum = ".".join(Datum.split(".")[::-1])
+
+            # Assign value to PLZ and Versammlungsort if they are empty since in the database they are NOT NULL vars
+            if not PLZ:
+                PLZ = "00000"
+            if not Versammlungsort:
+                if Aufzugsstrecke:
+                    Versammlungsort = Aufzugsstrecke.split(" - ")[0]
 
             return {
                 "Datum": Datum,

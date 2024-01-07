@@ -227,7 +227,7 @@ class ProtestPostgres:
                 Bis TIME NOT NULL,
                 Thema VARCHAR,
                 PLZ VARCHAR(10) NOT NULL,
-                Versammlungsort VARCHAR(100) NOT NULL,
+                Versammlungsort VARCHAR NOT NULL,
                 Aufzugsstrecke VARCHAR,
                 UNIQUE(PLZ, Versammlungsort, Datum, Von)
             )

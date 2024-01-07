@@ -190,7 +190,15 @@
             <span class="n">Versammlungsort</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">}))</span>
             <span class="n">Aufzugsstrecke</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">}))</span>
 
-            <span class="n">Datum</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Datum</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">Datum</span><span class="p">:</span>
+                <span class="n">Datum</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Datum</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c1"># Assign value to PLZ and Versammlungsort if they are empty since in the database they are NOT NULL vars</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">PLZ</span><span class="p">:</span>
+                <span class="n">PLZ</span> <span class="o">=</span> <span class="s2">&quot;00000&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Versammlungsort</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">Aufzugsstrecke</span><span class="p">:</span>
+                    <span class="n">Versammlungsort</span> <span class="o">=</span> <span class="n">Aufzugsstrecke</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; - &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;Datum&quot;</span><span class="p">:</span> <span class="n">Datum</span><span class="p">,</span>

@@ -88,7 +88,7 @@ class ProtestGrabber:
             if soup:
                 return soup.get_text().strip()
             else:
-                return "Empty"
+                return None
 
         try:
             Datum = get_text(event.find("td", {"headers": "Datum"}))
@@ -181,11 +181,14 @@ class ProtestPostgres:
             The function executes an SQL command to insert the event data, handling conflicts by updating existing records.
             """
 
+            # return None and do not add the data to database if any of the values for Datum, Von, Bis, PLZ, Versammlungsort are None
+            if not all([Datum, Von, Bis, PLZ, Versammlungsort]):
+                return None
+
             sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)
                             VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE
                             SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis
                             RETURNING id;"""
-
             cursor.execute(
                 sql_protest,
                 (

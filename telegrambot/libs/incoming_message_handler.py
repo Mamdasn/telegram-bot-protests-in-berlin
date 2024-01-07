@@ -106,9 +106,9 @@ def handle_commands(message):
 
     Supported Commands:
        | - "/start": Greeting message and bot introduction.
-       | - "/today", "Today 🪧": Fetches events for the current day.
-       | - "/tomorrow", "Tomorrow 🪧": Fetches events for the next day.
-       | - "/week", "This Week 🪧": Fetches events for the current week.
+       | - "/today", "Today ✊": Fetches events for the current day.
+       | - "/tomorrow", "Tomorrow 📢": Fetches events for the next day.
+       | - "/week", "Week 📣": Fetches events for the current week.
        | - "/weekend", "Weekend 🪧": Fetches events for the upcoming weekend.
        | - "/date [dd.mm.yyyy]": Fetches events for a specific date.
        | - "Register a Protest": Provides a like to register a protest meeting notice.
@@ -129,15 +129,15 @@ def handle_commands(message):
             queries = [
                 "Hey there,\nThis bot is made to provide you access to the up-to-date protest events in Berlin."
             ]
-        elif (message == "/today") or (message == "Today 🪧"):
+        elif (message == "/today") or (message == "Today ✊"):
             date = datetime.datetime.today().strftime("%Y.%m.%d")
             queries = fetcher.getBySpecificDate(date)
-        elif (message == "/tomorrow") or (message == "Tomorrow 🪧"):
+        elif (message == "/tomorrow") or (message == "Tomorrow 📢"):
             date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime(
                 "%Y.%m.%d"
             )
             queries = fetcher.getBySpecificDate(date)
-        elif (message.startswith("/calender")) or (message == "Calender 🗓️"):
+        elif (message.startswith("/calender")) or (message == "Calendar 🗓️"):
             start_date = datetime.datetime.today()
             if message.startswith("/calender"):
                 start_date_string = " ".join(message.split(" ")[1:])
@@ -153,7 +153,7 @@ def handle_commands(message):
                 if date.weekday() in (5, 6):
                     date = date.strftime("%Y.%m.%d")
                     queries.extend(fetcher.getBySpecificDate(date))
-        elif (message == "/week") or (message == "This Week 🪧"):
+        elif (message == "/week") or (message == "Week 📣"):
             queries = []
             for i in range(7):
                 date = (
@@ -239,9 +239,17 @@ def handle_message(chat_id, message_info, chat_type="private"):
     """
     message, message_id, _ = message_info
     keyboard = [
-        ["Today 🪧", "Tomorrow 🪧", "🔎"],
-        ["This Week 🪧", "Weekend 🪧", "Calender 🗓️"],
-        ["Help ❔", "Register a Protest", "Info 💁"],
+        ["Today ✊", "Tomorrow 📢", "🔎"],
+        ["Week 📣", "Weekend 🪧", "Calendar 🗓️"],
+        [
+            "Info 💁",
+            {
+                "text": "Source Code 📟",
+                "web_app": {
+                    "url": "https://github.com/Mamdasn/telegram-bot-protests-in-berlin"
+                },
+            },
+        ],
     ]
     emojies = [
         "👍",

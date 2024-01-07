@@ -269,13 +269,13 @@ class Fetchpostgres:
         thema = f"<b>Thema</b>: {q[4]}{newline}" if q[4] else ""
         plz = (
             f"<b>PLZ</b>: {q[5]}{newline}"
-            if ((q[5] != "") or (q[5] != "00000"))
+            if ((q[5] != "") and (q[5] != "00000"))
             else ""
         )
         google_maps_url_base = "https://www.google.com/maps/search/?api=1&query="
         google_maps_url = (
             f"{google_maps_url_base}{q[6]} {q[5]} Berlin"
-            if ((q[5] != "") or (q[5] != "00000"))
+            if ((q[5] != "") and (q[5] != "00000"))
             else f"{google_maps_url_base}{q[6]} Berlin"
         )
         versammlungsort = (

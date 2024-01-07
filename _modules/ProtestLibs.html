@@ -179,7 +179,7 @@
             <span class="k">if</span> <span class="n">soup</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s2">&quot;Empty&quot;</span>
+                <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">Datum</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="s2">&quot;Datum&quot;</span><span class="p">}))</span>
@@ -278,11 +278,14 @@
 <span class="sd">            The function executes an SQL command to insert the event data, handling conflicts by updating existing records.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
+            <span class="c1"># return None and do not add the data to database if any of the values for Datum, Von, Bis, PLZ, Versammlungsort are None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">Datum</span><span class="p">,</span> <span class="n">Von</span><span class="p">,</span> <span class="n">Bis</span><span class="p">,</span> <span class="n">PLZ</span><span class="p">,</span> <span class="n">Versammlungsort</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
             <span class="n">sql_protest</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)</span>
 <span class="s2">                            VALUES(</span><span class="si">%s</span><span class="s2">::DATE, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE</span>
 <span class="s2">                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis</span>
 <span class="s2">                            RETURNING id;&quot;&quot;&quot;</span>
-
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
                 <span class="n">sql_protest</span><span class="p">,</span>
                 <span class="p">(</span>

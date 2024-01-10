@@ -266,7 +266,13 @@ def handle_message(chat_id, message_info, chat_type="private"):
         if "@" not in message:
             return
         else:
-            message = message[:message.rfind("@")]
+            # To remove @telegrambot_username from `/search@telegrambot_username query`
+            bot_username_start=message.rfind("@")
+            bot_username_end=message.find(" ", bot_username_start)
+            if bot_username_end == -1:
+                message = message[:bot_username_start]
+            else:
+                message = message[:bot_username_start]+message[bot_username_end:]
             reply_keyboard_markup = None
 
     queries, reply_markup_main = handle_commands(message)

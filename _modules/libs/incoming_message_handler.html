@@ -289,7 +289,9 @@
 <span class="s2">For example: &lt;i&gt;&#39;@ProtestsBerlinBot ukraine&#39;&lt;/i&gt;&quot;&quot;&quot;</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="n">reply</span><span class="p">]</span>
 
-        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;🔎&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/search&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/search&quot;</span><span class="p">:</span>
+            <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Search through protests in Berlin by sending: </span><span class="se">\n</span><span class="s2">/search query </span><span class="se">\n</span><span class="s2">To get the manual, send /help.&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;🔎&quot;</span> <span class="p">:</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Send me a text to search:&quot;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/search </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -331,6 +333,10 @@
 <span class="sd">        In group chats, the function only processes messages that start with &quot;/&quot; (commands).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">message_info</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="p">:</span>
+        <span class="k">return</span>
+
     <span class="n">keyboard</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span><span class="s2">&quot;Today ✊&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 📢&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="s2">&quot;Week 📣&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calendar 🗓️&quot;</span><span class="p">],</span>

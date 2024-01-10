@@ -194,7 +194,9 @@ With the following command you can search and select a specific protest info in 
 For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
             queries = [reply]
 
-        elif (message == "🔎") or (message == "/search"):
+        elif message == "/search":
+            queries = ["Search through protests in Berlin by sending: \n/search query \nTo get the manual, send /help."]
+        elif message == "🔎" :
             queries = ["Send me a text to search:"]
         elif not message.startswith("/"):
             message = f"/search {message}"
@@ -233,6 +235,10 @@ def handle_message(chat_id, message_info, chat_type="private"):
         In group chats, the function only processes messages that start with "/" (commands).
     """
     message, message_id, _ = message_info
+
+    if not message:
+        return
+
     keyboard = [
         ["Today ✊", "Tomorrow 📢", "🔎"],
         ["Week 📣", "Weekend 🪧", "Calendar 🗓️"],

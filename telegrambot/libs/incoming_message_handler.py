@@ -79,7 +79,7 @@ def manage_messages(msg):
             chat_id, message_info, chat_type = parsed_message
             if chat_type == "callback_query":
                 handle_callback_query(chat_id, message_info)
-            elif chat_type in ("private", "group"):
+            elif chat_type in ("private", "group", "supergroup"):
                 handle_message(chat_id, message_info, chat_type)
             elif chat_type == "inline_query":
                 handle_inline_query(inline_query_id=chat_id, message_info=message_info)
@@ -261,10 +261,13 @@ def handle_message(chat_id, message_info, chat_type="private"):
         "input_field_placeholder": "Select one:",
     }
 
-    if chat_type == "group":
-        reply_keyboard_markup = None
-        if not message.startswith("/"):
+    # Commands explicitly meant for bots in groups (e.g., /command@bot_username).
+    if chat_type in ("group", "supergroup"):
+        if "@" not in message:
             return
+        else:
+            message = message[:message.rfind("@")]
+            reply_keyboard_markup = None
 
     queries, reply_markup_main = handle_commands(message)
 

@@ -195,8 +195,10 @@ For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
             queries = [reply]
 
         elif message == "/search":
-            queries = ["Search through protests in Berlin by sending: \n/search query \nTo get the manual, send /help."]
-        elif message == "🔎" :
+            queries = [
+                "Search through protests in Berlin by sending: \n/search query \nTo get the manual, send /help."
+            ]
+        elif message == "🔎":
             queries = ["Send me a text to search:"]
         elif not message.startswith("/"):
             message = f"/search {message}"
@@ -273,12 +275,12 @@ def handle_message(chat_id, message_info, chat_type="private"):
             return
         else:
             # To remove @telegrambot_username from `/search@telegrambot_username query`
-            bot_username_start=message.rfind("@")
-            bot_username_end=message.find(" ", bot_username_start)
+            bot_username_start = message.rfind("@")
+            bot_username_end = message.find(" ", bot_username_start)
             if bot_username_end == -1:
                 message = message[:bot_username_start]
             else:
-                message = message[:bot_username_start]+message[bot_username_end:]
+                message = message[:bot_username_start] + message[bot_username_end:]
             reply_keyboard_markup = None
 
     queries, reply_markup_main = handle_commands(message)

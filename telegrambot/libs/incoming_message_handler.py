@@ -80,11 +80,6 @@ def manage_messages(msg):
             if chat_type == "callback_query":
                 handle_callback_query(chat_id, message_info)
             elif chat_type in ("private", "group"):
-                if True:
-                    message_text, message_id, date = message_info
-                    fetcher.store_client_data(
-                        data=(date, message_text, message_id, chat_id, chat_type)
-                    )
                 handle_message(chat_id, message_info, chat_type)
             elif chat_type == "inline_query":
                 handle_inline_query(inline_query_id=chat_id, message_info=message_info)

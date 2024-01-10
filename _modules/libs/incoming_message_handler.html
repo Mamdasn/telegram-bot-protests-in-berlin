@@ -364,7 +364,13 @@
         <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[:</span><span class="n">message</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)]</span>
+            <span class="c1"># To remove @telegrambot_username from `/search@telegrambot_username query`</span>
+            <span class="n">bot_username_start</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)</span>
+            <span class="n">bot_username_end</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">bot_username_start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bot_username_end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[:</span><span class="n">bot_username_start</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="n">message</span><span class="p">[:</span><span class="n">bot_username_start</span><span class="p">]</span><span class="o">+</span><span class="n">message</span><span class="p">[</span><span class="n">bot_username_end</span><span class="p">:]</span>
             <span class="n">reply_keyboard_markup</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">queries</span><span class="p">,</span> <span class="n">reply_markup_main</span> <span class="o">=</span> <span class="n">handle_commands</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>

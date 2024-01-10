@@ -213,8 +213,10 @@ def parse_message(msg):
         )
     if msg.chat_type == "private":
         return msg.chat_id, msg.message_info, "private"
-    if msg.chat_type == "group":
+    elif msg.chat_type == "group":
         return msg.chat_id, msg.message_info, "group"
+    elif msg.chat_type == "supergroup":
+        return msg.chat_id, msg.message_info, "supergroup"
 
 
 async def post_json(url, json_data):

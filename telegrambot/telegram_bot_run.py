@@ -1,4 +1,3 @@
-import json
 from time import sleep
 
 import libs.incoming_message_handler as incoming_message_handler
@@ -38,9 +37,7 @@ def abortion_method():
 @app.route("/", methods=["POST"])
 def index():
     msg = request.get_json(force=True)
-    msg_str = json.dumps(msg)
     msg_http_code = str(msg)
-    print(msg_str)
     print(msg_http_code)
     incoming_message_handler.manage_messages(msg)
     return Response("Ok", status=200)

@@ -17,3 +17,6 @@ IP rotation can be automated using crontab (in this case every 24 hours):
 
 ## Documentation
 The documentation can be found here: [Docs](https://mamdasn.github.io/telegram-bot-protests-in-berlin/)
+
+## Donation
+My ton coin wallet address: UQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh

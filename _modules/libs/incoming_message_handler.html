@@ -202,7 +202,7 @@
 <span class="sd">       | - &quot;/weekend&quot;, &quot;Weekend 🪧&quot;: Fetches events for the upcoming weekend.</span>
 <span class="sd">       | - &quot;/date [dd.mm.yyyy]&quot;: Fetches events for a specific date.</span>
 <span class="sd">       | - &quot;Register a Protest&quot;: Provides a like to register a protest meeting notice.</span>
-<span class="sd">       | - &quot;/info&quot;, &quot;Info 💁&quot;: Provides contact information.</span>
+<span class="sd">       | - &quot;/info&quot;, &quot;Info/Donation 💁&quot;: Provides contact information.</span>
 <span class="sd">       | - &quot;/help&quot;, &quot;Help ❔&quot;: Displays help information.</span>
 <span class="sd">       | - &quot;/search&quot;, &quot;🔎&quot;: Initiates a search based on the provided query.</span>
 <span class="sd">       | - Any other text: Treated as a search query.</span>
@@ -250,9 +250,9 @@
                     <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y.%m.</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">queries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/info&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Info 💁&quot;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/info&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Info/Donation 💁&quot;</span><span class="p">):</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="s2">&quot;If you have any suggestions, comments, or questions, please don&#39;t hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com&quot;</span>
+                    <span class="s2">&quot;If you have any suggestions, comments, or questions, please don&#39;t hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com</span><span class="se">\n</span><span class="s2">My ton coin wallet address for donations: </span><span class="se">\n</span><span class="s2">UQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh&quot;</span>
             <span class="p">]</span>
         <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">:</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
@@ -343,7 +343,7 @@
         <span class="p">[</span><span class="s2">&quot;Today ✊&quot;</span><span class="p">,</span> <span class="s2">&quot;Tomorrow 📢&quot;</span><span class="p">,</span> <span class="s2">&quot;🔎&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="s2">&quot;Week 📣&quot;</span><span class="p">,</span> <span class="s2">&quot;Weekend 🪧&quot;</span><span class="p">,</span> <span class="s2">&quot;Calendar 🗓️&quot;</span><span class="p">],</span>
         <span class="p">[</span>
-            <span class="s2">&quot;Info 💁&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Info/Donation 💁&quot;</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Source Code 📟&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;web_app&quot;</span><span class="p">:</span> <span class="p">{</span>

@@ -419,6 +419,7 @@ def handle_callback_query(chat_id, message_info):
             message_id=callback_query_message_id,
             text=reply,
             reply_markup=reply_markup,
+            link_preview_options={'is_disabled': True},
         )
     )
     print(r)

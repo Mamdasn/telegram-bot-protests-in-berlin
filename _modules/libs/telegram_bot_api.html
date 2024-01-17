@@ -365,6 +365,8 @@
 <span class="sd">        | text (str): The text of the message to be sent.</span>
 <span class="sd">        | reply_to_message_id (str, optional): If the message is a reply, ID of the original message.</span>
 <span class="sd">        | reply_markup (str, optional): Additional interface options in JSON-serialized format.</span>
+<span class="sd">        | link_preview_options (dict, optional): A dictionary to control link preview behavior. </span>
+<span class="sd">          | It can include &#39;is_disabled&#39; (bool) to enable or disable link previews.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The text response of the request.</span>
@@ -408,7 +410,7 @@
 
 <div class="viewcode-block" id="editMessageText">
 <a class="viewcode-back" href="../../modules.html#libs.telegram_bot_api.editMessageText">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">editMessageText</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">editMessageText</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_preview_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronously edits the text of a message in a Telegram chat.</span>
 
@@ -419,6 +421,8 @@
 <span class="sd">        | message_id (str): Identifier of the message to edit.</span>
 <span class="sd">        | text (str): New text to replace the existing message content.</span>
 <span class="sd">        | reply_markup (str, optional): Additional interface options in JSON-serialized format.</span>
+<span class="sd">        | link_preview_options (dict, optional): A dictionary to control link preview behavior. </span>
+<span class="sd">          | It can include &#39;is_disabled&#39; (bool) to enable or disable link previews.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The text response of the request.</span>
@@ -433,6 +437,8 @@
     <span class="p">}</span>
     <span class="k">if</span> <span class="n">reply_markup</span><span class="p">:</span>
         <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;reply_markup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reply_markup</span>
+    <span class="k">if</span> <span class="n">link_preview_options</span><span class="p">:</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;link_preview_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_preview_options</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">))</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">r</span></div>
 

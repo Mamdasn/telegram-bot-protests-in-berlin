@@ -270,6 +270,8 @@ The structure of the returned tuple varies depending on the message type.</p>
 <div class="line">text (str): The text of the message to be sent.</div>
 <div class="line">reply_to_message_id (str, optional): If the message is a reply, ID of the original message.</div>
 <div class="line">reply_markup (str, optional): Additional interface options in JSON-serialized format.</div>
+<div class="line">link_preview_options (dict, optional): A dictionary to control link preview behavior. 
+| It can include ‘is_disabled’ (bool) to enable or disable link previews.</div>
 </div>
 </dd>
 <dt>Returns:</dt><dd><p>str: The text response of the request.</p>
@@ -295,7 +297,7 @@ The structure of the returned tuple varies depending on the message type.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="libs.telegram_bot_api.editMessageText">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">editMessageText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reply_markup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#editMessageText"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.editMessageText" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">editMessageText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reply_markup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_preview_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#editMessageText"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.editMessageText" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously edits the text of a message in a Telegram chat.</p>
 <p>This function allows editing the text of an existing message in a Telegram chat. It requires the message ID and the new text. Optionally, it can also update the reply markup.</p>
 <dl>
@@ -304,6 +306,8 @@ The structure of the returned tuple varies depending on the message type.</p>
 <div class="line">message_id (str): Identifier of the message to edit.</div>
 <div class="line">text (str): New text to replace the existing message content.</div>
 <div class="line">reply_markup (str, optional): Additional interface options in JSON-serialized format.</div>
+<div class="line">link_preview_options (dict, optional): A dictionary to control link preview behavior. 
+| It can include ‘is_disabled’ (bool) to enable or disable link previews.</div>
 </div>
 </dd>
 <dt>Returns:</dt><dd><p>str: The text response of the request.</p>

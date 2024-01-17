@@ -354,7 +354,7 @@
 
 <div class="viewcode-block" id="send_message">
 <a class="viewcode-back" href="../../modules.html#libs.telegram_bot_api.send_message">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_to_message_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_to_message_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_preview_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronously sends a message to a Telegram chat.</span>
 
@@ -377,6 +377,8 @@
         <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;reply_to_message_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reply_to_message_id</span>
     <span class="k">if</span> <span class="n">reply_markup</span><span class="p">:</span>
         <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;reply_markup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reply_markup</span>
+    <span class="k">if</span> <span class="n">link_preview_options</span><span class="p">:</span>
+        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;link_preview_options&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">link_preview_options</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">payload</span><span class="p">))</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">r</span></div>
 

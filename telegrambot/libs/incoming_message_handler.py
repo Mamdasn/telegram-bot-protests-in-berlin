@@ -306,6 +306,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
                 text=page,
                 reply_to_message_id=message_id,
                 reply_markup=reply_markup,
+                link_preview_options={'is_disabled': True},
             )
         )
         print("Sent response:", r)

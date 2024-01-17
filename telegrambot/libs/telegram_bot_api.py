@@ -256,7 +256,7 @@ async def sendChatAction(chat_id, action="typing"):
     return await r
 
 
-async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=None):
+async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=None, link_preview_options=None):
     """
     Asynchronously sends a message to a Telegram chat.
 
@@ -279,6 +279,8 @@ async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=Non
         payload["reply_to_message_id"] = reply_to_message_id
     if reply_markup:
         payload["reply_markup"] = reply_markup
+    if link_preview_options:
+        payload["link_preview_options"] = link_preview_options
     r = asyncio.create_task(post_json(url, payload))
     return await r
 

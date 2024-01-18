@@ -1,15 +1,40 @@
-name: Deploy to Google Cloud
+name: Dockerhub Publish and Deploy on host
 
-# Only trigger, when the build workflow succeeded
 on:
-  workflow_run:
-    workflows: ["Dockerhub Publish"]
-    types:
-      - completed
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.gitignore'
+      - '.pre-commit-config.yaml'
+      - '.github/**'
+      - 'docs/**'
+      - 'README.md'
 
 jobs:
-  deploy:
+  build-and-push-to-dockerhub:
     runs-on: ubuntu-latest
+    steps:
+    - name: Check Out Repo
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and push Docker image using Docker Compose
+      run: |
+        docker compose build
+        docker compose push
+
+  deploy-on-host:
+    runs-on: ubuntu-latest
+    needs: [build-and-push-to-dockerhub]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -21,7 +46,7 @@ jobs:
     - name: Deploy to Google Cloud
       env:
         BRANCH: main
-        CONTAINER_DIR: telegram-bot-protests-in-berlin 
+        CONTAINER_DIR: telegram-bot-protests-in-berlin
         CONTAINER_NAME_1: postgres_db
         CONTAINER_NAME_2: protestcrawler
         CONTAINER_NAME_3: telegrambot
@@ -47,6 +72,7 @@ jobs:
                 && git fetch --all \
                 && git switch $BRANCH \
                 && git merge origin/$BRANCH \
+                && docker compose pull \
                 && docker compose down \
                 && docker system prune -af \
                 && docker compose up -d \

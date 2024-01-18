@@ -267,8 +267,7 @@ async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=Non
         | text (str): The text of the message to be sent.
         | reply_to_message_id (str, optional): If the message is a reply, ID of the original message.
         | reply_markup (str, optional): Additional interface options in JSON-serialized format.
-        | link_preview_options (dict, optional): A dictionary to control link preview behavior. 
-          | It can include 'is_disabled' (bool) to enable or disable link previews.
+        | link_preview_options (dict, optional): A dictionary to control link preview behavior. It can include 'is_disabled' (bool) to enable or disable link previews.
 
     Returns:
         str: The text response of the request.
@@ -317,8 +316,7 @@ async def editMessageText(chat_id, message_id, text, reply_markup=None, link_pre
         | message_id (str): Identifier of the message to edit.
         | text (str): New text to replace the existing message content.
         | reply_markup (str, optional): Additional interface options in JSON-serialized format.
-        | link_preview_options (dict, optional): A dictionary to control link preview behavior. 
-          | It can include 'is_disabled' (bool) to enable or disable link previews.
+        | link_preview_options (dict, optional): A dictionary to control link preview behavior. It can include 'is_disabled' (bool) to enable or disable link previews.
 
     Returns:
         str: The text response of the request.

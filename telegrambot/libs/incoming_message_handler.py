@@ -210,8 +210,8 @@ For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
                 search_query,
                 columns=["Aufzugsstrecke", "Versammlungsort", "Thema", "PLZ", "Datum"],
             )
-            if not queries:
-                queries = ["There's nothing to show."]
+        if not queries:
+            queries = ["There's nothing to show."]
     return queries, reply_markup
 
 

@@ -53,8 +53,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.tools_collection">Tools collections Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.credentials">Credentials Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.postgres_api">Postgres API Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-ProtestLibs">Protest Library Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#protest-crawler-module">Protest Crawler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#protest-library-module">Protest Library Module</a></li>
 </ul>
 
         </div>
@@ -354,7 +354,13 @@
 
 <div class="viewcode-block" id="send_message">
 <a class="viewcode-back" href="../../modules.html#libs.telegram_bot_api.send_message">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_to_message_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_preview_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span>
+    <span class="n">chat_id</span><span class="p">,</span>
+    <span class="n">text</span><span class="p">,</span>
+    <span class="n">reply_to_message_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">link_preview_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronously sends a message to a Telegram chat.</span>
 
@@ -409,7 +415,9 @@
 
 <div class="viewcode-block" id="editMessageText">
 <a class="viewcode-back" href="../../modules.html#libs.telegram_bot_api.editMessageText">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">editMessageText</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_preview_options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">editMessageText</span><span class="p">(</span>
+    <span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">reply_markup</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">link_preview_options</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronously edits the text of a message in a Telegram chat.</span>
 

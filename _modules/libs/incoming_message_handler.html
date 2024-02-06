@@ -53,8 +53,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.tools_collection">Tools collections Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.credentials">Credentials Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-libs.postgres_api">Postgres API Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-protestcrawler">Protest Crawler Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html#module-ProtestLibs">Protest Library Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#protest-crawler-module">Protest Crawler Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html#protest-library-module">Protest Library Module</a></li>
 </ul>
 
         </div>
@@ -252,7 +252,7 @@
                 <span class="n">queries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">getBySpecificDate</span><span class="p">(</span><span class="n">date</span><span class="p">))</span>
         <span class="k">elif</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;/info&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Info/Donation 💁&quot;</span><span class="p">):</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="s2">&quot;If you have any suggestions, comments, or questions, please don&#39;t hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com</span><span class="se">\n</span><span class="s2">My ton coin wallet address for donations: </span><span class="se">\n</span><span class="s2">UQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh&quot;</span>
+                <span class="s2">&quot;If you have any suggestions, comments, or questions, please don&#39;t hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com</span><span class="se">\n</span><span class="s2">My ton coin wallet address for donations: </span><span class="se">\n</span><span class="s2">UQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh&quot;</span>
             <span class="p">]</span>
         <span class="k">elif</span> <span class="n">message</span> <span class="o">==</span> <span class="s2">&quot;Register a Protest&quot;</span><span class="p">:</span>
             <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
@@ -404,7 +404,7 @@
                 <span class="n">text</span><span class="o">=</span><span class="n">page</span><span class="p">,</span>
                 <span class="n">reply_to_message_id</span><span class="o">=</span><span class="n">message_id</span><span class="p">,</span>
                 <span class="n">reply_markup</span><span class="o">=</span><span class="n">reply_markup</span><span class="p">,</span>
-                <span class="n">link_preview_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;is_disabled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+                <span class="n">link_preview_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;is_disabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sent response:&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span></div>
@@ -523,7 +523,7 @@
             <span class="n">message_id</span><span class="o">=</span><span class="n">callback_query_message_id</span><span class="p">,</span>
             <span class="n">text</span><span class="o">=</span><span class="n">reply</span><span class="p">,</span>
             <span class="n">reply_markup</span><span class="o">=</span><span class="n">reply_markup</span><span class="p">,</span>
-            <span class="n">link_preview_options</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;is_disabled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+            <span class="n">link_preview_options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;is_disabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>

@@ -9,21 +9,24 @@ from postgresconf.config import config
 
 class ProtestGrabber:
     """
-    A class for grabbing and parsing protest information from a specified URL.
+    A class dedicated to fetching and parsing protest information from web pages.
 
-    This class relies on `aiohttp` for asynchronous HTTP requests and `BeautifulSoup` for parsing HTML content.
+    Leverages `aiohttp` for asynchronous web requests and `BeautifulSoup` for HTML parsing.
+
+    :param aiohttp.ClientSession session: A session object for making asynchronous HTTP requests.
     """
 
     async def fetch_content(
         self, url: str, retry: int = 10, delay: int = 5
     ) -> ClientResponse:
         """
-        Asynchronously fetches HTML content from a specified URL, with support for retries and delays.
+        Fetches HTML content from a URL asynchronously, with retry logic for robustness.
 
-        :param url: The URL to fetch the protest information from.
-        :param retry: The number of times to retry fetching the content in case of failures.
-        :param delay: The delay between retries in seconds.
-        :return: HTML content as a string if successful, None otherwise.
+        :param url: The URL to fetch the content from.
+        :param retry: Maximum number of retries on fetch failure.
+        :param delay: Delay between retries in seconds.
+        :return: The HTML content of the page as a string.
+        :raises Exception: If all retries fail.
         """
         async with aiohttp.ClientSession() as session:
             while retry > 0:
@@ -48,10 +51,10 @@ class ProtestGrabber:
 
     async def get_protest_list(self, url: str) -> list:
         """
-        Fetches the list of protests from the specified URL and parses the HTML content.
+        Retrieves a list of protest events by parsing HTML content from the specified URL.
 
-        :param url: The URL to fetch the protest information from.
-        :return: A list of BeautifulSoup Tag objects representing individual protest events, or None if unsuccessful.
+        :param url: The URL to scrape for protest information.
+        :return: A list of BeautifulSoup Tag objects, each representing a protest event.
         """
         print("url:", url)
         html_content = await self.fetch_content(url)
@@ -66,10 +69,10 @@ class ProtestGrabber:
     @staticmethod
     def parse_protest_list(event: Tag) -> dict:
         """
-        Parses an individual protest event's HTML content and extracts relevant details.
+        Extracts details from an HTML segment representing a single protest event.
 
-        :param event: A BeautifulSoup Tag object for an individual protest event.
-        :return: A dictionary with parsed details of the protest event, or [] if parsing fails.
+        :param event: The BeautifulSoup Tag object to parse.
+        :return: A dictionary containing details of the protest event.
         """
 
         def get_text(soup):
@@ -111,7 +114,9 @@ class ProtestGrabber:
 
 class ProtestPostgres:
     """
-    A class for handling the storage of protest information into a PostgreSQL database.
+    Manages the storage of protest information in a PostgreSQL database.
+
+    :param dict db_config: Configuration parameters for connecting to the database.
     """
 
     def __init__(self, db_config=config()):
@@ -123,17 +128,17 @@ class ProtestPostgres:
         """
         self.db_config = db_config
 
-    def _connect(self):
+    def _connect(self) -> psycopg2.extensions.connection:
         """
-        Creates a database connection.
+        Establishes a connection to the PostgreSQL database.
 
-        :return: Database connection object.
+        :return: A psycopg2 connection object.
         """
         return psycopg2.connect(**self.db_config)
 
     def _ensure_table_exists(self) -> bool:
         """
-        Ensures the 'events' table exists in the database.
+        Ensures the 'events' table exists in the PostgreSQL database.
         """
         create_command = """
         CREATE TABLE IF NOT EXISTS events (
@@ -157,7 +162,7 @@ class ProtestPostgres:
 
     def _insert_event(
         self,
-        cursor,
+        cursor: psycopg2.extensions.cursor,
         Datum=None,
         Von=None,
         Bis=None,
@@ -169,9 +174,9 @@ class ProtestPostgres:
         """
         Inserts a new event into the 'events' table.
 
-        :param cursor: The database cursor to execute the query.
+        :param cursor: The database cursor for executing SQL commands.
         :type cursor: psycopg2.extensions.cursor
-        :param event_data: Event data to insert.
+        :param event_data: Keyword arguments containing event data fields.
         """
 
         all_values_are_none = (
@@ -200,13 +205,13 @@ class ProtestPostgres:
 
         return True
 
-    def write_to_database(self, data: dict) -> bool:
+    def write_to_database(self, data: list) -> bool:
         """
-        Writes given protest data into the 'events' table.
+        Writes a list of protest event data into the 'events' table.
 
-        :param data: List of dictionaries containing event data.
+        :param data: A list of dictionaries, each representing protest event data.
         :type data: list of dict
-        :return: True if operation is successful, False otherwise.
+        :return: True if the operation was successful, False otherwise.
         """
         try:
             self._ensure_table_exists()

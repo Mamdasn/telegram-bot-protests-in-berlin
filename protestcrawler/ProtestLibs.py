@@ -4,7 +4,6 @@ import aiohttp
 import psycopg2
 from aiohttp import ClientResponse
 from bs4 import BeautifulSoup, Tag
-from postgresconf.config import config
 
 
 class ProtestGrabber:
@@ -119,7 +118,7 @@ class ProtestPostgres:
     :param dict db_config: Configuration parameters for connecting to the database.
     """
 
-    def __init__(self, db_config=config()):
+    def __init__(self, db_config):
         """
         Initializes the database configuration.
 

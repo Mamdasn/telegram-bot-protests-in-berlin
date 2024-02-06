@@ -157,7 +157,7 @@ def handle_commands(message):
                 queries.extend(fetcher.getBySpecificDate(date))
         elif (message == "/info") or (message == "Info/Donation 💁"):
             queries = [
-                    "If you have any suggestions, comments, or questions, please don't hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com\nMy ton coin wallet address for donations: \nUQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh"
+                "If you have any suggestions, comments, or questions, please don't hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com\nMy ton coin wallet address for donations: \nUQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh"
             ]
         elif message == "Register a Protest":
             queries = [
@@ -306,7 +306,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
                 text=page,
                 reply_to_message_id=message_id,
                 reply_markup=reply_markup,
-                link_preview_options={'is_disabled': True},
+                link_preview_options={"is_disabled": True},
             )
         )
         print("Sent response:", r)
@@ -419,7 +419,7 @@ def handle_callback_query(chat_id, message_info):
             message_id=callback_query_message_id,
             text=reply,
             reply_markup=reply_markup,
-            link_preview_options={'is_disabled': True},
+            link_preview_options={"is_disabled": True},
         )
     )
     print(r)

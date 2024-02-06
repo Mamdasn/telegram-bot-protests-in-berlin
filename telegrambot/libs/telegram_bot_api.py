@@ -256,7 +256,13 @@ async def sendChatAction(chat_id, action="typing"):
     return await r
 
 
-async def send_message(chat_id, text, reply_to_message_id=None, reply_markup=None, link_preview_options=None):
+async def send_message(
+    chat_id,
+    text,
+    reply_to_message_id=None,
+    reply_markup=None,
+    link_preview_options=None,
+):
     """
     Asynchronously sends a message to a Telegram chat.
 
@@ -305,7 +311,9 @@ async def deleteMessage(chat_id, message_id):
     return await r
 
 
-async def editMessageText(chat_id, message_id, text, reply_markup=None, link_preview_options=None):
+async def editMessageText(
+    chat_id, message_id, text, reply_markup=None, link_preview_options=None
+):
     """
     Asynchronously edits the text of a message in a Telegram chat.
 

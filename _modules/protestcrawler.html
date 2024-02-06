@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>protestcrawler &mdash; A Telegram Bot For Protests in Berlin  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5946139a" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=c5aca1ce" />
+
+  
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
@@ -80,11 +82,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for protestcrawler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
 
+<span class="kn">from</span> <span class="nn">postgresconf</span> <span class="kn">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">ProtestLibs</span> <span class="kn">import</span> <span class="n">ProtestGrabber</span><span class="p">,</span> <span class="n">ProtestPostgres</span>
 
 
@@ -92,43 +95,48 @@
 <a class="viewcode-back" href="../modules.html#protestcrawler.EventCrawler">[docs]</a>
 <span class="k">class</span> <span class="nc">EventCrawler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class for crawling events from specified URLs and processing them.</span>
+<span class="sd">    Crawls and processes events from specified URLs.</span>
 
-<span class="sd">    This class is designed to crawl event data from various websites, parse the information, and optionally store it in a database. It supports crawling from a set of predefined URLs, each with its own methods for fetching and parsing data.</span>
+<span class="sd">    This class is designed for crawling event data from various websites, parsing the obtained information, and, optionally, storing it in a database. It is capable of handling multiple sources by crawling from a set of predefined URLs, each requiring specific methods for data fetching and parsing. The class optimizes data retrieval and parsing through parallel processing.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        | url (str): The URL from which the event data will be crawled.</span>
-<span class="sd">        | _supported_methods (dict): A dictionary mapping supported URLs to their respective crawling, parsing, and database-writing methods.</span>
+<span class="sd">    :param url: The URL from which to crawl events.</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :param data_grabber: An instance of a data grabbing class with methods for fetching and parsing event data.</span>
+<span class="sd">    :type data_grabber: Callable</span>
+<span class="sd">    :param postgres_worker: An instance of a class responsible for writing data to a PostgreSQL database.</span>
+<span class="sd">    :type postgres_worker: Callable</span>
 
+<span class="sd">    :Example:</span>
 
-<span class="sd">    Methods:</span>
-<span class="sd">        | crawl(url, number_of_threads=1, save_to_database=True, \\*\\*kwargs): Main method to start the crawling process for a given URL.</span>
-<span class="sd">        | _run_in_parallel(parser, data, number_of_threads, \\*\\*kwargs): Static method to parse data in parallel using threading.</span>
-<span class="sd">        | _is_supported(): Checks if the provided URL is supported based on _supported_methods.</span>
-<span class="sd">        | _url_base(): Property that returns the base hostname of the provided URL.</span>
+<span class="sd">    .. code-block:: python</span>
 
+<span class="sd">        berlinde_url = &quot;https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege&quot;</span>
+<span class="sd">        ecrawler = EventCrawler(berlinde_url, ProtestGrabber, ProtestPostgres)</span>
 
-<span class="sd">    The class provides a high-level interface for crawling events from various sources, parsing the details, and optionally storing them in a database. It handles parallel processing to optimize data retrieval and parsing.</span>
+<span class="sd">        # To crawl data</span>
+<span class="sd">        data = ecrawler.crawl(number_of_threads=8, save_to_database=True)</span>
+<span class="sd">        print(f&quot;Number of protests: {len(data)}&quot;)</span>
 
-<span class="sd">    Example Usage:</span>
-<span class="sd">        | crawler = EventCrawler(supported_methods)</span>
-<span class="sd">        | crawled_data = crawler.crawl(&quot;http://example.com/events&quot;, number_of_threads=5)</span>
+<span class="sd">    .. note:: This class provides a high-level interface for event data crawling, parsing, and optional database storage.</span>
 
+<span class="sd">    .. warning:: Ensure that the `data_grabber` and `postgres_worker` classes are correctly implemented to avoid runtime errors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_supported_methods</span> <span class="o">=</span> <span class="n">methods</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data_grabber</span><span class="p">,</span> <span class="n">postgres_worker</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_grabber</span> <span class="o">=</span> <span class="n">data_grabber</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postgres_worker</span> <span class="o">=</span> <span class="n">postgres_worker</span><span class="p">(</span><span class="n">config</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">get_event_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_grabber</span><span class="o">.</span><span class="n">get_protest_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">))</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_url_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">urlparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">hostname</span>
+    <span class="k">def</span> <span class="nf">parse_event_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_grabber</span><span class="o">.</span><span class="n">parse_protest_list</span>
 
-    <span class="k">def</span> <span class="nf">_is_supported</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_base</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supported_methods</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">write_to_database</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">postgres_worker</span><span class="o">.</span><span class="n">write_to_database</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_run_in_parallel</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">number_of_threads</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -153,32 +161,16 @@
         <span class="n">queue</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">output_data</span>
 
-    <span class="k">def</span> <span class="nf">crawl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_supported</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;This url is not supported!</span><span class="se">\n</span><span class="s2">Please include the internet protocol,e.g. http https, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;in url.</span><span class="se">\n</span><span class="s2">Supported urls: </span><span class="si">{</span><span class="p">[</span><span class="n">k</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_supported_methods</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-            <span class="k">pass</span>
-
-        <span class="n">get_event_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supported_methods</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_base</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span><span class="s2">&quot;get_event_list&quot;</span><span class="p">]</span>
-        <span class="n">parse_event_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supported_methods</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_base</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span>
-            <span class="s2">&quot;parse_event_list&quot;</span>
-        <span class="p">]</span>
-
-        <span class="n">event_list</span> <span class="o">=</span> <span class="n">get_event_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">crawl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">event_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_list</span><span class="p">()</span>
         <span class="n">concurrent_threads</span> <span class="o">=</span> <span class="n">number_of_threads</span>
         <span class="n">crawled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_in_parallel</span><span class="p">(</span>
-            <span class="n">parse_event_list</span><span class="p">,</span> <span class="n">event_list</span><span class="p">,</span> <span class="n">concurrent_threads</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parse_event_list</span><span class="p">,</span> <span class="n">event_list</span><span class="p">,</span> <span class="n">concurrent_threads</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">save_to_database</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing/Updating data in database&quot;</span><span class="p">)</span>
-            <span class="n">write_to_database</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_supported_methods</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_base</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][</span>
-                <span class="s2">&quot;write_to_database&quot;</span>
-            <span class="p">]</span>
-            <span class="n">write_response</span> <span class="o">=</span> <span class="n">write_to_database</span><span class="p">(</span><span class="n">crawled_data</span><span class="p">)</span>
+            <span class="n">write_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_to_database</span><span class="p">(</span><span class="n">crawled_data</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">write_response</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing/Updating data in database is done.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -188,28 +180,27 @@
 
 
 
-<span class="c1"># Define a method</span>
-<span class="n">method</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;www.berlin.de&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;get_event_list&quot;</span><span class="p">:</span> <span class="n">ProtestGrabber</span><span class="o">.</span><span class="n">get_protest_list</span><span class="p">,</span>
-        <span class="s2">&quot;parse_event_list&quot;</span><span class="p">:</span> <span class="n">ProtestGrabber</span><span class="o">.</span><span class="n">parse_protest_list</span><span class="p">,</span>
-        <span class="s2">&quot;write_to_database&quot;</span><span class="p">:</span> <span class="n">ProtestPostgres</span><span class="o">.</span><span class="n">write_to_database</span><span class="p">,</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="n">ecrawler</span> <span class="o">=</span> <span class="n">EventCrawler</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+<span class="n">berlinde_url</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege&quot;</span>
+<span class="p">)</span>
+
+<span class="n">ecrawler</span> <span class="o">=</span> <span class="n">EventCrawler</span><span class="p">(</span><span class="n">berlinde_url</span><span class="p">,</span> <span class="n">ProtestGrabber</span><span class="p">,</span> <span class="n">ProtestPostgres</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data from berlin.de&quot;</span><span class="p">)</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege&quot;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">ecrawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span>
-            <span class="n">url</span><span class="p">,</span>
-            <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-            <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of protests:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data finished.&quot;</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">21600</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data from berlin.de&quot;</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">ecrawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span>
+                <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of protests:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data finished.&quot;</span><span class="p">)</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">21600</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;An error occured when retrieving data from the internet.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 
            </div>

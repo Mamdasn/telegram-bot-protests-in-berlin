@@ -106,8 +106,23 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#protest-crawler-module">Protest Crawler Module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#protest-library-module">Protest Library Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-protestcrawler">Protest Crawler Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#protestcrawler.EventCrawler"><code class="docutils literal notranslate"><span class="pre">EventCrawler</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-ProtestLibs">Protest Library Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestGrabber"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.fetch_content"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.fetch_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.get_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.get_protest_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.parse_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.parse_protest_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestPostgres"><code class="docutils literal notranslate"><span class="pre">ProtestPostgres</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestPostgres.write_to_database"><code class="docutils literal notranslate"><span class="pre">ProtestPostgres.write_to_database()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -919,11 +934,131 @@ deployment environments.</p>
 </dd></dl>
 
 </section>
-<section id="protest-crawler-module">
-<h1>Protest Crawler Module<a class="headerlink" href="#protest-crawler-module" title="Link to this heading"></a></h1>
+<section id="module-protestcrawler">
+<span id="protest-crawler-module"></span><h1>Protest Crawler Module<a class="headerlink" href="#module-protestcrawler" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="protestcrawler.EventCrawler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">protestcrawler.</span></span><span class="sig-name descname"><span class="pre">EventCrawler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_grabber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postgres_worker</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/protestcrawler.html#EventCrawler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#protestcrawler.EventCrawler" title="Link to this definition"></a></dt>
+<dd><p>Crawls and processes events from specified URLs.</p>
+<p>This class is designed for crawling event data from various websites, parsing the obtained information, and, optionally, storing it in a database. It is capable of handling multiple sources by crawling from a set of predefined URLs, each requiring specific methods for data fetching and parsing. The class optimizes data retrieval and parsing through parallel processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<em>str</em>) – The URL from which to crawl events.</p></li>
+<li><p><strong>data_grabber</strong> (<em>Callable</em>) – An instance of a data grabbing class with methods for fetching and parsing event data.</p></li>
+<li><p><strong>postgres_worker</strong> (<em>Callable</em>) – An instance of a class responsible for writing data to a PostgreSQL database.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Example<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">berlinde_url</span> <span class="o">=</span> <span class="s2">&quot;https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege&quot;</span>
+<span class="n">ecrawler</span> <span class="o">=</span> <span class="n">EventCrawler</span><span class="p">(</span><span class="n">berlinde_url</span><span class="p">,</span> <span class="n">ProtestGrabber</span><span class="p">,</span> <span class="n">ProtestPostgres</span><span class="p">)</span>
+
+<span class="c1"># To crawl data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">ecrawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span><span class="n">number_of_threads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of protests: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class provides a high-level interface for event data crawling, parsing, and optional database storage.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ensure that the <cite>data_grabber</cite> and <cite>postgres_worker</cite> classes are correctly implemented to avoid runtime errors.</p>
+</div>
+</dd></dl>
+
 </section>
-<section id="protest-library-module">
-<h1>Protest Library Module<a class="headerlink" href="#protest-library-module" title="Link to this heading"></a></h1>
+<section id="module-ProtestLibs">
+<span id="protest-library-module"></span><h1>Protest Library Module<a class="headerlink" href="#module-ProtestLibs" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestGrabber</span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber" title="Link to this definition"></a></dt>
+<dd><p>A class dedicated to fetching and parsing protest information from web pages.</p>
+<p>Leverages <cite>aiohttp</cite> for asynchronous web requests and <cite>BeautifulSoup</cite> for HTML parsing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>session</strong> (<em>aiohttp.ClientSession</em>) – A session object for making asynchronous HTTP requests.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.fetch_content">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ClientResponse</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.fetch_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.fetch_content" title="Link to this definition"></a></dt>
+<dd><p>Fetches HTML content from a URL asynchronously, with retry logic for robustness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – The URL to fetch the content from.</p></li>
+<li><p><strong>retry</strong> – Maximum number of retries on fetch failure.</p></li>
+<li><p><strong>delay</strong> – Delay between retries in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The HTML content of the page as a string.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – If all retries fail.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.get_protest_list">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_protest_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.get_protest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.get_protest_list" title="Link to this definition"></a></dt>
+<dd><p>Retrieves a list of protest events by parsing HTML content from the specified URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> – The URL to scrape for protest information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of BeautifulSoup Tag objects, each representing a protest event.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.parse_protest_list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_protest_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.parse_protest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.parse_protest_list" title="Link to this definition"></a></dt>
+<dd><p>Extracts details from an HTML segment representing a single protest event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>event</strong> – The BeautifulSoup Tag object to parse.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing details of the protest event.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestPostgres">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestPostgres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestPostgres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestPostgres" title="Link to this definition"></a></dt>
+<dd><p>Manages the storage of protest information in a PostgreSQL database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db_config</strong> (<em>dict</em>) – Configuration parameters for connecting to the database.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestPostgres.write_to_database">
+<span class="sig-name descname"><span class="pre">write_to_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestPostgres.write_to_database"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestPostgres.write_to_database" title="Link to this definition"></a></dt>
+<dd><p>Writes a list of protest event data into the ‘events’ table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>list</em><em> of </em><em>dict</em>) – A list of dictionaries, each representing protest event data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the operation was successful, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 

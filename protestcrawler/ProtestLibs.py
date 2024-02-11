@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from time import sleep
 
 import aiohttp
@@ -86,7 +87,7 @@ class ProtestGrabber:
                 "Von": get_text(event.find("td", {"headers": "Von"})),
                 "Bis": get_text(event.find("td", {"headers": "Bis"})),
                 "Thema": get_text(event.find("td", {"headers": "Thema"})),
-                "PLZ": get_text(event.find("td", {"headers": "PLZ"})) or "00000",
+                "PLZ": get_text(event.find("td", {"headers": "PLZ"})),
                 "Versammlungsort": get_text(
                     event.find("td", {"headers": "Versammlungsort"})
                 ),
@@ -94,6 +95,13 @@ class ProtestGrabber:
                     event.find("td", {"headers": "Aufzugsstrecke"})
                 ),
             }
+
+            all_values_are_none = all([v is None for v in details.values()])
+            if all_values_are_none:
+                return {}
+
+            if details.get("PLZ") is None:
+                details["PLZ"] = "00000"
 
             # Adjusting date format if needed
             if details.get("Datum"):
@@ -127,13 +135,39 @@ class ProtestPostgres:
         """
         self.db_config = db_config
 
-    def _connect(self) -> psycopg2.extensions.connection:
+    @contextmanager
+    def _db_cursor(self) -> psycopg2.extensions.connection:
         """
         Establishes a connection to the PostgreSQL database.
 
         :return: A psycopg2 connection object.
         """
-        return psycopg2.connect(**self.db_config)
+        print("Waiting for postgres to load.")
+        for itr in range(10):
+            try:
+                connection = psycopg2.connect(**self.db_config)
+                cursor = connection.cursor()
+                break
+            except Exception as e:
+                print(e)
+                if itr == 9:
+                    raise e
+            print(".", end="")
+            sleep(5)
+        else:
+            print()
+
+        print("The connection with the database is established at last.")
+
+        try:
+            yield cursor
+            connection.commit()
+        except Exception as e:
+            connection.rollback()
+            print("Commit resulted in error. Rolling back to the privious commit!")
+            raise e
+        finally:
+            connection.close()
 
     def _ensure_table_exists(self) -> bool:
         """
@@ -152,55 +186,27 @@ class ProtestPostgres:
             UNIQUE(PLZ, Versammlungsort, Datum, Von)
         );
         """
-        with self._connect() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(create_command)
-            conn.commit()
+        with self._db_cursor() as cursor:
+            cursor.execute(create_command)
 
         return True
 
-    def _insert_event(
-        self,
-        cursor: psycopg2.extensions.cursor,
-        Datum=None,
-        Von=None,
-        Bis=None,
-        Thema=None,
-        PLZ=None,
-        Versammlungsort=None,
-        Aufzugsstrecke=None,
-    ) -> bool:
+    def _insert_event(self, cursor: psycopg2.extensions.cursor, data: dict) -> bool:
         """
         Inserts a new event into the 'events' table.
 
         :param cursor: The database cursor for executing SQL commands.
         :type cursor: psycopg2.extensions.cursor
-        :param event_data: Keyword arguments containing event data fields.
+        :param data: contain event data
+        :type data: dict
         """
-
-        all_values_are_none = (
-            Datum and Von and Bis and PLZ and Versammlungsort
-        ) is None
-        if all_values_are_none:
-            return all_values_are_none
 
         sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)
                             VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE
                             SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis
                             RETURNING id;"""
 
-        cursor.execute(
-            sql_protest,
-            (
-                Datum,
-                Von,
-                Bis,
-                Thema,
-                PLZ,
-                Versammlungsort,
-                Aufzugsstrecke,
-            ),
-        )
+        cursor.execute(sql_protest, list(data.values()))
 
         return True
 
@@ -214,12 +220,10 @@ class ProtestPostgres:
         """
         try:
             self._ensure_table_exists()
-            with self._connect() as conn:
-                with conn.cursor() as cursor:
-                    for event in data:
-                        print(event)
-                        self._insert_event(cursor, **event)
-                conn.commit()
+            with self._db_cursor() as cursor:
+                for event in data:
+                    if event:
+                        self._insert_event(cursor, event)
             return True
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)

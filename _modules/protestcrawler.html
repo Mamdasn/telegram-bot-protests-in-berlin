@@ -161,12 +161,22 @@
         <span class="n">queue</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">output_data</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_run_in_sequence</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">parser</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">crawl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">event_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_list</span><span class="p">()</span>
         <span class="n">concurrent_threads</span> <span class="o">=</span> <span class="n">number_of_threads</span>
-        <span class="n">crawled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_in_parallel</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parse_event_list</span><span class="p">,</span> <span class="n">event_list</span><span class="p">,</span> <span class="n">concurrent_threads</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">concurrent_threads</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">crawled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_in_parallel</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parse_event_list</span><span class="p">,</span> <span class="n">event_list</span><span class="p">,</span> <span class="n">concurrent_threads</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">crawled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_in_sequence</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parse_event_list</span><span class="p">,</span> <span class="n">event_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">save_to_database</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Writing/Updating data in database&quot;</span><span class="p">)</span>
@@ -176,7 +186,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There seems to be a problem with your database.&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">crawled_data</span></div>
+        <span class="n">lendata</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_list</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">event_list</span>
+        <span class="k">return</span> <span class="n">lendata</span></div>
 
 
 
@@ -190,11 +202,11 @@
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data from berlin.de&quot;</span><span class="p">)</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">ecrawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span>
-                <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+            <span class="n">lendata</span> <span class="o">=</span> <span class="n">ecrawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span>
+                <span class="n">number_of_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="n">save_to_database</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of protests:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of protests:&quot;</span><span class="p">,</span> <span class="n">lendata</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data finished.&quot;</span><span class="p">)</span>
             <span class="n">sleep</span><span class="p">(</span><span class="mi">21600</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

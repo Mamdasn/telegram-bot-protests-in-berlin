@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from time import sleep
-
+from typing import Iterator
 import aiohttp
 import psycopg2
 from aiohttp import ClientResponse
@@ -210,7 +210,7 @@ class ProtestPostgres:
 
         return True
 
-    def write_to_database(self, data: list) -> bool:
+    def write_to_database(self, data: Iterator[str]) -> bool:
         """
         Writes a list of protest event data into the 'events' table.
 

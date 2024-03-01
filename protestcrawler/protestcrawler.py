@@ -75,12 +75,22 @@ class EventCrawler:
         queue.join()
         return output_data
 
+    @staticmethod
+    def _run_in_sequence(parser, data, **kwargs):
+        for event in data:
+            yield parser(event, **kwargs)
+
     def crawl(self, number_of_threads=1, save_to_database=True, **kwargs):
         event_list = self.get_event_list()
         concurrent_threads = number_of_threads
-        crawled_data = self._run_in_parallel(
-            self.parse_event_list, event_list, concurrent_threads, **kwargs
-        )
+        if concurrent_threads > 1:
+            crawled_data = self._run_in_parallel(
+                self.parse_event_list, event_list, concurrent_threads, **kwargs
+            )
+        else:
+            crawled_data = self._run_in_sequence(
+                self.parse_event_list, event_list, **kwargs
+            )
 
         if save_to_database:
             print("Writing/Updating data in database")
@@ -90,7 +100,9 @@ class EventCrawler:
             else:
                 print("There seems to be a problem with your database.")
 
-        return crawled_data
+        lendata = len(event_list)
+        del event_list
+        return lendata
 
 
 berlinde_url = (
@@ -103,11 +115,11 @@ if __name__ == "__main__":
     while True:
         try:
             print("Scraping data from berlin.de")
-            data = ecrawler.crawl(
-                number_of_threads=8,
+            lendata = ecrawler.crawl(
+                number_of_threads=1,
                 save_to_database=True,
             )
-            print("Number of protests:", len(data))
+            print("Number of protests:", lendata)
             print("Scraping data finished.")
             sleep(21600)
         except Exception as e:

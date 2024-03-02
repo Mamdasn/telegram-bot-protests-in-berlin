@@ -2,7 +2,7 @@ import asyncio
 import threading
 from queue import Queue
 from time import sleep
-
+from datetime import datetime
 from postgresconf import config
 from ProtestLibs import ProtestGrabber, ProtestPostgres
 
@@ -100,28 +100,28 @@ class EventCrawler:
             else:
                 print("There seems to be a problem with your database.")
 
-        lendata = len(event_list)
-        del event_list
-        return lendata
+        return crawled_data
 
 
 berlinde_url = (
     "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
 )
 
-ecrawler = EventCrawler(berlinde_url, ProtestGrabber, ProtestPostgres)
-
 if __name__ == "__main__":
     while True:
+        ecrawler = EventCrawler(berlinde_url, ProtestGrabber, ProtestPostgres)
         try:
+            print(datetime.now())
             print("Scraping data from berlin.de")
-            lendata = ecrawler.crawl(
-                number_of_threads=1,
-                save_to_database=True,
+            lendata = len(
+                ecrawler.crawl(
+                    number_of_threads=1,
+                    save_to_database=True,
+                )
             )
             print("Number of protests:", lendata)
             print("Scraping data finished.")
-            sleep(21600)
+            sleep(60 * 60)
         except Exception as e:
             print("An error occured when retrieving data from the internet.")
             print(e)

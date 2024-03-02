@@ -186,7 +186,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There seems to be a problem with your database.&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">crawled_data</span></div>
+        <span class="k">return</span> <span class="n">event_list</span></div>
 
 
 
@@ -197,8 +197,9 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">ecrawler</span> <span class="o">=</span> <span class="n">EventCrawler</span><span class="p">(</span><span class="n">berlinde_url</span><span class="p">,</span> <span class="n">ProtestGrabber</span><span class="p">,</span> <span class="n">ProtestPostgres</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scraping data from berlin.de&quot;</span><span class="p">)</span>
             <span class="n">lendata</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
                 <span class="n">ecrawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">(</span>

@@ -100,7 +100,7 @@ class EventCrawler:
             else:
                 print("There seems to be a problem with your database.")
 
-        return crawled_data
+        return event_list
 
 
 berlinde_url = (
@@ -110,8 +110,9 @@ berlinde_url = (
 if __name__ == "__main__":
     while True:
         ecrawler = EventCrawler(berlinde_url, ProtestGrabber, ProtestPostgres)
+        print()
+        print(datetime.now())
         try:
-            print(datetime.now())
             print("Scraping data from berlin.de")
             lendata = len(
                 ecrawler.crawl(

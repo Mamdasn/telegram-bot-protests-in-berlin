@@ -5,6 +5,7 @@ import aiohttp
 import psycopg2
 from aiohttp import ClientResponse
 from bs4 import BeautifulSoup, Tag
+import socket
 
 
 class ProtestGrabber:
@@ -17,7 +18,7 @@ class ProtestGrabber:
     """
 
     async def fetch_content(
-        self, url: str, retry: int = 10, delay: int = 5
+        self, url: str, retry: int = 10, delay: int = 20
     ) -> ClientResponse:
         """
         Fetches HTML content from a URL asynchronously, with retry logic for robustness.
@@ -31,21 +32,17 @@ class ProtestGrabber:
         async with aiohttp.ClientSession() as session:
             while retry > 0:
                 try:
-                    response = await session.get(url)
-                    if response.status == 200:
+                    proxy = "http://tor_privoxy:8118"
+                    async with session.get(url, proxy=proxy) as response:
+                        response.raise_for_status()
                         return await response.text()
-                    else:
-                        proxies = {
-                            "http": "http://tor_privoxy:8118",
-                            "https": "http://tor_privoxy:8118",
-                        }
-                        return await session.get(url, proxies=proxies)
 
                 except Exception as e:
                     print(
                         f"Retry {retry}: Exception occurred: {e}. Retrying after {delay} seconds..."
                     )
                     retry -= 1
+                    ProtestGrabber.rotate_ip_request()
                     sleep(delay)
         return None
 
@@ -65,6 +62,22 @@ class ProtestGrabber:
                 protests = table_of_content.find("tbody").find_all("tr", class_=True)
                 return protests
         return []
+
+    @staticmethod
+    def rotate_ip_request() -> bool:
+        """
+        Send a request to torprivoxy to change the ip.
+        """
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect(("tor_privoxy", 9051))
+            commands = 'AUTHENTICATE ""\r\nSIGNAL NEWNYM\r\nQUIT\r\n'
+            s.sendall(commands.encode("utf-8"))
+
+            data = s.recv(1024)
+            if data.decode("utf-8").find("OK") != -1:
+                return True
+            else:
+                return False
 
     @staticmethod
     def parse_protest_list(event: Tag) -> dict:

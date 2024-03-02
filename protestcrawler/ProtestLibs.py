@@ -143,7 +143,7 @@ class ProtestPostgres:
         :return: A psycopg2 connection object.
         """
         print("Waiting for postgres to load.")
-        for itr in range(10):
+        for itr in range(60):
             try:
                 connection = psycopg2.connect(**self.db_config)
                 cursor = connection.cursor()

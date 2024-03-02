@@ -114,6 +114,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestGrabber"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.fetch_content"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.fetch_content()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.get_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.get_protest_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.rotate_ip_request"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.rotate_ip_request()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.parse_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.parse_protest_list()</span></code></a></li>
 </ul>
 </li>
@@ -985,7 +986,7 @@ deployment environments.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.fetch_content">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ClientResponse</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.fetch_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.fetch_content" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ClientResponse</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.fetch_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.fetch_content" title="Link to this definition"></a></dt>
 <dd><p>Fetches HTML content from a URL asynchronously, with retry logic for robustness.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1016,6 +1017,12 @@ deployment environments.</p>
 <dd class="field-even"><p>A list of BeautifulSoup Tag objects, each representing a protest event.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.rotate_ip_request">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rotate_ip_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.rotate_ip_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.rotate_ip_request" title="Link to this definition"></a></dt>
+<dd><p>Send a request to torprivoxy to change the ip.</p>
 </dd></dl>
 
 <dl class="py method">

@@ -84,9 +84,10 @@
   <h1>Source code for protestcrawler</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
 <span class="kn">from</span> <span class="nn">postgresconf</span> <span class="kn">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">ProtestLibs</span> <span class="kn">import</span> <span class="n">ProtestGrabber</span><span class="p">,</span> <span class="n">ProtestPostgres</span>
 

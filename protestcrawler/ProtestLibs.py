@@ -1,11 +1,12 @@
+import socket
 from contextlib import contextmanager
 from time import sleep
 from typing import Iterator
+
 import aiohttp
 import psycopg2
 from aiohttp import ClientResponse
 from bs4 import BeautifulSoup, Tag
-import socket
 
 
 class ProtestGrabber:
@@ -156,19 +157,20 @@ class ProtestPostgres:
         :return: A psycopg2 connection object.
         """
         print("Waiting for postgres to load.")
-        for itr in range(60):
+        retry = 60
+        while retry > 0:
             try:
                 connection = psycopg2.connect(**self.db_config)
                 cursor = connection.cursor()
                 break
+
             except Exception as e:
                 print(e)
-                if itr == 9:
+                if retry == 1:
                     raise e
-            print(".", end="")
+                retry -= 1
+
             sleep(5)
-        else:
-            print()
 
         print("The connection with the database is established at last.")
 

@@ -1,8 +1,9 @@
 import asyncio
 import threading
+from datetime import datetime
 from queue import Queue
 from time import sleep
-from datetime import datetime
+
 from postgresconf import config
 from ProtestLibs import ProtestGrabber, ProtestPostgres
 

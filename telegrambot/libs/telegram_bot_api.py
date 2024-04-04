@@ -1,4 +1,5 @@
 import asyncio
+from functools import partial
 
 import aiohttp
 
@@ -47,10 +48,12 @@ class Message:
 
     Methods:
         _getitem(dic, key): A static method to safely extract a nested value from a dictionary using a key or a tuple of nested keys.
+        _extract_tg_response(key): A method to safely extract a nested value by feeding the telegram response dictionary and a key or a tuple of nested keys to _getitem method.
     """
 
     def __init__(self, tg_response: dict):
         self._tg_response = tg_response
+        self._extract_tg_response = partial(self._getitem, self._tg_response)
 
     @staticmethod
     def _getitem(query, key):
@@ -63,31 +66,31 @@ class Message:
 
     @property
     def message(self):
-        return self._getitem(self._tg_response, "message")
+        return self._extract_tg_response("message")
 
     @property
     def message_date(self):
-        return self._getitem(self.message, "date")
+        return self._extract_tg_response(("message", "date"))
 
     @property
     def chat(self):
-        return self._getitem(self.message, "chat")
+        return self._extract_tg_response(("message", "chat"))
 
     @property
     def chat_id(self):
-        return self._getitem(self.message, ("chat", "id"))
+        return self._extract_tg_response(("message", "chat", "id"))
 
     @property
     def chat_type(self):
-        return self._getitem(self.message, ("chat", "type"))
+        return self._extract_tg_response(("message", "chat", "type"))
 
     @property
     def message_id(self):
-        return self._getitem(self.message, "message_id")
+        return self._extract_tg_response(("message", "message_id"))
 
     @property
     def message_text(self):
-        return self._getitem(self.message, "text")
+        return self._extract_tg_response(("message", "text"))
 
     @property
     def message_info(self):
@@ -95,75 +98,79 @@ class Message:
 
     @property
     def inline_query(self):
-        return self._getitem(self._tg_response, "inline_query")
+        return self._extract_tg_response("inline_query")
 
     @property
     def query(self):
-        return self._getitem(self.inline_query, "query")
+        return self._extract_tg_response(("inline_query", "query"))
 
     @property
     def query_id(self):
-        return self._getitem(self.inline_query, "id")
+        return self._extract_tg_response(("inline_query", "id"))
 
     @property
     def callback_query(self):
-        return self._getitem(self._tg_response, "callback_query")
+        return self._extract_tg_response("callback_query")
 
     @property
     def callback_query_id(self):
-        return self._getitem(self.callback_query, "id")
+        return self._extract_tg_response(("callback_query", "id"))
 
     @property
     def callback_query_data(self):
-        return self._getitem(self.callback_query, "data")
+        return self._extract_tg_response(("callback_query", "data"))
 
     @property
     def callback_query_message(self):
-        return self._getitem(self.callback_query, "message")
+        return self._extract_tg_response(("callback_query", "message"))
 
     @property
     def callback_query_message_id(self):
-        return self._getitem(self.callback_query_message, "message_id")
+        return self._extract_tg_response(("callback_query", "message", "message_id"))
 
     @property
     def callback_query_message_chat(self):
-        return self._getitem(self.callback_query_message, "chat")
+        return self._extract_tg_response(("callback_query", "message", "chat"))
 
     @property
     def callback_query_message_chat_id(self):
-        return self._getitem(self.callback_query_message_chat, "id")
+        return self._extract_tg_response(("callback_query", "message", "chat", "id"))
 
     @property
     def callback_query_reply_to_message(self):
-        return self._getitem(self.callback_query_message, "reply_to_message")
+        return self._extract_tg_response(
+            ("callback_query", "message", "reply_to_message")
+        )
 
     @property
     def callback_query_reply_to_message_message_id(self):
-        return self._getitem(self.callback_query_reply_to_message, "message_id")
+        return self._extract_tg_response(
+            ("callback_query", "message", "reply_to_message", "message_id"),
+        )
 
     @property
     def my_chat_member(self):
-        return self._getitem(self._tg_response, "my_chat_member")
+        return self._extract_tg_response("my_chat_member")
 
     @property
     def my_chat_member_chat(self):
-        return self._getitem(self.my_chat_member, "chat")
+        return self._extract_tg_response(("my_chat_member", "chat"))
 
     @property
     def my_chat_member_chat_title(self):
-        return self._getitem(self.my_chat_member_chat, "title")
+        return self._extract_tg_response(("my_chat_member", "chat", "title"))
 
     @property
     def my_chat_member_chat_type(self):
-        return self._getitem(self.my_chat_member_chat, "type")
+        return self._extract_tg_response(("my_chat_member", "chat", "type"))
 
     @property
     def my_chat_member_from(self):
-        return self._getitem(self.my_chat_member, "from")
+        return self._extract_tg_response(("my_chat_member", "from"))
 
     @property
     def my_chat_member_from_first_name(self):
-        return self._getitem(self.my_chat_member_from, "first_name")
+        return self._extract_tg_response(("my_chat_member", "from", "first_name"))
 
     @property
     def callback_query_message_info(self):

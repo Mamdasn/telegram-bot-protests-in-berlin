@@ -15,7 +15,7 @@ class Message:
     This class provides a structured way to access various components of a message received in Telegram. It uses properties to access specific parts of the message, such as text, chat information, callback queries, and more.
 
     Attributes:
-        _message (dict): The original message dictionary received from Telegram.
+        _tg_response (dict): The original message dictionary received from Telegram.
 
     The class provides properties to access different elements of the message:
         | - `message`: The main message content.
@@ -49,8 +49,8 @@ class Message:
         _getitem(dic, key): A static method to safely extract a nested value from a dictionary using a key or a tuple of nested keys.
     """
 
-    def __init__(self, message: dict):
-        self._message = message
+    def __init__(self, tg_response: dict):
+        self._tg_response = tg_response
 
     @staticmethod
     def _getitem(query, key):
@@ -63,7 +63,7 @@ class Message:
 
     @property
     def message(self):
-        return self._getitem(self._message, "message")
+        return self._getitem(self._tg_response, "message")
 
     @property
     def message_date(self):
@@ -95,7 +95,7 @@ class Message:
 
     @property
     def inline_query(self):
-        return self._getitem(self._message, "inline_query")
+        return self._getitem(self._tg_response, "inline_query")
 
     @property
     def query(self):
@@ -107,7 +107,7 @@ class Message:
 
     @property
     def callback_query(self):
-        return self._getitem(self._message, "callback_query")
+        return self._getitem(self._tg_response, "callback_query")
 
     @property
     def callback_query_id(self):
@@ -143,7 +143,7 @@ class Message:
 
     @property
     def my_chat_member(self):
-        return self._getitem(self._message, "my_chat_member")
+        return self._getitem(self._tg_response, "my_chat_member")
 
     @property
     def my_chat_member_chat(self):

@@ -53,9 +53,8 @@ class Message:
         self._message = message
 
     @staticmethod
-    def _getitem(dic, key):
+    def _getitem(query, key):
         keys = key if isinstance(key, tuple) else (key,)
-        query = dic
         for k in keys:
             if not isinstance(query, dict):
                 return None

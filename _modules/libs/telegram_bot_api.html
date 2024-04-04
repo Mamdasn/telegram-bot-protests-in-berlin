@@ -83,6 +83,7 @@
              
   <h1>Source code for libs.telegram_bot_api</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">import</span> <span class="nn">aiohttp</span>
 
@@ -101,7 +102,7 @@
 <span class="sd">    This class provides a structured way to access various components of a message received in Telegram. It uses properties to access specific parts of the message, such as text, chat information, callback queries, and more.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        _message (dict): The original message dictionary received from Telegram.</span>
+<span class="sd">        _tg_response (dict): The original message dictionary received from Telegram.</span>
 
 <span class="sd">    The class provides properties to access different elements of the message:</span>
 <span class="sd">        | - `message`: The main message content.</span>
@@ -133,15 +134,16 @@
 
 <span class="sd">    Methods:</span>
 <span class="sd">        _getitem(dic, key): A static method to safely extract a nested value from a dictionary using a key or a tuple of nested keys.</span>
+<span class="sd">        _extract_tg_response(key): A method to safely extract a nested value by feeding the telegram response dictionary and a key or a tuple of nested keys to _getitem method.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">message</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tg_response</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tg_response</span> <span class="o">=</span> <span class="n">tg_response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tg_response</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_getitem</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_getitem</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">key</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">key</span><span class="p">,)</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="n">dic</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
@@ -150,31 +152,31 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">message_date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">chat_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">chat_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">message_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">message_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">message_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -182,75 +184,79 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inline_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">,</span> <span class="s2">&quot;inline_query&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">(</span><span class="s2">&quot;inline_query&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inline_query</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;inline_query&quot;</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">query_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inline_query</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;inline_query&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">,</span> <span class="s2">&quot;callback_query&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">(</span><span class="s2">&quot;callback_query&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_message_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query_message</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_message_chat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query_message</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_message_chat_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query_message_chat</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_reply_to_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query_message</span><span class="p">,</span> <span class="s2">&quot;reply_to_message&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;reply_to_message&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_reply_to_message_message_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callback_query_reply_to_message</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;callback_query&quot;</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">,</span> <span class="s2">&quot;reply_to_message&quot;</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">my_chat_member</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="p">,</span> <span class="s2">&quot;my_chat_member&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">(</span><span class="s2">&quot;my_chat_member&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">my_chat_member_chat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_chat_member</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;my_chat_member&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">my_chat_member_chat_title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_chat_member_chat</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;my_chat_member&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">my_chat_member_chat_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_chat_member_chat</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;my_chat_member&quot;</span><span class="p">,</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">my_chat_member_from</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_chat_member</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;my_chat_member&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">my_chat_member_from_first_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getitem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_chat_member_from</span><span class="p">,</span> <span class="s2">&quot;first_name&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_tg_response</span><span class="p">((</span><span class="s2">&quot;my_chat_member&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;first_name&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callback_query_message_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

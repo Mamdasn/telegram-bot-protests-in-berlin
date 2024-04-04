@@ -154,11 +154,11 @@
 <span id="telegram-bot-api-module"></span><h1>Telegram Bot API Module<a class="headerlink" href="#module-libs.telegram_bot_api" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="libs.telegram_bot_api.Message">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.Message" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tg_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.Message" title="Link to this definition"></a></dt>
 <dd><p>A class to represent and process a Telegram message.</p>
 <p>This class provides a structured way to access various components of a message received in Telegram. It uses properties to access specific parts of the message, such as text, chat information, callback queries, and more.</p>
 <dl>
-<dt>Attributes:</dt><dd><p>_message (dict): The original message dictionary received from Telegram.</p>
+<dt>Attributes:</dt><dd><p>_tg_response (dict): The original message dictionary received from Telegram.</p>
 </dd>
 <dt>The class provides properties to access different elements of the message:</dt><dd><div class="line-block">
 <div class="line">- <cite>message</cite>: The main message content.</div>
@@ -189,7 +189,8 @@
 <div class="line">- <cite>callback_query_message_info</cite>: A tuple containing various pieces of information about the callback query message.</div>
 </div>
 </dd>
-<dt>Methods:</dt><dd><p>_getitem(dic, key): A static method to safely extract a nested value from a dictionary using a key or a tuple of nested keys.</p>
+<dt>Methods:</dt><dd><p>_getitem(dic, key): A static method to safely extract a nested value from a dictionary using a key or a tuple of nested keys.
+_extract_tg_response(key): A method to safely extract a nested value by feeding the telegram response dictionary and a key or a tuple of nested keys to _getitem method.</p>
 </dd>
 </dl>
 </dd></dl>

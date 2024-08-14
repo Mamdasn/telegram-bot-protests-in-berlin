@@ -2,6 +2,9 @@
 
 FROM python:3.11-alpine
 
+# Install necessary packages for building python packages
+RUN apk --no-cache add gcc musl-dev libffi-dev libpq-dev
+
 WORKDIR /app
 
 #RUN python3 -m pip install --upgrade pip

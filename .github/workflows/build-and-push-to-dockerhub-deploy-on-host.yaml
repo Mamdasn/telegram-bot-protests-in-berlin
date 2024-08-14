@@ -35,7 +35,8 @@ jobs:
 
     - name: Build and push Docker image using Docker Compose
       run: |
-        docker compose build --platform linux/arm/v7
+        export DOCKER_DEFAULT_PLATFORM=linux/arm/v7
+        docker compose build
         docker compose push  
 
   deploy-on-host:

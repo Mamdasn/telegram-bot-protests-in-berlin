@@ -33,7 +33,7 @@ jobs:
         docker compose push
 
   deploy-on-host:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [build-and-push-to-dockerhub]
     steps:
     - name: Checkout repository

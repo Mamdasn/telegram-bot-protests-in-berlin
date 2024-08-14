@@ -5,6 +5,9 @@ FROM python:3.11-alpine
 # Install nginx
 RUN apk --no-cache add nginx curl openssl
 
+# Install necessary packages for building python packages
+RUN apk --no-cache add gcc musl-dev libffi-dev libpq-dev
+
 # Set the working directory inside the container
 WORKDIR /app
 

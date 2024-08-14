@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-and-push-to-dockerhub:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - name: Check Out Repo
       uses: actions/checkout@v3
@@ -36,14 +36,7 @@ jobs:
     runs-on: self-hosted
     needs: [build-and-push-to-dockerhub]
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Set up SSH
-      run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/id_rsa
-        chmod 600 ~/id_rsa
-    - name: Deploy to Google Cloud
+    - name: Deploy to Self-Hosted
       env:
         BRANCH: main
         CONTAINER_DIR: telegram-bot-protests-in-berlin
@@ -54,31 +47,21 @@ jobs:
         TG_BOT_TOKEN: ${{secrets.TG_BOT_TOKEN}}
         IP_ADDRESS: ${{secrets.SSH_HOST}}
         SSL_PORT: ${{secrets.SSL_PORT}}
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
       run: |
-        ssh-keyscan -t rsa $IP_ADDRESS >> ~/known_hosts
-        ssh -o UserKnownHostsFile=~/known_hosts \
-            -i ~/id_rsa $SSH_USERNAME@$IP_ADDRESS \
-                "export BRANCH=${{env.BRANCH}} \
-                && export CONTAINER_DIR=${{env.CONTAINER_DIR}} \
-                && export CONTAINER_NAME_1=${{env.CONTAINER_NAME_1}} \
-                && export CONTAINER_NAME_2=${{env.CONTAINER_NAME_2}} \
-                && export CONTAINER_NAME_3=${{env.CONTAINER_NAME_3}} \
-                && export CONTAINER_NAME_4=${{env.CONTAINER_NAME_4}} \
-                && export SSL_PORT=${{env.SSL_PORT}} \
-                && export TG_BOT_TOKEN=${{env.TG_BOT_TOKEN}} \
-                && export IP_ADDRESS=${{env.IP_ADDRESS}} \
-                && cd $CONTAINER_DIR \
-                && git fetch --all \
-                && git switch $BRANCH \
-                && git merge origin/$BRANCH \
-                && docker compose pull \
-                && docker compose down \
-                && docker system prune -af \
-                && docker compose up -d \
-                && echo Check whether the docker containers are running... \
-                && docker ps -q --filter name=^${CONTAINER_NAME_1}$ | grep -q . \
-                && docker ps -q --filter name=^${CONTAINER_NAME_2}$ | grep -q . \
-                && docker ps -q --filter name=^${CONTAINER_NAME_3}$ | grep -q . \
-                && docker ps -q --filter name=^${CONTAINER_NAME_4}$ | grep -q . \
-                && echo All docker containers are running."
+           export TG_BOT_TOKEN=$TG_BOT_TOKEN
+           && export IP_ADDRESS=$IP_ADDRESS
+           && export SSL_PORT=$SSL_PORT
+           && cd $CONTAINER_DIR 
+           && git fetch --all 
+           && git switch $BRANCH 
+           && git merge origin/$BRANCH 
+           && docker compose pull 
+           && docker compose down 
+           && docker system prune -af 
+           && docker compose up -d 
+           && echo Check whether the docker containers are running... 
+           && docker ps -q --filter name=^${CONTAINER_NAME_1}$ | grep -q . 
+           && docker ps -q --filter name=^${CONTAINER_NAME_2}$ | grep -q . 
+           && docker ps -q --filter name=^${CONTAINER_NAME_3}$ | grep -q . 
+           && docker ps -q --filter name=^${CONTAINER_NAME_4}$ | grep -q . 
+           && echo All docker containers are running.

@@ -55,19 +55,20 @@ jobs:
         IP_ADDRESS: ${{secrets.SSH_HOST}}
         SSL_PORT: ${{secrets.SSL_PORT}}
       run: |
-           export TG_BOT_TOKEN=$TG_BOT_TOKEN
-           && export IP_ADDRESS=$IP_ADDRESS
-           && export SSL_PORT=$SSL_PORT
-           && cd $CONTAINER_DIR 
-           && git fetch --all 
-           && git switch $BRANCH 
-           && git merge origin/$BRANCH 
-           && docker compose down 
-           && docker system prune -af 
-           && docker compose up -d 
-           && echo Check whether the docker containers are running... 
-           && docker ps -q --filter name=^${CONTAINER_NAME_1}$ | grep -q . 
-           && docker ps -q --filter name=^${CONTAINER_NAME_2}$ | grep -q . 
-           && docker ps -q --filter name=^${CONTAINER_NAME_3}$ | grep -q . 
-           && docker ps -q --filter name=^${CONTAINER_NAME_4}$ | grep -q . 
-           && echo All docker containers are running.
+        export TG_BOT_TOKEN=$TG_BOT_TOKEN && 
+	export IP_ADDRESS=$IP_ADDRESS && 
+	export SSL_PORT=$SSL_PORT && 
+	cd $CONTAINER_DIR  && 
+	git fetch --all  && 
+	git switch $BRANCH  && 
+	git merge origin/$BRANCH  && 
+	docker compose pull  && 
+	docker compose down  && 
+	docker system prune -af  && 
+	docker compose up -d  && 
+	echo Check whether the docker containers are running...  && 
+	docker ps -q --filter name=^${CONTAINER_NAME_1}$ | grep -q .  && 
+	docker ps -q --filter name=^${CONTAINER_NAME_2}$ | grep -q .  && 
+	docker ps -q --filter name=^${CONTAINER_NAME_3}$ | grep -q .  && 
+	docker ps -q --filter name=^${CONTAINER_NAME_4}$ | grep -q .  && 
+	echo All docker containers are running.

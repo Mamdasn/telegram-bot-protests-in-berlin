@@ -46,7 +46,7 @@ jobs:
     - name: Deploy to Self-Hosted
       env:
         BRANCH: main
-        CONTAINER_DIR: ~/telegram-bot-protests-in-berlin
+        CONTAINER_DIR: ${{secrets.HOME}}/telegram-bot-protests-in-berlin
         CONTAINER_NAME_1: postgres_db
         CONTAINER_NAME_2: protestcrawler
         CONTAINER_NAME_3: telegrambot

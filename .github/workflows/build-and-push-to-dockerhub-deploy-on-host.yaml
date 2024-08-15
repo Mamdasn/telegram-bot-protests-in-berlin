@@ -60,7 +60,8 @@ jobs:
         export SSL_PORT=$SSL_PORT && 
         cd $CONTAINER_DIR  && 
         git fetch --all  && 
-        git switch $BRANCH  && 
+        git rev-parse --verify --quiet $BRANCH &&
+        git checkout $BRANCH  && 
         git merge origin/$BRANCH  && 
         docker compose pull  && 
         docker compose down  && 

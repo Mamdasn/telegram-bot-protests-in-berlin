@@ -52,7 +52,7 @@ jobs:
         CONTAINER_NAME_3: telegrambot
         CONTAINER_NAME_4: tor_privoxy
         TG_BOT_TOKEN: ${{secrets.TG_BOT_TOKEN}}
-        IP_ADDRESS: ${{secrets.SSH_HOST}}
+        IP_ADDRESS: ${{secrets.IP_HOST}}
         SSL_PORT: ${{secrets.SSL_PORT}}
       run: |
         export TG_BOT_TOKEN=$TG_BOT_TOKEN && 

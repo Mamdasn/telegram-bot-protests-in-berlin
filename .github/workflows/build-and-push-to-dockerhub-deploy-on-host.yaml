@@ -63,7 +63,6 @@ jobs:
         git rev-parse --verify --quiet $BRANCH &&
         git checkout $BRANCH  && 
         git merge origin/$BRANCH  && 
-        docker compose pull  && 
         docker compose down  && 
         docker system prune -af  && 
         docker compose up -d  && 

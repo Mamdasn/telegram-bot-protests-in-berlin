@@ -13,11 +13,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  determine-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      selected-runner: ${{ steps.select-runner.outputs.runner }}
+      docker-platform: ${{ steps.select-runner.outputs.platform }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Select Runner
+        id: select-runner
+        run: |
+          if [ "$(gh api /repos/${{ github.repository }}/actions/runners --paginate | jq '.runners[] | select(.labels[].name == "ARM64" and .status == "online")')" ]; then
+            echo "runner=self-hosted-arm64" >> $GITHUB_ENV
+            echo "platform=linux/arm64" >> $GITHUB_ENV
+            echo "::set-output name=runner::self-hosted-arm64"
+            echo "::set-output name=platform::linux/arm64"
+          elif [ "$(gh api /repos/${{ github.repository }}/actions/runners --paginate | jq '.runners[] | select(.labels[].name == "X64" and .status == "online")')" ]; then
+            echo "runner=self-hosted-x64" >> $GITHUB_ENV
+            echo "platform=linux/amd64" >> $GITHUB_ENV
+            echo "::set-output name=runner::self-hosted-x64"
+            echo "::set-output name=platform::linux/amd64"
+          else
+            echo "No suitable runner available."
+            exit 1
+          fi
+
   build-and-push-to-dockerhub:
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        runner: [self-hosted-ARM64, self-hosted-X64]
+    needs: determine-runner
+    runs-on: ${{ needs.determine-runner.outputs.selected-runner }}
+    if: ${{ always() }}
     steps:
     - name: Check Out Repo
       uses: actions/checkout@v3
@@ -31,24 +57,16 @@ jobs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
       with:
-        platforms: arm64,amd64
+        platforms: ${{ needs.determine-runner.outputs.docker-platform }}
 
-    - name: Set Docker platform based on runner
+    - name: Set Docker platform based on selected runner
       run: |
-        if [ "${{ matrix.runner }}" == "self-hosted-X64" ]; then
-          echo "DOCKER_DEFAULT_PLATFORM=linux/amd64" >> $GITHUB_ENV
-        elif [ "${{ matrix.runner }}" == "self-hosted-ARM64" ]; then
-          echo "DOCKER_DEFAULT_PLATFORM=linux/arm64" >> $GITHUB_ENV
-        else
-          echo "Unsupported runner: ${{ matrix.runner }}"
-          exit 1
-        fi
+        echo "DOCKER_DEFAULT_PLATFORM=${{ needs.determine-runner.outputs.docker-platform }}" >> $GITHUB_ENV
 
     - name: Build and push Docker image using Docker Compose
       run: |
         docker compose build
         docker compose push
-
   deploy-on-host:
     runs-on: self-hosted
     needs: [build-and-push-to-dockerhub]

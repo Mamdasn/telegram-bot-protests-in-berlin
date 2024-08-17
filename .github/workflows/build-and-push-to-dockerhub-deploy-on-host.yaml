@@ -15,8 +15,7 @@ on:
 jobs:
   build-x86:
     name: Build on x86
-    runs-on: self-hosted
-    if: runner.os == 'Linux' && runner.arch == 'X64' && github.event_name == 'push' # Add a condition that always evaluates to false if no runner is available
+    runs-on: [self-hosted, X86]  
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -43,8 +42,7 @@ jobs:
 
   build-arm64:
     name: Build on ARM64
-    runs-on: self-hosted
-    if: runner.os == 'Linux' && runner.arch == 'ARM64'
+    runs-on: [self-hosted, ARM64] 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

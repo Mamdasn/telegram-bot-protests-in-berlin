@@ -16,7 +16,7 @@ jobs:
   determine-runner:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
     outputs:
       selected-runner: ${{ steps.select-runner.outputs.runner }}
       docker-platform: ${{ steps.select-runner.outputs.platform }}

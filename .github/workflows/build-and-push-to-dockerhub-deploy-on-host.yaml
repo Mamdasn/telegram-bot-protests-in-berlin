@@ -66,34 +66,7 @@ jobs:
         run: |
           docker compose build
           docker compose push
-
-  build-and-push-to-dockerhub:
-    needs: determine-runner
-    runs-on: ${{ needs.determine-runner.outputs.selected-runner }}
-    if: ${{ always() }}
-    steps:
-    - name: Check Out Repo
-      uses: actions/checkout@v3
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: ${{ needs.determine-runner.outputs.docker-platform }}
-
-    - name: Set Docker platform based on selected runner
-      run: |
-        echo "DOCKER_DEFAULT_PLATFORM=${{ needs.determine-runner.outputs.docker-platform }}" >> $GITHUB_ENV
-
-    - name: Build and push Docker image using Docker Compose
-      run: |
-        docker compose build
-        docker compose push
+          
   deploy-on-host:
     runs-on: self-hosted
     needs: [build-and-push-to-dockerhub]

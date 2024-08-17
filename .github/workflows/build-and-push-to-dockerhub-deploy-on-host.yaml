@@ -67,7 +67,7 @@ jobs:
         export TG_BOT_TOKEN=$TG_BOT_TOKEN && 
         export IP_ADDRESS=$IP_ADDRESS && 
         export SSL_PORT=$SSL_PORT && 
-        cd ${{env.HOME}}/$CONTAINER_DIR  && 
+        cd ${HOME}/$CONTAINER_DIR  && 
         git fetch --all  && 
         git rev-parse --verify --quiet $BRANCH &&
         git checkout $BRANCH  && 

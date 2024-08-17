@@ -14,7 +14,10 @@ on:
 
 jobs:
   build-and-push-to-dockerhub:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [self-hosted-ARM64, self-hosted-X64]
     steps:
     - name: Check Out Repo
       uses: actions/checkout@v3
@@ -30,28 +33,21 @@ jobs:
       with:
         platforms: arm64,amd64
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Determine architecture
-      id: arch
-      run: echo "ARCH=$(uname -m)" >> $GITHUB_ENV
-
-    - name: Set Docker platform based on architecture
+    - name: Set Docker platform based on runner
       run: |
-        if [ "${{ env.ARCH }}" == "x86_64" ]; then
+        if [ "${{ matrix.runner }}" == "self-hosted-X64" ]; then
           echo "DOCKER_DEFAULT_PLATFORM=linux/amd64" >> $GITHUB_ENV
-        elif [ "${{ env.ARCH }}" == "aarch64" ]; then
+        elif [ "${{ matrix.runner }}" == "self-hosted-ARM64" ]; then
           echo "DOCKER_DEFAULT_PLATFORM=linux/arm64" >> $GITHUB_ENV
         else
-          echo "Unsupported architecture: ${{ env.ARCH }}"
+          echo "Unsupported runner: ${{ matrix.runner }}"
           exit 1
         fi
 
     - name: Build and push Docker image using Docker Compose
       run: |
         docker compose build
-        docker compose push  
+        docker compose push
 
   deploy-on-host:
     runs-on: self-hosted

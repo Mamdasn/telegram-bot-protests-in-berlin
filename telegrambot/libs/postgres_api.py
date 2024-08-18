@@ -246,6 +246,23 @@ class Fetchpostgres:
         f = partial(self.get_query_column, column="Aufzugsstrecke")
         return f(query=query)
 
+    @staticmethod
+    def escape_special_html_characters(string):
+        """
+        Escape special HTML characters in a string to their corresponding HTML entities.
+
+        This method replaces the following characters:
+        - '<' with '&lt;'
+        - '>' with '&gt;'
+        - '&' with '&amp;'
+
+        :param string: The input string containing special HTML characters.
+        :type string: str
+        :return: The string with special HTML characters replaced by their corresponding HTML entities.
+        :rtype: str
+        """
+        return string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+
     def format_postgres_output(self, q):
         """
         Format the output from a PostgreSQL query for display.

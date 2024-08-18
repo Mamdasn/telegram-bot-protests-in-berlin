@@ -274,47 +274,56 @@ class Fetchpostgres:
         """
         if isinstance(q, str):
             return q
+        data = {
+                'date': q[1],
+                'time range start': q[2],
+                'time range end': q[3],
+                'thema': Fetchpostgres.escape_special_html_characters(q[4]),
+                'plz': q[5],
+                'versammlung': Fetchpostgres.escape_special_html_characters(q[6]),
+                'location': q[7]
+        }
         newline = "\n"
-        date = f'<b>On {q[1].strftime("%d.%m.%Y")}</b>' if q[1] else ""
+        date = f'<b>On {data["date"].strftime("%d.%m.%Y")}</b>' if data["date"] else ""
         time_range = (
-            f'{q[2].strftime("%H:%M")} to {q[3].strftime("%H:%M:")}'
-            if q[3]
-            else f'{q[2].strftime("%H:%M")}'
-            if q[2]
+            f'{data["time range start"].strftime("%H:%M")} to {data["time range end"].strftime("%H:%M:")}'
+            if data["time range end"]
+            else f'{data["time range start"].strftime("%H:%M")}'
+            if data["time range start"]
             else ""
         )
-        thema = f"<b>Thema</b>: {q[4]}{newline}" if q[4] else ""
+        thema = f"<b>Thema</b>: {data['thema']}{newline}" if data['thema'] else ""
         plz = (
-            f"<b>PLZ</b>: {q[5]}{newline}"
-            if ((q[5] != "") and (q[5] != "00000"))
+            f"<b>PLZ</b>: {data['plz']}{newline}"
+            if ((data['plz'] != "") and (data['plz'] != "00000"))
             else ""
         )
         google_maps_url_base = "https://www.google.com/maps/search/?api=1&query="
         google_maps_url = (
-            f"{google_maps_url_base}{q[6]} {q[5]} Berlin"
-            if ((q[5] != "") and (q[5] != "00000"))
-            else f"{google_maps_url_base}{q[6]} Berlin"
+            f"{google_maps_url_base}{data['versammlung']} {data['plz']} Berlin"
+            if ((data['plz'] != "") and (data['plz'] != "00000"))
+            else f"{google_maps_url_base}{data['versammlung']} Berlin"
         )
         versammlungsort = (
-            f'<b>Versammlungsort</b>: <a href="{google_maps_url}">{q[6]}{newline}</a>'
-            if q[6]
+            f'<b>Versammlungsort</b>: <a href="{google_maps_url}">{data["versammlung"]}{newline}</a>'
+            if data["versammlung"]
             else ""
         )
         route_with_google_maps_urls = ""
-        if q[7]:
+        if data['location']:
             find_indexes = [
-                q[7].find(sep) for sep in [" - ", "/"] if q[7].find(sep) != -1
+                data['location'].find(sep) for sep in [" - ", "/"] if data['location'].find(sep) != -1
             ]
             if find_indexes:
                 first_location_index = min(find_indexes)
-                first_location = q[7][:first_location_index]
-                route_with_google_maps_urls = f'<a href="{google_maps_url_base}{first_location} Berlin">{first_location}</a>{q[7][first_location_index:]}'
+                first_location = data['location'][:first_location_index]
+                route_with_google_maps_urls = f'<a href="{google_maps_url_base}{first_location} Berlin">{first_location}</a>{data["location"][first_location_index:]}'
             else:
-                first_location = q[7]
+                first_location = data['location']
                 route_with_google_maps_urls = f'<a href="{google_maps_url_base}{first_location} Berlin">{first_location}</a>'
         aufzugsstrecke = (
             f"<b>Aufzugsstrecke</b>: {route_with_google_maps_urls}{newline}"
-            if q[7]
+            if data["location"]
             else ""
         )
         # return f"<b>id: {q[0]}</b>{newline}{date}{' - ' if date and time_range else ''}{time_range}{newline}{thema}{plz}{versammlungsort}{aufzugsstrecke}"

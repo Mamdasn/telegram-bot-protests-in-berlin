@@ -82,7 +82,7 @@ def get_remaining_days_in_current_month():
     return remaining_days
 
 
-def message_format_for_postgres(queries, page_number=1, length_of_message=4000):
+def message_format_for_postgres(queries, page_number=1, length_of_message=3000):
     """
     Format a list of queries for display, splitting into pages if necessary.
 
@@ -90,7 +90,7 @@ def message_format_for_postgres(queries, page_number=1, length_of_message=4000):
     :type queries: list[str]
     :param page_number: The page number to display, defaults to 1.
     :type page_number: int, optional
-    :param length_of_message: The maximum length of the message, defaults to 4000.
+    :param length_of_message: The maximum length of the message, defaults to 3000.
     :type length_of_message: int, optional
     :return: A tuple containing the formatted page of queries and the total number of pages.
     :rtype: (str, int)

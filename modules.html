@@ -618,14 +618,14 @@ Structure: (callback_query_id, message_id, callback_query_data, callback_query_m
 
 <dl class="py function">
 <dt class="sig sig-object py" id="libs.tools_collection.message_format_for_postgres">
-<span class="sig-prename descclassname"><span class="pre">libs.tools_collection.</span></span><span class="sig-name descname"><span class="pre">message_format_for_postgres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_of_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/tools_collection.html#message_format_for_postgres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.tools_collection.message_format_for_postgres" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">libs.tools_collection.</span></span><span class="sig-name descname"><span class="pre">message_format_for_postgres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length_of_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/tools_collection.html#message_format_for_postgres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.tools_collection.message_format_for_postgres" title="Link to this definition"></a></dt>
 <dd><p>Format a list of queries for display, splitting into pages if necessary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>queries</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – A list of SQL queries.</p></li>
 <li><p><strong>page_number</strong> (<em>int</em><em>, </em><em>optional</em>) – The page number to display, defaults to 1.</p></li>
-<li><p><strong>length_of_message</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum length of the message, defaults to 4000.</p></li>
+<li><p><strong>length_of_message</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum length of the message, defaults to 3000.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

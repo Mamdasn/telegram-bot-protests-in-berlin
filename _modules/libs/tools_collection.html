@@ -177,7 +177,7 @@
 
 <div class="viewcode-block" id="message_format_for_postgres">
 <a class="viewcode-back" href="../../modules.html#libs.tools_collection.message_format_for_postgres">[docs]</a>
-<span class="k">def</span> <span class="nf">message_format_for_postgres</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="n">page_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_of_message</span><span class="o">=</span><span class="mi">4000</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">message_format_for_postgres</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="n">page_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_of_message</span><span class="o">=</span><span class="mi">3000</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format a list of queries for display, splitting into pages if necessary.</span>
 
@@ -185,7 +185,7 @@
 <span class="sd">    :type queries: list[str]</span>
 <span class="sd">    :param page_number: The page number to display, defaults to 1.</span>
 <span class="sd">    :type page_number: int, optional</span>
-<span class="sd">    :param length_of_message: The maximum length of the message, defaults to 4000.</span>
+<span class="sd">    :param length_of_message: The maximum length of the message, defaults to 3000.</span>
 <span class="sd">    :type length_of_message: int, optional</span>
 <span class="sd">    :return: A tuple containing the formatted page of queries and the total number of pages.</span>
 <span class="sd">    :rtype: (str, int)</span>

@@ -100,6 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getPLZQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getPLZQuery()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getVersammlungsortQuery()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getAufzugsstreckeQuery()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.escape_special_html_characters"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.escape_special_html_characters()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.format_postgres_output"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.format_postgres_output()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.format_postgre_queries"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.format_postgre_queries()</span></code></a></li>
 </ul>
@@ -895,6 +896,27 @@ deployment environments.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.escape_special_html_characters">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">escape_special_html_characters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.escape_special_html_characters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.escape_special_html_characters" title="Link to this definition"></a></dt>
+<dd><p>Escape special HTML characters in a string to their corresponding HTML entities.</p>
+<p>This method replaces the following characters:
+- ‘&lt;’ with ‘&amp;lt;’
+- ‘&gt;’ with ‘&amp;gt;’
+- ‘&amp;’ with ‘&amp;amp;’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>str</em>) – The input string containing special HTML characters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The string with special HTML characters replaced by their corresponding HTML entities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>

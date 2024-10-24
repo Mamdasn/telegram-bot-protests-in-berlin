@@ -261,7 +261,7 @@ class Fetchpostgres:
         :return: The string with special HTML characters replaced by their corresponding HTML entities.
         :rtype: str
         """
-        return string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        return string.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     def format_postgres_output(self, q):
         """
@@ -275,13 +275,13 @@ class Fetchpostgres:
         if isinstance(q, str):
             return q
         data = {
-                'date': q[1],
-                'time range start': q[2],
-                'time range end': q[3],
-                'thema': Fetchpostgres.escape_special_html_characters(q[4]),
-                'plz': q[5],
-                'versammlung': Fetchpostgres.escape_special_html_characters(q[6]),
-                'location': q[7]
+            "date": q[1],
+            "time range start": q[2],
+            "time range end": q[3],
+            "thema": Fetchpostgres.escape_special_html_characters(q[4]),
+            "plz": q[5],
+            "versammlung": Fetchpostgres.escape_special_html_characters(q[6]),
+            "location": q[7],
         }
         newline = "\n"
         date = f'<b>On {data["date"].strftime("%d.%m.%Y")}</b>' if data["date"] else ""
@@ -292,16 +292,16 @@ class Fetchpostgres:
             if data["time range start"]
             else ""
         )
-        thema = f"<b>Thema</b>: {data['thema']}{newline}" if data['thema'] else ""
+        thema = f"<b>Thema</b>: {data['thema']}{newline}" if data["thema"] else ""
         plz = (
             f"<b>PLZ</b>: {data['plz']}{newline}"
-            if ((data['plz'] != "") and (data['plz'] != "00000"))
+            if ((data["plz"] != "") and (data["plz"] != "00000"))
             else ""
         )
         google_maps_url_base = "https://www.google.com/maps/search/?api=1&query="
         google_maps_url = (
             f"{google_maps_url_base}{data['versammlung']} {data['plz']} Berlin"
-            if ((data['plz'] != "") and (data['plz'] != "00000"))
+            if ((data["plz"] != "") and (data["plz"] != "00000"))
             else f"{google_maps_url_base}{data['versammlung']} Berlin"
         )
         versammlungsort = (
@@ -310,16 +310,18 @@ class Fetchpostgres:
             else ""
         )
         route_with_google_maps_urls = ""
-        if data['location']:
+        if data["location"]:
             find_indexes = [
-                data['location'].find(sep) for sep in [" - ", "/"] if data['location'].find(sep) != -1
+                data["location"].find(sep)
+                for sep in [" - ", "/"]
+                if data["location"].find(sep) != -1
             ]
             if find_indexes:
                 first_location_index = min(find_indexes)
-                first_location = data['location'][:first_location_index]
+                first_location = data["location"][:first_location_index]
                 route_with_google_maps_urls = f'<a href="{google_maps_url_base}{first_location} Berlin">{first_location}</a>{data["location"][first_location_index:]}'
             else:
-                first_location = data['location']
+                first_location = data["location"]
                 route_with_google_maps_urls = f'<a href="{google_maps_url_base}{first_location} Berlin">{first_location}</a>'
         aufzugsstrecke = (
             f"<b>Aufzugsstrecke</b>: {route_with_google_maps_urls}{newline}"

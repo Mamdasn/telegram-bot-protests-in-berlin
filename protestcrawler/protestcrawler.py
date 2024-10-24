@@ -7,6 +7,8 @@ from time import sleep
 from postgresconf import config
 from ProtestLibs import ProtestGrabber, ProtestPostgres
 
+from .credentials import config as envconfig
+
 
 class EventCrawler:
     """
@@ -123,7 +125,7 @@ if __name__ == "__main__":
             )
             print("Number of protests:", lendata)
             print("Scraping data finished.")
-            sleep(60 * 60)
+            sleep(envconfig.DB_UPDATE_PERIOD)
         except Exception as e:
             print("An error occured when retrieving data from the internet.")
             print(e)

@@ -343,7 +343,7 @@ def handle_inline_query(inline_query_id, message_info):
                         "message_text": fetcher.format_postgres_output(q),
                         "parse_mode": "HTML",
                     },
-                    "description": f"{q[1].strftime('%d.%m.%Y.') if q[1] else ''}{q[2].strftime('%H:%M')} {'to' if q[2] else '' } {q[3].strftime('%H:%M')} - {f'{q[5]}; {q[6]}' if q[5] else ''}{q[7] if q[7] else ''}",
+                    "description": f"{q[1].strftime('%d.%m.%Y.') if q[1] else ''}{q[2].strftime('%H:%M')} {'to' if q[2] else ''} {q[3].strftime('%H:%M')} - {f'{q[5]}; {q[6]}' if q[5] else ''}{q[7] if q[7] else ''}",
                 }
             )
     else:

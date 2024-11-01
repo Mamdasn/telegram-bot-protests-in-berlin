@@ -255,12 +255,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
         ],
     ]
     emojies = [
-        "👍",
         "🕊",
-        "🐳",
-        "⚡",
-        "✍",
-        "🫡",
     ]
 
     reply_keyboard_markup = {

@@ -133,8 +133,8 @@ def make_reply_markup_page_control(page_number, number_of_pages, command):
     :rtype: dict
     """
     reply_markup = ""
-    next_page = {"text": ">", "callback_data": f"page {page_number+1} {command}"}
-    previous_page = {"text": "<", "callback_data": f"page {page_number-1} {command}"}
+    next_page = {"text": ">", "callback_data": f"page {page_number + 1} {command}"}
+    previous_page = {"text": "<", "callback_data": f"page {page_number - 1} {command}"}
     if 2 <= page_number < number_of_pages:
         reply_markup = {"inline_keyboard": [[previous_page, next_page]]}
     elif (page_number == number_of_pages) and (1 < number_of_pages):

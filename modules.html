@@ -52,13 +52,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.Message"><code class="docutils literal notranslate"><span class="pre">Message</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.parse_message"><code class="docutils literal notranslate"><span class="pre">parse_message()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.post_json"><code class="docutils literal notranslate"><span class="pre">post_json()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.sendChatAction"><code class="docutils literal notranslate"><span class="pre">sendChatAction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.send_chat_action"><code class="docutils literal notranslate"><span class="pre">send_chat_action()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.send_message"><code class="docutils literal notranslate"><span class="pre">send_message()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.deleteMessage"><code class="docutils literal notranslate"><span class="pre">deleteMessage()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.editMessageText"><code class="docutils literal notranslate"><span class="pre">editMessageText()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.answerCallbackQuery"><code class="docutils literal notranslate"><span class="pre">answerCallbackQuery()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.answerInlineQuery"><code class="docutils literal notranslate"><span class="pre">answerInlineQuery()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.setMessageReaction"><code class="docutils literal notranslate"><span class="pre">setMessageReaction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.delete_message"><code class="docutils literal notranslate"><span class="pre">delete_message()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.edit_message_text"><code class="docutils literal notranslate"><span class="pre">edit_message_text()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.answer_callback_query"><code class="docutils literal notranslate"><span class="pre">answer_callback_query()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.answer_inline_query"><code class="docutils literal notranslate"><span class="pre">answer_inline_query()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#libs.telegram_bot_api.set_message_reaction"><code class="docutils literal notranslate"><span class="pre">set_message_reaction()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#module-libs.incoming_message_handler">Handle Incoming Messages Module</a><ul>
@@ -249,8 +249,8 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.telegram_bot_api.sendChatAction">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">sendChatAction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'typing'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#sendChatAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.sendChatAction" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.telegram_bot_api.send_chat_action">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">send_chat_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'typing'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#send_chat_action"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.send_chat_action" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously sends a chat action to a Telegram chat.</p>
 <p>This function is used to send various chat actions to inform users in a chat about the ongoing activity (e.g., typing, uploading a photo).</p>
 <dl class="field-list simple">
@@ -294,8 +294,8 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.telegram_bot_api.deleteMessage">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">deleteMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#deleteMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.deleteMessage" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.telegram_bot_api.delete_message">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">delete_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#delete_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.delete_message" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously deletes a message from a Telegram chat.</p>
 <p>This function is used to delete a message in a Telegram chat based on its unique message ID.</p>
 <dl class="field-list simple">
@@ -315,8 +315,8 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.telegram_bot_api.editMessageText">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">editMessageText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reply_markup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_preview_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#editMessageText"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.editMessageText" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.telegram_bot_api.edit_message_text">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">edit_message_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reply_markup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_preview_options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#edit_message_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.edit_message_text" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously edits the text of a message in a Telegram chat.</p>
 <p>This function allows editing the text of an existing message in a Telegram chat. It requires the message ID and the new text. Optionally, it can also update the reply markup.</p>
 <dl class="field-list simple">
@@ -339,8 +339,8 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.telegram_bot_api.answerCallbackQuery">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">answerCallbackQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_query_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#answerCallbackQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.answerCallbackQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.telegram_bot_api.answer_callback_query">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">answer_callback_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_query_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#answer_callback_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.answer_callback_query" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously sends a response to a callback query in Telegram.</p>
 <p>This function is used to provide feedback to a user who initiated a callback query in a Telegram bot interaction.</p>
 <dl class="field-list simple">
@@ -360,8 +360,8 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.telegram_bot_api.answerInlineQuery">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">answerInlineQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inline_query_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#answerInlineQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.answerInlineQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.telegram_bot_api.answer_inline_query">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">answer_inline_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inline_query_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#answer_inline_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.answer_inline_query" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously sends a response to an inline query in Telegram.</p>
 <p>This function is used to send results in response to an inline query made by a user in a Telegram bot. Inline queries allow users to select from a list of results and send them into the chat.</p>
 <dl class="field-list simple">
@@ -381,8 +381,8 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.telegram_bot_api.setMessageReaction">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">setMessageReaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_big</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#setMessageReaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.setMessageReaction" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.telegram_bot_api.set_message_reaction">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">set_message_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_big</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#set_message_reaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.set_message_reaction" title="Link to this definition"></a></dt>
 <dd><p>Asynchronously sets a reaction emoji to a specific message in a Telegram chat.</p>
 <p>This function enables a Telegram bot to react to a message within a chat using a specified emoji. The <cite>is_big</cite> parameter allows the choice of a larger animation for the reaction, enhancing the visibility of the reaction.</p>
 <dl class="field-list simple">
@@ -576,7 +576,7 @@ Structure: (callback_query_id, message_id, callback_query_data, callback_query_m
 </ul>
 </dd>
 </dl>
-<p>The function parses the callback query data, checks if it contains pagination information, and processes the command accordingly. It then formats a reply message and updates the message text in the Telegram chat using the ‘editMessageText’ function.</p>
+<p>The function parses the callback query data, checks if it contains pagination information, and processes the command accordingly. It then formats a reply message and updates the message text in the Telegram chat using the ‘edit_message_text’ function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None. The function performs its operations asynchronously and sends responses directly to the Telegram chat.</p>
@@ -586,7 +586,7 @@ Structure: (callback_query_id, message_id, callback_query_data, callback_query_m
 </dd>
 </dl>
 <dl class="simple">
-<dt>Note:</dt><dd><p>The function relies on ‘answerCallbackQuery’ to send an acknowledgement to the callback query and ‘editMessageText’ to modify the message based on the callback query’s data.</p>
+<dt>Note:</dt><dd><p>The function relies on ‘answer_callback_query’ to send an acknowledgement to the callback query and ‘edit_message_text’ to modify the message based on the callback query’s data.</p>
 </dd>
 </dl>
 </dd></dl>

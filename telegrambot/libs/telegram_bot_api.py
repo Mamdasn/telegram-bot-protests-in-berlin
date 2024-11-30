@@ -233,12 +233,13 @@ async def post_json(url, json_data):
     This function is a utility to send asynchronous POST requests to a specified URL with JSON-formatted data.
     If the request fails (status code not 200), it retries up to 5 times with a 0.5-second delay between attempts.
 
-    Args:
-        | url (str): The URL to which the request is to be sent.
-        | json_data (dict): The JSON data to be sent in the POST request.
+    :param url: The URL to which the request is to be sent.
+    :type url: str
+    :param json_data: The JSON data to be sent in the POST request.
+    :type json_data: dict
 
-    Returns:
-        str: The text response of the request if successful, or None if all retries fail.
+    :return: The result of the asynchronous operation to post json payload.
+    :rtype: Coroutine
     """
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=json_data) as response:
@@ -256,12 +257,13 @@ async def sendChatAction(chat_id, action="typing"):
 
     This function is used to send various chat actions to inform users in a chat about the ongoing activity (e.g., typing, uploading a photo).
 
-    Args:
-        | chat_id (str): Unique identifier for the target chat or username of the target channel.
-        | action (str): Type of action to broadcast (e.g., 'typing', 'upload_photo').
+    :param chat_id: Unique identifier for the target chat or username of the target channel.
+    :type chat_id: str
+    :param action: Type of action to broadcast (e.g., 'typing', 'upload_photo').
+    :type action: str, optional
 
-    Returns:
-        str: The text response of the request.
+    :return: The result of the asynchronous operation to send a chat action.
+    :rtype: Coroutine
     """
     url = f"{base_link}/sendChatAction"
     payload = {"chat_id": chat_id, "action": action}
@@ -281,15 +283,19 @@ async def send_message(
 
     This function allows sending a text message to a specified chat in Telegram. Additional parameters allow specifying a reply and custom keyboards.
 
-    Args:
-        | chat_id (str): Unique identifier for the target chat or username of the target channel.
-        | text (str): The text of the message to be sent.
-        | reply_to_message_id (str, optional): If the message is a reply, ID of the original message.
-        | reply_markup (str, optional): Additional interface options in JSON-serialized format.
-        | link_preview_options (dict, optional): A dictionary to control link preview behavior. It can include 'is_disabled' (bool) to enable or disable link previews.
+    :param chat_id: Unique identifier for the target chat or username of the target channel.
+    :type chat_id: str
+    :param text: The text of the message to be sent.
+    :type text: str
+    :param reply_to_message_id: If the message is a reply, ID of the original message.
+    :type reply_to_message_id: str, optional
+    :param reply_markup: Additional interface options in JSON-serialized format.
+    :type reply_markup: str, optional
+    :param link_preview_options: A dictionary to control link preview behavior. It can include 'is_disabled' (bool) to enable or disable link previews.
+    :type link_preview_options: dict, optional
 
-    Returns:
-        str: The text response of the request.
+    :return: The result of the asynchronous operation to send a message.
+    :rtype: Coroutine
     """
 
     await asyncio.create_task(sendChatAction(chat_id, action="typing"))
@@ -311,12 +317,13 @@ async def deleteMessage(chat_id, message_id):
 
     This function is used to delete a message in a Telegram chat based on its unique message ID.
 
-    Args:
-        | chat_id (str): Unique identifier for the target chat or username of the target channel.
-        | message_id (str): Identifier of the message to delete.
+    :param chat_id: Unique identifier for the target chat or username of the target channel.
+    :type chat_id: str
+    :param message_id: Identifier of the message to delete.
+    :type message_id: str
 
-    Returns:
-        str: The text response of the request.
+    :return: The result of the asynchronous operation to delete a sent message.
+    :rtype: Coroutine
     """
     url = f"{base_link}/deleteMessage"
     payload = {"chat_id": chat_id, "message_id": message_id}
@@ -332,15 +339,19 @@ async def editMessageText(
 
     This function allows editing the text of an existing message in a Telegram chat. It requires the message ID and the new text. Optionally, it can also update the reply markup.
 
-    Args:
-        | chat_id (str): Unique identifier for the target chat or username of the target channel.
-        | message_id (str): Identifier of the message to edit.
-        | text (str): New text to replace the existing message content.
-        | reply_markup (str, optional): Additional interface options in JSON-serialized format.
-        | link_preview_options (dict, optional): A dictionary to control link preview behavior. It can include 'is_disabled' (bool) to enable or disable link previews.
+    :param chat_id: Unique identifier for the target chat or username of the target channel.
+    :type chat_id: str
+    :param message_id: Identifier of the message to edit.
+    :type message_id: str
+    :param text: New text to replace the existing message content.
+    :type text: str
+    :param reply_markup: Additional interface options in JSON-serialized format.
+    :type reply_markup: str, optional
+    :param link_preview_options: A dictionary to control link preview behavior. It can include 'is_disabled' (bool) to enable or disable link previews.
+    :type link_preview_options: dict, optional
 
-    Returns:
-        str: The text response of the request.
+    :return: The result of the asynchronous operation to edit a sent message.
+    :rtype: Coroutine
     """
 
     url = f"{base_link}/editMessageText"
@@ -364,12 +375,13 @@ async def answerCallbackQuery(callback_query_id, text):
 
     This function is used to provide feedback to a user who initiated a callback query in a Telegram bot interaction.
 
-    Args:
-        | callback_query_id (str): Unique identifier for the callback query.
-        | text (str): Text of the notification to be shown to the user.
+    :param callback_query_id: Unique identifier for the callback query.
+    :type callback_query_id: str
+    :param text: Text of the notification to be shown to the user.
+    :type text: list
 
-    Returns:
-        str: The text response of the request.
+    :return: The result of the asynchronous operation to send the callback query.
+    :rtype: Coroutine
     """
     url = f"{base_link}/answerCallbackQuery"
     payload = {"callback_query_id": callback_query_id, "text": text}
@@ -388,10 +400,8 @@ async def answerInlineQuery(inline_query_id, results):
     :param results: A list of results for the inline query. Each item in the list should be a type of InlineQueryResult.
     :type results: list
 
-    :return: The result of the asynchronous operation to send the inline query response.
+    :return: The result of the asynchronous operation to send the inline query.
     :rtype: Coroutine
-
-    :raises ValueError: If the results are not properly formatted.
     """
     url = f"{base_link}/answerInlineQuery"
     payload = {
@@ -409,14 +419,17 @@ async def setMessageReaction(chat_id, message_id, reaction, is_big=False):
 
     This function enables a Telegram bot to react to a message within a chat using a specified emoji. The `is_big` parameter allows the choice of a larger animation for the reaction, enhancing the visibility of the reaction.
 
-    Args:
-        | chat_id (str): The unique identifier for the target chat or the username of the target channel.
-        | message_id (str): The identifier of the message to react to.
-        | reaction (str): The emoji used for the reaction, represented by a value from `ReactionTypeEmoji`.
-        | is_big (bool, optional): Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.
+    :param chat_id: Unique identifier for the target chat or username of the target channel.
+    :type chat_id: str
+    :param message_id: The identifier of the message to react to.
+    :type message_id: str
+    :param reaction: The emoji used for the reaction, represented by a value from `ReactionTypeEmoji`.
+    :type reaction: str
+    :param is_big: Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.
+    :type is_big: bool, optional
 
-    Returns:
-        str: A response indicating the success or failure of the reaction setting request.
+    :return: The result of the asynchronous operation to react to a message.
+    :rtype: Coroutine
     """
     url = f"{base_link}/setMessageReaction"
     payload = {

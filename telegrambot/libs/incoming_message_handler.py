@@ -126,12 +126,12 @@ def handle_commands(message):
             ]
         elif (message == "/today") or (message == "Today ✊"):
             date = datetime.datetime.today().strftime("%Y.%m.%d")
-            queries = fetcher.getBySpecificDate(date)
+            queries = fetcher.get_by_specific_date(date)
         elif (message == "/tomorrow") or (message == "Tomorrow 📢"):
             date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime(
                 "%Y.%m.%d"
             )
-            queries = fetcher.getBySpecificDate(date)
+            queries = fetcher.get_by_specific_date(date)
         elif (message.startswith("/calender")) or (message == "Calendar 🗓️"):
             start_date = datetime.datetime.today()
             if message.startswith("/calender"):
@@ -147,14 +147,14 @@ def handle_commands(message):
                 date = datetime.datetime.today() + datetime.timedelta(days=i)
                 if date.weekday() in (5, 6):
                     date = date.strftime("%Y.%m.%d")
-                    queries.extend(fetcher.getBySpecificDate(date))
+                    queries.extend(fetcher.get_by_specific_date(date))
         elif (message == "/week") or (message == "Week 📣"):
             queries = []
             for i in range(7):
                 date = (
                     datetime.datetime.today() + datetime.timedelta(days=i)
                 ).strftime("%Y.%m.%d")
-                queries.extend(fetcher.getBySpecificDate(date))
+                queries.extend(fetcher.get_by_specific_date(date))
         elif (message == "/info") or (message == "Info/Donation 💁"):
             queries = [
                 "If you have any suggestions, comments, or questions, please don't hesitate to reach out to me. Reach me at reach.s.farhad@gmail.com\nMy ton coin wallet address for donations: \nUQAqLrv2LMWy0gD6obOSCX9C5g_YCRvjjDqo7Ui1JYPz6aOh"
@@ -169,7 +169,7 @@ def handle_commands(message):
                 date_query = datetime.datetime.strptime(date, "%d.%m.%Y").strftime(
                     "%Y.%m.%d"
                 )
-                queries = fetcher.getBySpecificDate(date_query)
+                queries = fetcher.get_by_specific_date(date_query)
             except Exception as e:
                 print(e)
                 queries = [

@@ -92,7 +92,7 @@ class Fetchpostgres:
             cursor.fetchone()
         return self.connection(**self.params).commit()
 
-    def getBySpecificDate(self, date):
+    def get_by_specific_date(self, date):
         """
         Retrieve records from the PostgreSQL database by a specific date.
 
@@ -107,7 +107,7 @@ class Fetchpostgres:
             fetched_records = cursor.fetchall()
             return fetched_records
 
-    def getBySpecificTime(self, column, time):
+    def get_by_specific_time(self, column, time):
         """
         Retrieve records from the PostgreSQL database by a specific time.
 
@@ -174,7 +174,7 @@ class Fetchpostgres:
             fetched_records.sort(key=lambda x: x[0])
             return fetched_records
 
-    def getVonQuery(self, time):
+    def get_von_query(self, time):
         """
         Retrieve rows from the 'events' table where the 'Von' column matches a specific time.
 
@@ -183,10 +183,10 @@ class Fetchpostgres:
         :return: Rows from the database matching the specified time in the 'Von' column.
         :rtype: list
         """
-        f = partial(self.getBySpecificTime, column="Von")
+        f = partial(self.get_by_specific_time, column="Von")
         return f(time=time)
 
-    def getBisQuery(self, time):
+    def get_bis_query(self, time):
         """
         Retrieve rows from the 'events' table where the 'Bis' column matches a specific time.
 
@@ -195,10 +195,10 @@ class Fetchpostgres:
         :return: Rows from the database matching the specified time in the 'Bis' column.
         :rtype: list
         """
-        f = partial(self.getBySpecificTime, column="Bis")
+        f = partial(self.get_by_specific_time, column="Bis")
         return f(time=time)
 
-    def getThemaQuery(self, query):
+    def get_Thema_query(self, query):
         """
         Retrieve rows from the 'events' table where the 'Thema' column contains a specific query.
 
@@ -210,7 +210,7 @@ class Fetchpostgres:
         f = partial(self.get_query_column, column="Thema")
         return f(query=query)
 
-    def getPLZQuery(self, query):
+    def get_PLZ_query(self, query):
         """
         Retrieve rows from the 'events' table where the 'PLZ' column contains a specific query.
 
@@ -222,7 +222,7 @@ class Fetchpostgres:
         f = partial(self.get_query_column, column="PLZ")
         return f(query=query[0])
 
-    def getVersammlungsortQuery(self, query):
+    def get_Versammlungsort_query(self, query):
         """
         Retrieve rows from the 'events' table where the 'Versammlungsort' column contains a specific query.
 
@@ -234,7 +234,7 @@ class Fetchpostgres:
         f = partial(self.get_query_column, column="Versammlungsort")
         return f(query=query)
 
-    def getAufzugsstreckeQuery(self, query):
+    def get_Aufzugsstrecke_query(self, query):
         """
         Retrieve rows from the 'events' table where the 'Aufzugsstrecke' column contains a specific query.
 

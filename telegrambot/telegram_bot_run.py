@@ -36,10 +36,8 @@ def abortion_method():
 
 @app.route("/", methods=["POST"])
 def index():
-    msg = request.get_json(force=True)
-    msg_http_code = str(msg)
-    print(msg_http_code)
-    incoming_message_handler.manage_messages(msg)
+    received_message = request.get_json(force=True)
+    incoming_message_handler.manage_messages(received_message)
     return Response("Ok", status=200)
 
 

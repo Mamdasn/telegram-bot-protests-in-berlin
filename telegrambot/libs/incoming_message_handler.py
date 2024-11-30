@@ -292,8 +292,8 @@ def handle_message(chat_id, message_info, chat_type="private"):
             reply_markup = reply_keyboard_markup
 
         reaction = [{"type": "emoji", "emoji": pick_randomly(emojies)}]
-        response_react = asyncio.run(setMessageReaction(chat_id, message_id, reaction))
-        response_message = asyncio.run(
+        asyncio.run(setMessageReaction(chat_id, message_id, reaction))
+        asyncio.run(
             send_message(
                 chat_id=chat_id,
                 text=page,
@@ -355,7 +355,7 @@ def handle_inline_query(inline_query_id, message_info):
                 },
             }
         )
-    response_inlinequery = asyncio.run(answerInlineQuery(inline_query_id=inline_query_id, results=results))
+    asyncio.run(answerInlineQuery(inline_query_id=inline_query_id, results=results))
 
 
 def handle_callback_query(chat_id, message_info):
@@ -402,7 +402,7 @@ def handle_callback_query(chat_id, message_info):
     if reply_markup_page:
         reply_markup = reply_markup_page
     asyncio.run(answerCallbackQuery(callback_query_id, text=""))
-    response_edit_message = asyncio.run(
+    asyncio.run(
         editMessageText(
             chat_id=chat_id,
             message_id=callback_query_message_id,

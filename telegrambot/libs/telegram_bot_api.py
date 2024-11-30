@@ -3,6 +3,8 @@ from functools import partial
 
 import aiohttp
 
+from time import sleep
+
 from .credentials import config
 
 token = config.TG_BOT_TOKEN
@@ -240,7 +242,12 @@ async def post_json(url, json_data):
     """
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=json_data) as response:
-            return await response.text()
+            for i in range(5):
+                if response.status != 200:
+                    sleep(0.5)
+                    continue
+                else:
+                    return await response.text()
 
 
 async def sendChatAction(chat_id, action="typing"):

@@ -1,5 +1,6 @@
 import asyncio
 from functools import partial
+from time import sleep
 
 import aiohttp
 
@@ -240,7 +241,12 @@ async def post_json(url, json_data):
     """
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=json_data) as response:
-            return await response.text()
+            for i in range(5):
+                if response.status != 200:
+                    sleep(0.5)
+                    continue
+                else:
+                    return await response.text()
 
 
 async def sendChatAction(chat_id, action="typing"):

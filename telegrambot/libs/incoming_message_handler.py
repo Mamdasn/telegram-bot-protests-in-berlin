@@ -205,7 +205,6 @@ For example: <i>'@ProtestsBerlinBot ukraine'</i>"""
 
         if message.startswith("/search") and (message != "/search"):
             search_query = message.split(" ", 1)[-1].split(",")
-            print(search_query)
             queries = fetcher.get_query_any_column(
                 search_query,
                 columns=["Aufzugsstrecke", "Versammlungsort", "Thema", "PLZ", "Datum"],
@@ -293,9 +292,8 @@ def handle_message(chat_id, message_info, chat_type="private"):
             reply_markup = reply_keyboard_markup
 
         reaction = [{"type": "emoji", "emoji": pick_randomly(emojies)}]
-        r = asyncio.run(setMessageReaction(chat_id, message_id, reaction))
-        print("React response:", r)
-        r = asyncio.run(
+        asyncio.run(setMessageReaction(chat_id, message_id, reaction))
+        asyncio.run(
             send_message(
                 chat_id=chat_id,
                 text=page,
@@ -304,7 +302,6 @@ def handle_message(chat_id, message_info, chat_type="private"):
                 link_preview_options={"is_disabled": True},
             )
         )
-        print("Sent response:", r)
 
 
 def handle_inline_query(inline_query_id, message_info):
@@ -358,8 +355,7 @@ def handle_inline_query(inline_query_id, message_info):
                 },
             }
         )
-    r = asyncio.run(answerInlineQuery(inline_query_id=inline_query_id, results=results))
-    print(r)
+    asyncio.run(answerInlineQuery(inline_query_id=inline_query_id, results=results))
 
 
 def handle_callback_query(chat_id, message_info):
@@ -400,15 +396,13 @@ def handle_callback_query(chat_id, message_info):
     else:
         command = callback_query_data
         queries, reply_markup = handle_commands(command)
-    print("callback_query_data:", callback_query_data)
-    print("command:", command)
     reply_markup_page, reply = message_and_reply_markup_format(
         page_number, queries, command
     )
     if reply_markup_page:
         reply_markup = reply_markup_page
     asyncio.run(answerCallbackQuery(callback_query_id, text=""))
-    r = asyncio.run(
+    asyncio.run(
         editMessageText(
             chat_id=chat_id,
             message_id=callback_query_message_id,
@@ -417,4 +411,3 @@ def handle_callback_query(chat_id, message_info):
             link_preview_options={"is_disabled": True},
         )
     )
-    print(r)

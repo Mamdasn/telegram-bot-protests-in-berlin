@@ -228,16 +228,17 @@ def parse_message(msg):
 
 async def post_json(url, json_data):
     """
-    Asynchronously sends a POST request with JSON data.
+    Asynchronously sends a POST request with JSON data and retries on failure.
 
     This function is a utility to send asynchronous POST requests to a specified URL with JSON-formatted data.
+    If the request fails (status code not 200), it retries up to 5 times with a 0.5-second delay between attempts.
 
     Args:
         | url (str): The URL to which the request is to be sent.
         | json_data (dict): The JSON data to be sent in the POST request.
 
     Returns:
-        str: The text response of the request.
+        str: The text response of the request if successful, or None if all retries fail.
     """
     async with aiohttp.ClientSession() as session:
         async with session.post(url, json=json_data) as response:

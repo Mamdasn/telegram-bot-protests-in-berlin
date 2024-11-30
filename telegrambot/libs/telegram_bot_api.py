@@ -1,9 +1,8 @@
 import asyncio
 from functools import partial
+from time import sleep
 
 import aiohttp
-
-from time import sleep
 
 from .credentials import config
 

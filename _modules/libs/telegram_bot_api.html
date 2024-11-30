@@ -318,16 +318,17 @@
 <a class="viewcode-back" href="../../modules.html#libs.telegram_bot_api.post_json">[docs]</a>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">post_json</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json_data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Asynchronously sends a POST request with JSON data.</span>
+<span class="sd">    Asynchronously sends a POST request with JSON data and retries on failure.</span>
 
 <span class="sd">    This function is a utility to send asynchronous POST requests to a specified URL with JSON-formatted data.</span>
+<span class="sd">    If the request fails (status code not 200), it retries up to 5 times with a 0.5-second delay between attempts.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        | url (str): The URL to which the request is to be sent.</span>
 <span class="sd">        | json_data (dict): The JSON data to be sent in the POST request.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request.</span>
+<span class="sd">        str: The text response of the request if successful, or None if all retries fail.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>

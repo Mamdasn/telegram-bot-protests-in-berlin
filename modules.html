@@ -229,15 +229,16 @@ The structure of the returned tuple varies depending on the message type.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="libs.telegram_bot_api.post_json">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libs.telegram_bot_api.</span></span><span class="sig-name descname"><span class="pre">post_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/telegram_bot_api.html#post_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.telegram_bot_api.post_json" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously sends a POST request with JSON data.</p>
-<p>This function is a utility to send asynchronous POST requests to a specified URL with JSON-formatted data.</p>
+<dd><p>Asynchronously sends a POST request with JSON data and retries on failure.</p>
+<p>This function is a utility to send asynchronous POST requests to a specified URL with JSON-formatted data.
+If the request fails (status code not 200), it retries up to 5 times with a 0.5-second delay between attempts.</p>
 <dl>
 <dt>Args:</dt><dd><div class="line-block">
 <div class="line">url (str): The URL to which the request is to be sent.</div>
 <div class="line">json_data (dict): The JSON data to be sent in the POST request.</div>
 </div>
 </dd>
-<dt>Returns:</dt><dd><p>str: The text response of the request.</p>
+<dt>Returns:</dt><dd><p>str: The text response of the request if successful, or None if all retries fail.</p>
 </dd>
 </dl>
 </dd></dl>

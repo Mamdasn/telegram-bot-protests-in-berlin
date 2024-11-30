@@ -185,9 +185,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getBySpecificDate">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getBySpecificDate">[docs]</a>
-    <span class="k">def</span> <span class="nf">getBySpecificDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_by_specific_date">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_by_specific_date">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_by_specific_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve records from the PostgreSQL database by a specific date.</span>
 
@@ -203,9 +203,9 @@
             <span class="k">return</span> <span class="n">fetched_records</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getBySpecificTime">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getBySpecificTime">[docs]</a>
-    <span class="k">def</span> <span class="nf">getBySpecificTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_by_specific_time">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_by_specific_time">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_by_specific_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve records from the PostgreSQL database by a specific time.</span>
 
@@ -279,9 +279,9 @@
             <span class="k">return</span> <span class="n">fetched_records</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getVonQuery">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getVonQuery">[docs]</a>
-    <span class="k">def</span> <span class="nf">getVonQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_von_query">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_von_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_von_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Von&#39; column matches a specific time.</span>
 
@@ -290,13 +290,13 @@
 <span class="sd">        :return: Rows from the database matching the specified time in the &#39;Von&#39; column.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getBySpecificTime</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Von&quot;</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_by_specific_time</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Von&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getBisQuery">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getBisQuery">[docs]</a>
-    <span class="k">def</span> <span class="nf">getBisQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_bis_query">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_bis_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_bis_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Bis&#39; column matches a specific time.</span>
 
@@ -305,13 +305,13 @@
 <span class="sd">        :return: Rows from the database matching the specified time in the &#39;Bis&#39; column.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getBySpecificTime</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Bis&quot;</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_by_specific_time</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;Bis&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getThemaQuery">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getThemaQuery">[docs]</a>
-    <span class="k">def</span> <span class="nf">getThemaQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_Thema_query">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_Thema_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_Thema_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Thema&#39; column contains a specific query.</span>
 
@@ -324,9 +324,9 @@
         <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getPLZQuery">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getPLZQuery">[docs]</a>
-    <span class="k">def</span> <span class="nf">getPLZQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_PLZ_query">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_PLZ_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_PLZ_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;PLZ&#39; column contains a specific query.</span>
 
@@ -339,9 +339,9 @@
         <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getVersammlungsortQuery">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery">[docs]</a>
-    <span class="k">def</span> <span class="nf">getVersammlungsortQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_Versammlungsort_query">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_Versammlungsort_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_Versammlungsort_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Versammlungsort&#39; column contains a specific query.</span>
 
@@ -354,9 +354,9 @@
         <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Fetchpostgres.getAufzugsstreckeQuery">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery">[docs]</a>
-    <span class="k">def</span> <span class="nf">getAufzugsstreckeQuery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_Aufzugsstrecke_query">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_Aufzugsstrecke_query">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_Aufzugsstrecke_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Aufzugsstrecke&#39; column contains a specific query.</span>
 

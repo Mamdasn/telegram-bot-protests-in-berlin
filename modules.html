@@ -88,16 +88,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.start"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.start()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.close"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.close()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.store_client_data"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.store_client_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getBySpecificDate"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getBySpecificDate()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getBySpecificTime"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getBySpecificTime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_by_specific_date"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_by_specific_date()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_by_specific_time"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_by_specific_time()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_query_column"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_query_column()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_query_any_column"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_query_any_column()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getVonQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getVonQuery()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getBisQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getBisQuery()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getThemaQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getThemaQuery()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getPLZQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getPLZQuery()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getVersammlungsortQuery()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.getAufzugsstreckeQuery()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_von_query"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_von_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_bis_query"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_bis_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_Thema_query"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_Thema_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_PLZ_query"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_PLZ_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_Versammlungsort_query"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_Versammlungsort_query()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_Aufzugsstrecke_query"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_Aufzugsstrecke_query()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.escape_special_html_characters"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.escape_special_html_characters()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.format_postgres_output"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.format_postgres_output()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.format_postgre_queries"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.format_postgre_queries()</span></code></a></li>
@@ -750,8 +750,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getBySpecificDate">
-<span class="sig-name descname"><span class="pre">getBySpecificDate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getBySpecificDate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getBySpecificDate" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_by_specific_date">
+<span class="sig-name descname"><span class="pre">get_by_specific_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_by_specific_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_by_specific_date" title="Link to this definition"></a></dt>
 <dd><p>Retrieve records from the PostgreSQL database by a specific date.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -767,8 +767,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getBySpecificTime">
-<span class="sig-name descname"><span class="pre">getBySpecificTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getBySpecificTime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getBySpecificTime" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_by_specific_time">
+<span class="sig-name descname"><span class="pre">get_by_specific_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_by_specific_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_by_specific_time" title="Link to this definition"></a></dt>
 <dd><p>Retrieve records from the PostgreSQL database by a specific time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -827,8 +827,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getVonQuery">
-<span class="sig-name descname"><span class="pre">getVonQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getVonQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getVonQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_von_query">
+<span class="sig-name descname"><span class="pre">get_von_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_von_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_von_query" title="Link to this definition"></a></dt>
 <dd><p>Retrieve rows from the ‘events’ table where the ‘Von’ column matches a specific time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -844,8 +844,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getBisQuery">
-<span class="sig-name descname"><span class="pre">getBisQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getBisQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getBisQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_bis_query">
+<span class="sig-name descname"><span class="pre">get_bis_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_bis_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_bis_query" title="Link to this definition"></a></dt>
 <dd><p>Retrieve rows from the ‘events’ table where the ‘Bis’ column matches a specific time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -861,8 +861,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getThemaQuery">
-<span class="sig-name descname"><span class="pre">getThemaQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getThemaQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getThemaQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_Thema_query">
+<span class="sig-name descname"><span class="pre">get_Thema_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_Thema_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_Thema_query" title="Link to this definition"></a></dt>
 <dd><p>Retrieve rows from the ‘events’ table where the ‘Thema’ column contains a specific query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -878,8 +878,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getPLZQuery">
-<span class="sig-name descname"><span class="pre">getPLZQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getPLZQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getPLZQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_PLZ_query">
+<span class="sig-name descname"><span class="pre">get_PLZ_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_PLZ_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_PLZ_query" title="Link to this definition"></a></dt>
 <dd><p>Retrieve rows from the ‘events’ table where the ‘PLZ’ column contains a specific query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -895,8 +895,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getVersammlungsortQuery">
-<span class="sig-name descname"><span class="pre">getVersammlungsortQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getVersammlungsortQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getVersammlungsortQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_Versammlungsort_query">
+<span class="sig-name descname"><span class="pre">get_Versammlungsort_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_Versammlungsort_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_Versammlungsort_query" title="Link to this definition"></a></dt>
 <dd><p>Retrieve rows from the ‘events’ table where the ‘Versammlungsort’ column contains a specific query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -912,8 +912,8 @@ deployment environments.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery">
-<span class="sig-name descname"><span class="pre">getAufzugsstreckeQuery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.getAufzugsstreckeQuery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.getAufzugsstreckeQuery" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_Aufzugsstrecke_query">
+<span class="sig-name descname"><span class="pre">get_Aufzugsstrecke_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_Aufzugsstrecke_query"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_Aufzugsstrecke_query" title="Link to this definition"></a></dt>
 <dd><p>Retrieve rows from the ‘events’ table where the ‘Aufzugsstrecke’ column contains a specific query.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -323,12 +323,13 @@
 <span class="sd">    This function is a utility to send asynchronous POST requests to a specified URL with JSON-formatted data.</span>
 <span class="sd">    If the request fails (status code not 200), it retries up to 5 times with a 0.5-second delay between attempts.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | url (str): The URL to which the request is to be sent.</span>
-<span class="sd">        | json_data (dict): The JSON data to be sent in the POST request.</span>
+<span class="sd">    :param url: The URL to which the request is to be sent.</span>
+<span class="sd">    :type url: str</span>
+<span class="sd">    :param json_data: The JSON data to be sent in the POST request.</span>
+<span class="sd">    :type json_data: dict</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request if successful, or None if all retries fail.</span>
+<span class="sd">    :return: The result of the asynchronous operation to post json payload.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">json_data</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
@@ -349,12 +350,13 @@
 
 <span class="sd">    This function is used to send various chat actions to inform users in a chat about the ongoing activity (e.g., typing, uploading a photo).</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | chat_id (str): Unique identifier for the target chat or username of the target channel.</span>
-<span class="sd">        | action (str): Type of action to broadcast (e.g., &#39;typing&#39;, &#39;upload_photo&#39;).</span>
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel.</span>
+<span class="sd">    :type chat_id: str</span>
+<span class="sd">    :param action: Type of action to broadcast (e.g., &#39;typing&#39;, &#39;upload_photo&#39;).</span>
+<span class="sd">    :type action: str, optional</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request.</span>
+<span class="sd">    :return: The result of the asynchronous operation to send a chat action.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/sendChatAction&quot;</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chat_id&quot;</span><span class="p">:</span> <span class="n">chat_id</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">}</span>
@@ -377,15 +379,19 @@
 
 <span class="sd">    This function allows sending a text message to a specified chat in Telegram. Additional parameters allow specifying a reply and custom keyboards.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | chat_id (str): Unique identifier for the target chat or username of the target channel.</span>
-<span class="sd">        | text (str): The text of the message to be sent.</span>
-<span class="sd">        | reply_to_message_id (str, optional): If the message is a reply, ID of the original message.</span>
-<span class="sd">        | reply_markup (str, optional): Additional interface options in JSON-serialized format.</span>
-<span class="sd">        | link_preview_options (dict, optional): A dictionary to control link preview behavior. It can include &#39;is_disabled&#39; (bool) to enable or disable link previews.</span>
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel.</span>
+<span class="sd">    :type chat_id: str</span>
+<span class="sd">    :param text: The text of the message to be sent.</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :param reply_to_message_id: If the message is a reply, ID of the original message.</span>
+<span class="sd">    :type reply_to_message_id: str, optional</span>
+<span class="sd">    :param reply_markup: Additional interface options in JSON-serialized format.</span>
+<span class="sd">    :type reply_markup: str, optional</span>
+<span class="sd">    :param link_preview_options: A dictionary to control link preview behavior. It can include &#39;is_disabled&#39; (bool) to enable or disable link previews.</span>
+<span class="sd">    :type link_preview_options: dict, optional</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request.</span>
+<span class="sd">    :return: The result of the asynchronous operation to send a message.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">sendChatAction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;typing&quot;</span><span class="p">))</span>
@@ -410,12 +416,13 @@
 
 <span class="sd">    This function is used to delete a message in a Telegram chat based on its unique message ID.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | chat_id (str): Unique identifier for the target chat or username of the target channel.</span>
-<span class="sd">        | message_id (str): Identifier of the message to delete.</span>
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel.</span>
+<span class="sd">    :type chat_id: str</span>
+<span class="sd">    :param message_id: Identifier of the message to delete.</span>
+<span class="sd">    :type message_id: str</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request.</span>
+<span class="sd">    :return: The result of the asynchronous operation to delete a sent message.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/deleteMessage&quot;</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;chat_id&quot;</span><span class="p">:</span> <span class="n">chat_id</span><span class="p">,</span> <span class="s2">&quot;message_id&quot;</span><span class="p">:</span> <span class="n">message_id</span><span class="p">}</span>
@@ -434,15 +441,19 @@
 
 <span class="sd">    This function allows editing the text of an existing message in a Telegram chat. It requires the message ID and the new text. Optionally, it can also update the reply markup.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | chat_id (str): Unique identifier for the target chat or username of the target channel.</span>
-<span class="sd">        | message_id (str): Identifier of the message to edit.</span>
-<span class="sd">        | text (str): New text to replace the existing message content.</span>
-<span class="sd">        | reply_markup (str, optional): Additional interface options in JSON-serialized format.</span>
-<span class="sd">        | link_preview_options (dict, optional): A dictionary to control link preview behavior. It can include &#39;is_disabled&#39; (bool) to enable or disable link previews.</span>
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel.</span>
+<span class="sd">    :type chat_id: str</span>
+<span class="sd">    :param message_id: Identifier of the message to edit.</span>
+<span class="sd">    :type message_id: str</span>
+<span class="sd">    :param text: New text to replace the existing message content.</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :param reply_markup: Additional interface options in JSON-serialized format.</span>
+<span class="sd">    :type reply_markup: str, optional</span>
+<span class="sd">    :param link_preview_options: A dictionary to control link preview behavior. It can include &#39;is_disabled&#39; (bool) to enable or disable link previews.</span>
+<span class="sd">    :type link_preview_options: dict, optional</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request.</span>
+<span class="sd">    :return: The result of the asynchronous operation to edit a sent message.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/editMessageText&quot;</span>
@@ -469,12 +480,13 @@
 
 <span class="sd">    This function is used to provide feedback to a user who initiated a callback query in a Telegram bot interaction.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | callback_query_id (str): Unique identifier for the callback query.</span>
-<span class="sd">        | text (str): Text of the notification to be shown to the user.</span>
+<span class="sd">    :param callback_query_id: Unique identifier for the callback query.</span>
+<span class="sd">    :type callback_query_id: str</span>
+<span class="sd">    :param text: Text of the notification to be shown to the user.</span>
+<span class="sd">    :type text: list</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: The text response of the request.</span>
+<span class="sd">    :return: The result of the asynchronous operation to send the callback query.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/answerCallbackQuery&quot;</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;callback_query_id&quot;</span><span class="p">:</span> <span class="n">callback_query_id</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">}</span>
@@ -496,10 +508,8 @@
 <span class="sd">    :param results: A list of results for the inline query. Each item in the list should be a type of InlineQueryResult.</span>
 <span class="sd">    :type results: list</span>
 
-<span class="sd">    :return: The result of the asynchronous operation to send the inline query response.</span>
+<span class="sd">    :return: The result of the asynchronous operation to send the inline query.</span>
 <span class="sd">    :rtype: Coroutine</span>
-
-<span class="sd">    :raises ValueError: If the results are not properly formatted.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/answerInlineQuery&quot;</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
@@ -520,14 +530,17 @@
 
 <span class="sd">    This function enables a Telegram bot to react to a message within a chat using a specified emoji. The `is_big` parameter allows the choice of a larger animation for the reaction, enhancing the visibility of the reaction.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        | chat_id (str): The unique identifier for the target chat or the username of the target channel.</span>
-<span class="sd">        | message_id (str): The identifier of the message to react to.</span>
-<span class="sd">        | reaction (str): The emoji used for the reaction, represented by a value from `ReactionTypeEmoji`.</span>
-<span class="sd">        | is_big (bool, optional): Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.</span>
+<span class="sd">    :param chat_id: Unique identifier for the target chat or username of the target channel.</span>
+<span class="sd">    :type chat_id: str</span>
+<span class="sd">    :param message_id: The identifier of the message to react to.</span>
+<span class="sd">    :type message_id: str</span>
+<span class="sd">    :param reaction: The emoji used for the reaction, represented by a value from `ReactionTypeEmoji`.</span>
+<span class="sd">    :type reaction: str</span>
+<span class="sd">    :param is_big: Indicates whether the reaction animation should be displayed in a larger size. Defaults to False, showing a standard-sized animation.</span>
+<span class="sd">    :type is_big: bool, optional</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: A response indicating the success or failure of the reaction setting request.</span>
+<span class="sd">    :return: The result of the asynchronous operation to react to a message.</span>
+<span class="sd">    :rtype: Coroutine</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_link</span><span class="si">}</span><span class="s2">/setMessageReaction&quot;</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>

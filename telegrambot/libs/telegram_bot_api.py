@@ -251,7 +251,7 @@ async def post_json(url, json_data):
                     return await response.text()
 
 
-async def sendChatAction(chat_id, action="typing"):
+async def send_chat_action(chat_id, action="typing"):
     """
     Asynchronously sends a chat action to a Telegram chat.
 
@@ -298,7 +298,7 @@ async def send_message(
     :rtype: Coroutine
     """
 
-    await asyncio.create_task(sendChatAction(chat_id, action="typing"))
+    await asyncio.create_task(send_chat_action(chat_id, action="typing"))
     url = f"{base_link}/sendMessage"
     payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     if reply_to_message_id:
@@ -311,7 +311,7 @@ async def send_message(
     return await r
 
 
-async def deleteMessage(chat_id, message_id):
+async def delete_message(chat_id, message_id):
     """
     Asynchronously deletes a message from a Telegram chat.
 
@@ -331,7 +331,7 @@ async def deleteMessage(chat_id, message_id):
     return await r
 
 
-async def editMessageText(
+async def edit_message_text(
     chat_id, message_id, text, reply_markup=None, link_preview_options=None
 ):
     """
@@ -369,7 +369,7 @@ async def editMessageText(
     return await r
 
 
-async def answerCallbackQuery(callback_query_id, text):
+async def answer_callback_query(callback_query_id, text):
     """
     Asynchronously sends a response to a callback query in Telegram.
 
@@ -389,7 +389,7 @@ async def answerCallbackQuery(callback_query_id, text):
     return await r
 
 
-async def answerInlineQuery(inline_query_id, results):
+async def answer_inline_query(inline_query_id, results):
     """
     Asynchronously sends a response to an inline query in Telegram.
 
@@ -413,7 +413,7 @@ async def answerInlineQuery(inline_query_id, results):
     return await r
 
 
-async def setMessageReaction(chat_id, message_id, reaction, is_big=False):
+async def set_message_reaction(chat_id, message_id, reaction, is_big=False):
     """
     Asynchronously sets a reaction emoji to a specific message in a Telegram chat.
 

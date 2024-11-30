@@ -3,12 +3,12 @@ import datetime
 from random import choice as pick_randomly
 
 from .telegram_bot_api import (
-    answerCallbackQuery,
-    answerInlineQuery,
-    editMessageText,
+    answer_callback_query,
+    answer_inline_query,
+    edit_message_text,
     parse_message,
     send_message,
-    setMessageReaction,
+    set_message_reaction,
 )
 from .tools_collection import get_calender  # get_next_period_of_time,
 from .tools_collection import (
@@ -292,7 +292,7 @@ def handle_message(chat_id, message_info, chat_type="private"):
             reply_markup = reply_keyboard_markup
 
         reaction = [{"type": "emoji", "emoji": pick_randomly(emojies)}]
-        asyncio.run(setMessageReaction(chat_id, message_id, reaction))
+        asyncio.run(set_message_reaction(chat_id, message_id, reaction))
         asyncio.run(
             send_message(
                 chat_id=chat_id,
@@ -355,7 +355,7 @@ def handle_inline_query(inline_query_id, message_info):
                 },
             }
         )
-    asyncio.run(answerInlineQuery(inline_query_id=inline_query_id, results=results))
+    asyncio.run(answer_inline_query(inline_query_id=inline_query_id, results=results))
 
 
 def handle_callback_query(chat_id, message_info):
@@ -370,13 +370,13 @@ def handle_callback_query(chat_id, message_info):
                          Structure: (callback_query_id, message_id, callback_query_data, callback_query_message_id).
     :type message_info: tuple
 
-    The function parses the callback query data, checks if it contains pagination information, and processes the command accordingly. It then formats a reply message and updates the message text in the Telegram chat using the 'editMessageText' function.
+    The function parses the callback query data, checks if it contains pagination information, and processes the command accordingly. It then formats a reply message and updates the message text in the Telegram chat using the 'edit_message_text' function.
 
     :return: None. The function performs its operations asynchronously and sends responses directly to the Telegram chat.
     :rtype: NoneType
 
     Note:
-        The function relies on 'answerCallbackQuery' to send an acknowledgement to the callback query and 'editMessageText' to modify the message based on the callback query's data.
+        The function relies on 'answer_callback_query' to send an acknowledgement to the callback query and 'edit_message_text' to modify the message based on the callback query's data.
     """
     (
         callback_query_id,
@@ -401,9 +401,9 @@ def handle_callback_query(chat_id, message_info):
     )
     if reply_markup_page:
         reply_markup = reply_markup_page
-    asyncio.run(answerCallbackQuery(callback_query_id, text=""))
+    asyncio.run(answer_callback_query(callback_query_id, text=""))
     asyncio.run(
-        editMessageText(
+        edit_message_text(
             chat_id=chat_id,
             message_id=callback_query_message_id,
             text=reply,

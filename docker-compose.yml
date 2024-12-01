@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   tor_privoxy:  
     container_name: tor_privoxy  

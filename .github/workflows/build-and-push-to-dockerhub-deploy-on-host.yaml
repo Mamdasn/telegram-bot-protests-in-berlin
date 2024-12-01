@@ -32,7 +32,7 @@ jobs:
 
       - name: Build and push arm64 image
         run: |
-        docker buildx bake --push --file docker-compose.yml
+          docker buildx bake --push --file docker-compose.yml
 
   deploy-on-host:
     runs-on: self-hosted

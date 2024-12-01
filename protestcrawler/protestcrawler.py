@@ -7,7 +7,7 @@ from time import sleep
 from postgresconf import config
 from ProtestLibs import ProtestGrabber, ProtestPostgres
 
-from .credentials import config as envconfig
+from credentials import config as envconfig
 
 
 class EventCrawler:

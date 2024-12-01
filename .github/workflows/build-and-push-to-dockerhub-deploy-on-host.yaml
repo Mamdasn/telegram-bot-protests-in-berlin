@@ -42,10 +42,7 @@ jobs:
       env:
         BRANCH: main
         CONTAINER_DIR: Action-Home/telegram-bot-protests-in-berlin
-        CONTAINER_NAME_1: postgres_db
-        CONTAINER_NAME_2: protestcrawler
-        CONTAINER_NAME_3: telegrambot
-        CONTAINER_NAME_4: tor_privoxy
+        CONTAINER_NAMES: "postgres_db protestcrawler telegrambot tor_privoxy"
         TG_BOT_TOKEN: ${{secrets.TG_BOT_TOKEN}}
         DB_UPDATE_PERIOD: ${{secrets.DB_UPDATE_PERIOD}}
         IP_ADDRESS: ${{secrets.IP_HOST}}
@@ -64,8 +61,12 @@ jobs:
         docker system prune -af  && 
         docker compose up -d  && 
         echo Check whether the docker containers are running...  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_1}$ --filter status=running | grep -q .  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_2}$ --filter status=running | grep -q .  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_3}$ --filter status=running | grep -q .  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_4}$ --filter status=running | grep -q .  && 
+        for CONTAINER_NAME in $CONTAINER_NAMES; do
+          if ! docker ps -q --filter name=^${CONTAINER_NAME}$ --filter status=running | grep -q .; then
+            echo "Container $CONTAINER_NAME is not running."
+            exit 1
+          else
+            echo "Container $CONTAINER_NAME is running."
+          fi
+        done &&
         echo All docker containers are running.

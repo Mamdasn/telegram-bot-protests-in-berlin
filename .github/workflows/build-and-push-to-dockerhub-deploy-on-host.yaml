@@ -64,8 +64,8 @@ jobs:
         docker system prune -af  && 
         docker compose up -d  && 
         echo Check whether the docker containers are running...  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_1}$ | grep -q .  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_2}$ | grep -q .  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_3}$ | grep -q .  && 
-        docker ps -q --filter name=^${CONTAINER_NAME_4}$ | grep -q .  && 
+        docker ps -q --filter name=^${CONTAINER_NAME_1}$ --filter status=running | grep -q .  && 
+        docker ps -q --filter name=^${CONTAINER_NAME_2}$ --filter status=running | grep -q .  && 
+        docker ps -q --filter name=^${CONTAINER_NAME_3}$ --filter status=running | grep -q .  && 
+        docker ps -q --filter name=^${CONTAINER_NAME_4}$ --filter status=running | grep -q .  && 
         echo All docker containers are running.

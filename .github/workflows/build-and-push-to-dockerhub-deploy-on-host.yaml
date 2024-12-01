@@ -28,7 +28,7 @@ jobs:
       - name: Set up Docker Buildx with QEMU
         uses: docker/setup-buildx-action@v3
         with:
-          platform: [linux/arm64]
+          platform: linux/arm64
           install: true
 
       - name: Build and push arm64 image

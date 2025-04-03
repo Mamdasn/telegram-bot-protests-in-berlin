@@ -4,14 +4,13 @@ import libs.incoming_message_handler as incoming_message_handler
 from flask import Flask, abort, request
 from flask.wrappers import Response
 from libs.postgres_api import Fetchpostgres
-from postgresconf.config import config as pconfig
+from libs.credentials import config
 
-params = pconfig()
 print("Trying to connect to the postgres backend.", end="")
 for _ in range(100):
     try:
         print(".", end=".")
-        fetcher = Fetchpostgres(params)
+        fetcher = Fetchpostgres(config.POSTGRES)
         print()
         print("Postgres connection established.")
         break

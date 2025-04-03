@@ -24,7 +24,11 @@ services:
     build: "protestcrawler"
     image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.0.0}
     environment:
-      - DB_UPDATE_PERIOD=${DB_UPDATE_PERIOD}
+        DB_UPDATE_PERIOD: ${DB_UPDATE_PERIOD}
+        POSTGRES_USER: 'postgres'
+        POSTGRES_PASSWORD: '1234'
+        POSTGRES_DB: 'postgres'
+        POSTGRES_HOST: 'postgres_db'
     volumes:
       - ./protestcrawler/output:/app/output
     command: ["sh", "-c", "python protestcrawler.py >> /app/output/protestcrawler.logs 2>&1"]
@@ -35,8 +39,12 @@ services:
     ports:
       - '443:443' # telegram server communication
     environment:
-      - IP_ADDRESS=${IP_ADDRESS}
-      - TG_BOT_TOKEN=${TG_BOT_TOKEN}
+        IP_ADDRESS: ${IP_ADDRESS}
+        TG_BOT_TOKEN: ${TG_BOT_TOKEN}
+        POSTGRES_USER: 'postgres'
+        POSTGRES_PASSWORD: '1234'
+        POSTGRES_DB: 'postgres'
+        POSTGRES_HOST: 'postgres_db'
     volumes:
       - ./telegrambot/output:/app/output
     command: ["sh", "-c", "sh /app/entrypoint.sh && nginx && gunicorn -w 2 --bind 0.0.0.0:5000 wsgi:app >> /app/output/telegram.logs 2>&1;"]

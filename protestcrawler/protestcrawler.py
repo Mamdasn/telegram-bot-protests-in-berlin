@@ -4,7 +4,6 @@ from datetime import datetime
 from queue import Queue
 from time import sleep
 
-from postgresconf import config
 from ProtestLibs import ProtestGrabber, ProtestPostgres
 
 from credentials import config as envconfig
@@ -42,7 +41,7 @@ class EventCrawler:
     def __init__(self, url, data_grabber, postgres_worker):
         self.url = url
         self.data_grabber = data_grabber()
-        self.postgres_worker = postgres_worker(config())
+        self.postgres_worker = postgres_worker(envconfig.POSTGRES)
 
     def get_event_list(self):
         return asyncio.run(self.data_grabber.get_protest_list(self.url))

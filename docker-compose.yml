@@ -38,9 +38,10 @@ services:
     build: "telegrambot"
     image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:4.0.0}
     ports:
-      - '443:443' # telegram server communication
+      - "${SSL_PORT:-443}:443" # telegram server communication
     environment:
         <<: *postgres-cred-shared
+        SSL_PORT: ${SSL_PORT:-443}
         IP_ADDRESS: ${IP_ADDRESS}
         TG_BOT_TOKEN: ${TG_BOT_TOKEN}
         POSTGRES_HOST: 'postgres_db'

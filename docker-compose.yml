@@ -1,3 +1,8 @@
+x-postgres-cred-env-var: &postgres-cred-shared
+    POSTGRES_USER: 'postgres'
+    POSTGRES_PASSWORD: '1234'
+    POSTGRES_DB: 'postgres'
+
 services:
   tor_privoxy:
     container_name: tor_privoxy
@@ -11,9 +16,7 @@ services:
     restart: 'always'
     container_name: postgres_db
     environment:
-        POSTGRES_USER: 'postgres'
-        POSTGRES_PASSWORD: '1234'
-        POSTGRES_DB: 'postgres'
+        <<: *postgres-cred-shared
         log_statement: "all"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
@@ -24,10 +27,8 @@ services:
     build: "protestcrawler"
     image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.0.0}
     environment:
+        <<: *postgres-cred-shared
         DB_UPDATE_PERIOD: ${DB_UPDATE_PERIOD}
-        POSTGRES_USER: 'postgres'
-        POSTGRES_PASSWORD: '1234'
-        POSTGRES_DB: 'postgres'
         POSTGRES_HOST: 'postgres_db'
     volumes:
       - ./protestcrawler/output:/app/output
@@ -39,11 +40,9 @@ services:
     ports:
       - '443:443' # telegram server communication
     environment:
+        <<: *postgres-cred-shared
         IP_ADDRESS: ${IP_ADDRESS}
         TG_BOT_TOKEN: ${TG_BOT_TOKEN}
-        POSTGRES_USER: 'postgres'
-        POSTGRES_PASSWORD: '1234'
-        POSTGRES_DB: 'postgres'
         POSTGRES_HOST: 'postgres_db'
     volumes:
       - ./telegrambot/output:/app/output

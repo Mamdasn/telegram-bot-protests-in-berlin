@@ -1,0 +1,4 @@
+[submodule "telegrambot"]
+	path = telegrambot
+	url = git@github.com:Mamdasn/telegrambot.git
+	branch = berlin-protests

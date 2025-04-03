@@ -698,11 +698,15 @@ Structure: (callback_query_id, message_id, callback_query_data, callback_query_m
 for the application, such as tokens and keys. These variables are typically
 loaded from the environment to ensure security and flexibility across different
 deployment environments.</p>
-<dl class="simple">
+<dl>
 <dt>Class Attributes:</dt><dd><dl class="simple">
 <dt>TG_BOT_TOKEN (str): Telegram Bot Token, fetched from the environment variable ‘TG_BOT_TOKEN’.</dt><dd><p>This token is used to authenticate and interact with the Telegram Bot API.</p>
 </dd>
 </dl>
+<p>POSTGRES_HOST (str): Host of the postgres server.
+POSTGRES_USER (str): The postgres user used to login to the server.
+POSTGRES_PASSWORD (str): The postgres password used to login to the server.
+POSTGRES_DB (str): The postgres database name.</p>
 </dd>
 </dl>
 </dd></dl>

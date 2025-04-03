@@ -80,15 +80,15 @@
            <div itemprop="articleBody">
              
   <h1>Source code for libs.postgres_api</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 
-<span class="kn">import</span> <span class="nn">psycopg2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
 
 
 <div class="viewcode-block" id="Fetchpostgres">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres">[docs]</a>
-<span class="k">class</span> <span class="nc">Fetchpostgres</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Fetchpostgres</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to handle interactions with a PostgreSQL database.</span>
 
@@ -98,7 +98,7 @@
 <span class="sd">    :type params: dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the Fetchpostgres class with connection parameters for PostgreSQL.</span>
 
@@ -110,7 +110,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.start">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.start">[docs]</a>
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Establish a cursor for the PostgreSQL connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -120,7 +120,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.close">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.close">[docs]</a>
-    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Close the cursor and the PostgreSQL connection if open.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -132,7 +132,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.store_client_data">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.store_client_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">store_client_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">store_client_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Store client data in the PostgreSQL database, creating the table if it does not exist.</span>
 
@@ -187,7 +187,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_by_specific_date">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_by_specific_date">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_by_specific_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_specific_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve records from the PostgreSQL database by a specific date.</span>
 
@@ -205,7 +205,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_by_specific_time">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_by_specific_time">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_by_specific_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_by_specific_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve records from the PostgreSQL database by a specific time.</span>
 
@@ -225,7 +225,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_query_column">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_query_column">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_query_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the specified column contains the specified query.</span>
 
@@ -248,7 +248,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_query_any_column">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_query_any_column">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_query_any_column</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_query_any_column</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">,</span> <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">,</span> <span class="s2">&quot;Thema&quot;</span><span class="p">,</span> <span class="s2">&quot;PLZ&quot;</span><span class="p">]</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -281,7 +281,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_von_query">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_von_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_von_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_von_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Von&#39; column matches a specific time.</span>
 
@@ -296,7 +296,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_bis_query">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_bis_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_bis_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bis_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Bis&#39; column matches a specific time.</span>
 
@@ -311,7 +311,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_Thema_query">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_Thema_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_Thema_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Thema_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Thema&#39; column contains a specific query.</span>
 
@@ -326,7 +326,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_PLZ_query">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_PLZ_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_PLZ_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_PLZ_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;PLZ&#39; column contains a specific query.</span>
 
@@ -341,7 +341,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_Versammlungsort_query">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_Versammlungsort_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_Versammlungsort_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Versammlungsort_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Versammlungsort&#39; column contains a specific query.</span>
 
@@ -356,7 +356,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.get_Aufzugsstrecke_query">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_Aufzugsstrecke_query">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_Aufzugsstrecke_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_Aufzugsstrecke_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve rows from the &#39;events&#39; table where the &#39;Aufzugsstrecke&#39; column contains a specific query.</span>
 
@@ -372,7 +372,7 @@
 <div class="viewcode-block" id="Fetchpostgres.escape_special_html_characters">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.escape_special_html_characters">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">escape_special_html_characters</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">escape_special_html_characters</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Escape special HTML characters in a string to their corresponding HTML entities.</span>
 
@@ -391,7 +391,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.format_postgres_output">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.format_postgres_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_postgres_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_postgres_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format the output from a PostgreSQL query for display.</span>
 
@@ -462,7 +462,7 @@
 
 <div class="viewcode-block" id="Fetchpostgres.format_postgre_queries">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.format_postgre_queries">[docs]</a>
-    <span class="k">def</span> <span class="nf">format_postgre_queries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_postgre_queries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Format multiple PostgreSQL query results for display.</span>
 

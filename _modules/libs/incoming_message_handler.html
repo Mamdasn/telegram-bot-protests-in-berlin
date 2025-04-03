@@ -80,11 +80,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for libs.incoming_message_handler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span> <span class="k">as</span> <span class="n">pick_randomly</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span> <span class="k">as</span> <span class="n">pick_randomly</span>
 
-<span class="kn">from</span> <span class="nn">.telegram_bot_api</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.telegram_bot_api</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">answer_callback_query</span><span class="p">,</span>
     <span class="n">answer_inline_query</span><span class="p">,</span>
     <span class="n">edit_message_text</span><span class="p">,</span>
@@ -92,8 +92,8 @@
     <span class="n">send_message</span><span class="p">,</span>
     <span class="n">set_message_reaction</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.tools_collection</span> <span class="kn">import</span> <span class="n">get_calender</span>  <span class="c1"># get_next_period_of_time,</span>
-<span class="kn">from</span> <span class="nn">.tools_collection</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tools_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_calender</span>  <span class="c1"># get_next_period_of_time,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tools_collection</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">make_reply_markup_page_control</span><span class="p">,</span>
     <span class="n">message_format_for_postgres</span><span class="p">,</span>
 <span class="p">)</span>
@@ -103,7 +103,7 @@
 
 <div class="viewcode-block" id="set_fetcher">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.set_fetcher">[docs]</a>
-<span class="k">def</span> <span class="nf">set_fetcher</span><span class="p">(</span><span class="n">created_fetcher</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_fetcher</span><span class="p">(</span><span class="n">created_fetcher</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets the global fetcher by the given fetcher value</span>
 
@@ -120,7 +120,7 @@
 
 <div class="viewcode-block" id="message_and_reply_markup_format">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.message_and_reply_markup_format">[docs]</a>
-<span class="k">def</span> <span class="nf">message_and_reply_markup_format</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">message_and_reply_markup_format</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">queries</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats the given queries into a paginated message and generates reply markup for page control.</span>
 
@@ -147,7 +147,7 @@
 
 <div class="viewcode-block" id="manage_messages">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.manage_messages">[docs]</a>
-<span class="k">def</span> <span class="nf">manage_messages</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">manage_messages</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Manages incoming messages, parses them, and routes them to appropriate handlers based on chat type.</span>
 
@@ -180,7 +180,7 @@
 
 <div class="viewcode-block" id="handle_commands">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_commands">[docs]</a>
-<span class="k">def</span> <span class="nf">handle_commands</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_commands</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handles the commands received in a message and generates responses for a Telegram bot.</span>
 
@@ -310,7 +310,7 @@
 
 <div class="viewcode-block" id="handle_message">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_message">[docs]</a>
-<span class="k">def</span> <span class="nf">handle_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_message</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">,</span> <span class="n">chat_type</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Processes and responds to a message received in a Telegram chat.</span>
 
@@ -403,7 +403,7 @@
 
 <div class="viewcode-block" id="handle_inline_query">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_inline_query">[docs]</a>
-<span class="k">def</span> <span class="nf">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Processes an inline query received in a Telegram chat and sends back results.</span>
 
@@ -460,7 +460,7 @@
 
 <div class="viewcode-block" id="handle_callback_query">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.handle_callback_query">[docs]</a>
-<span class="k">def</span> <span class="nf">handle_callback_query</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_callback_query</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Processes a callback query received from a Telegram chat interaction.</span>
 

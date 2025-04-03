@@ -80,12 +80,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for libs.tools_collection</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
 
 <div class="viewcode-block" id="get_next_period_of_time">
 <a class="viewcode-back" href="../../modules.html#libs.tools_collection.get_next_period_of_time">[docs]</a>
-<span class="k">def</span> <span class="nf">get_next_period_of_time</span><span class="p">(</span><span class="n">number_of_days</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_next_period_of_time</span><span class="p">(</span><span class="n">number_of_days</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a list of dates for a given number of days starting from a specified date.</span>
 
@@ -108,7 +108,7 @@
 
 <div class="viewcode-block" id="get_calender">
 <a class="viewcode-back" href="../../modules.html#libs.tools_collection.get_calender">[docs]</a>
-<span class="k">def</span> <span class="nf">get_calender</span><span class="p">(</span><span class="n">start_date</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_calender</span><span class="p">(</span><span class="n">start_date</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a calendar layout for a 24-day period starting from a given date.</span>
 
@@ -154,7 +154,7 @@
 
 <div class="viewcode-block" id="get_remaining_days_in_current_month">
 <a class="viewcode-back" href="../../modules.html#libs.tools_collection.get_remaining_days_in_current_month">[docs]</a>
-<span class="k">def</span> <span class="nf">get_remaining_days_in_current_month</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_remaining_days_in_current_month</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the remaining days in the current month from today.</span>
 
@@ -175,7 +175,7 @@
 
 <div class="viewcode-block" id="message_format_for_postgres">
 <a class="viewcode-back" href="../../modules.html#libs.tools_collection.message_format_for_postgres">[docs]</a>
-<span class="k">def</span> <span class="nf">message_format_for_postgres</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="n">page_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_of_message</span><span class="o">=</span><span class="mi">3000</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">message_format_for_postgres</span><span class="p">(</span><span class="n">queries</span><span class="p">,</span> <span class="n">page_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_of_message</span><span class="o">=</span><span class="mi">3000</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format a list of queries for display, splitting into pages if necessary.</span>
 
@@ -215,7 +215,7 @@
 
 <div class="viewcode-block" id="make_reply_markup_page_control">
 <a class="viewcode-back" href="../../modules.html#libs.tools_collection.make_reply_markup_page_control">[docs]</a>
-<span class="k">def</span> <span class="nf">make_reply_markup_page_control</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">number_of_pages</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_reply_markup_page_control</span><span class="p">(</span><span class="n">page_number</span><span class="p">,</span> <span class="n">number_of_pages</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a reply markup for page control in an interactive interface.</span>
 

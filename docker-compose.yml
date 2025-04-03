@@ -39,4 +39,4 @@ services:
       - TG_BOT_TOKEN=${TG_BOT_TOKEN}
     volumes:
       - ./telegrambot/output:/app/output
-    command: ["sh", "-c", "/app/initial-setup-files/webhook-setup.sh && /app/initial-setup-files/nginx-setup.sh && nginx && gunicorn -w 2 --bind 0.0.0.0:5000 wsgi:app >> /app/output/telegram.logs 2>&1"]
+    command: ["sh", "-c", "sh /app/entrypoint.sh && nginx && gunicorn -w 2 --bind 0.0.0.0:5000 wsgi:app >> /app/output/telegram.logs 2>&1;"]

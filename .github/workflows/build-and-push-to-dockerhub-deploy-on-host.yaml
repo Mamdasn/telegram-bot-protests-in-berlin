@@ -48,19 +48,20 @@ jobs:
         IP_ADDRESS: ${{secrets.IP_HOST}}
         SSL_PORT: ${{secrets.SSL_PORT}}
       run: |
-        export TG_BOT_TOKEN=$TG_BOT_TOKEN && 
-        export DB_UPDATE_PERIOD=$DB_UPDATE_PERIOD && 
-        export IP_ADDRESS=$IP_ADDRESS && 
-        export SSL_PORT=$SSL_PORT && 
-        cd ${HOME}/$CONTAINER_DIR  && 
-        git fetch --all  && 
+        export TG_BOT_TOKEN=$TG_BOT_TOKEN &&
+        export DB_UPDATE_PERIOD=$DB_UPDATE_PERIOD &&
+        export IP_ADDRESS=$IP_ADDRESS &&
+        export SSL_PORT=$SSL_PORT &&
+        cd ${HOME}/$CONTAINER_DIR  &&
+        git fetch --all  &&
         git rev-parse --verify --quiet $BRANCH &&
-        git checkout $BRANCH  && 
-        git merge origin/$BRANCH  && 
-        docker compose down  && 
-        docker system prune -af  && 
-        docker compose up -d  && 
-        echo Check whether the docker containers are running...  && 
+        git checkout $BRANCH  &&
+        git merge origin/$BRANCH  &&
+        docker compose down  &&
+        docker system prune -af  &&
+        cat telegrambot-entrypoint/webhook-setup.sh telegrambot-entrypoint/nginx-setup.sh | tee telegrambot/entrypoint.sh &&
+        docker compose up -d  &&
+        echo Check whether the docker containers are running...  &&
         for CONTAINER_NAME in $CONTAINER_NAMES; do
           if ! docker ps -q --filter name=^${CONTAINER_NAME}$ --filter status=running | grep -q .; then
             echo "Container $CONTAINER_NAME is not running."

@@ -64,7 +64,6 @@ jobs:
         git submodule update --remote --recursive &&
         docker compose down  &&
         docker system prune -af  &&
-        cat telegrambot-entrypoint/webhook-setup.sh telegrambot-entrypoint/nginx-setup.sh | tee telegrambot/entrypoint.sh &&
         docker compose up -d  &&
         echo Check whether the docker containers are running...  &&
         for CONTAINER_NAME in $CONTAINER_NAMES; do

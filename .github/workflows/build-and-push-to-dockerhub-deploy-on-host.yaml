@@ -61,6 +61,7 @@ jobs:
         git merge origin/$BRANCH  &&
         git submodule sync &&
         git submodule update --init --recursive &&
+        git submodule update --remote --recursive &&
         docker compose down  &&
         docker system prune -af  &&
         cat telegrambot-entrypoint/webhook-setup.sh telegrambot-entrypoint/nginx-setup.sh | tee telegrambot/entrypoint.sh &&

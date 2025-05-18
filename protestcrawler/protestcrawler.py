@@ -32,10 +32,6 @@ class EventCrawler:
         # To crawl data
         data = ecrawler.crawl(number_of_threads=8, save_to_database=True)
         print(f"Number of protests: {len(data)}")
-
-    .. note:: This class provides a high-level interface for event data crawling, parsing, and optional database storage.
-
-    .. warning:: Ensure that the `data_grabber` and `postgres_worker` classes are correctly implemented to avoid runtime errors.
     """
 
     def __init__(self, url, data_grabber, postgres_worker):

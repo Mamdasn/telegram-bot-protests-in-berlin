@@ -84,6 +84,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span> <span class="k">as</span> <span class="n">pick_randomly</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.credentials</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.postgres_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fetchpostgres</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.telegram_bot_api</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">answer_callback_query</span><span class="p">,</span>
     <span class="n">answer_inline_query</span><span class="p">,</span>
@@ -98,24 +100,7 @@
     <span class="n">message_format_for_postgres</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">fetcher</span> <span class="o">=</span> <span class="kc">None</span>
-
-
-<div class="viewcode-block" id="set_fetcher">
-<a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.set_fetcher">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_fetcher</span><span class="p">(</span><span class="n">created_fetcher</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets the global fetcher by the given fetcher value</span>
-
-<span class="sd">    :param created_fetcher: The created fetcher in the main thread for the communication with postgresql.</span>
-<span class="sd">    :type page_number: Fetchpostgres</span>
-
-<span class="sd">    :return: None</span>
-<span class="sd">    :rtype: NoneType</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">fetcher</span>
-    <span class="n">fetcher</span> <span class="o">=</span> <span class="n">created_fetcher</span></div>
-
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">Fetchpostgres</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">POSTGRES</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="message_and_reply_markup_format">
@@ -158,10 +143,6 @@
 
 <span class="sd">    :return: None. The function processes messages and triggers other functions without returning a value.</span>
 <span class="sd">    :rtype: NoneType</span>
-
-<span class="sd">    The function handles different types of interactions like callback queries, private messages, group messages, and inline queries. It uses a &#39;parse_message&#39; function to extract necessary information and then calls the relevant handler such as &#39;handle_callback_query&#39;, &#39;handle_message&#39;, or &#39;handle_inline_query&#39;.</span>
-
-<span class="sd">    Exception handling is implemented to catch and log any errors during message processing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">parsed_message</span> <span class="o">=</span> <span class="n">parse_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -206,9 +187,6 @@
 <span class="sd">       | - Any other text: Treated as a search query.</span>
 
 <span class="sd">    The function also handles date-specific queries and provides a mechanism for calendar-based event selection.</span>
-
-<span class="sd">    Note:</span>
-<span class="sd">        The function relies on an external &#39;fetcher&#39; module to retrieve data from a database based on the commands.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">queries</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">reply_markup</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -329,7 +307,7 @@
 <span class="sd">    :rtype: NoneType</span>
 
 <span class="sd">    Note:</span>
-<span class="sd">        In group chats, the function only processes messages that start with &quot;/&quot; (commands).</span>
+<span class="sd">        In group chats, unlike private chats, this function only processes messages that start with &quot;/&quot; (commands).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">message</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">message_info</span>
 
@@ -418,9 +396,6 @@
 
 <span class="sd">    :return: None. The function sends inline query responses asynchronously.</span>
 <span class="sd">    :rtype: NoneType</span>
-
-<span class="sd">    Note:</span>
-<span class="sd">        The function formats the fetched data into a specific structure required by Telegram for inline query results.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">search_query</span> <span class="o">=</span> <span class="n">message_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
     <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">get_query_any_column</span><span class="p">(</span>
@@ -476,9 +451,6 @@
 
 <span class="sd">    :return: None. The function performs its operations asynchronously and sends responses directly to the Telegram chat.</span>
 <span class="sd">    :rtype: NoneType</span>
-
-<span class="sd">    Note:</span>
-<span class="sd">        The function relies on &#39;answer_callback_query&#39; to send an acknowledgement to the callback query and &#39;edit_message_text&#39; to modify the message based on the callback query&#39;s data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="p">(</span>
         <span class="n">callback_query_id</span><span class="p">,</span>

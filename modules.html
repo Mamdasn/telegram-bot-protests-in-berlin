@@ -62,7 +62,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#module-libs.incoming_message_handler">Handle Incoming Messages Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#libs.incoming_message_handler.set_fetcher"><code class="docutils literal notranslate"><span class="pre">set_fetcher()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.incoming_message_handler.message_and_reply_markup_format"><code class="docutils literal notranslate"><span class="pre">message_and_reply_markup_format()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.incoming_message_handler.manage_messages"><code class="docutils literal notranslate"><span class="pre">manage_messages()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#libs.incoming_message_handler.handle_commands"><code class="docutils literal notranslate"><span class="pre">handle_commands()</span></code></a></li>
@@ -85,6 +84,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#module-libs.postgres_api">Postgres API Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.establish_db_connection"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.establish_db_connection()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.start"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.start()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.close"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.close()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.store_client_data"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.store_client_data()</span></code></a></li>
@@ -407,23 +407,6 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 <section id="module-libs.incoming_message_handler">
 <span id="handle-incoming-messages-module"></span><h1>Handle Incoming Messages Module<a class="headerlink" href="#module-libs.incoming_message_handler" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="libs.incoming_message_handler.set_fetcher">
-<span class="sig-prename descclassname"><span class="pre">libs.incoming_message_handler.</span></span><span class="sig-name descname"><span class="pre">set_fetcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">created_fetcher</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/incoming_message_handler.html#set_fetcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.incoming_message_handler.set_fetcher" title="Link to this definition"></a></dt>
-<dd><p>Sets the global fetcher by the given fetcher value</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>created_fetcher</strong> – The created fetcher in the main thread for the communication with postgresql.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>NoneType</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="libs.incoming_message_handler.message_and_reply_markup_format">
 <span class="sig-prename descclassname"><span class="pre">libs.incoming_message_handler.</span></span><span class="sig-name descname"><span class="pre">message_and_reply_markup_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/incoming_message_handler.html#message_and_reply_markup_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.incoming_message_handler.message_and_reply_markup_format" title="Link to this definition"></a></dt>
 <dd><p>Formats the given queries into a paginated message and generates reply markup for page control.</p>
@@ -462,8 +445,6 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 <dd class="field-odd"><p>NoneType</p>
 </dd>
 </dl>
-<p>The function handles different types of interactions like callback queries, private messages, group messages, and inline queries. It uses a ‘parse_message’ function to extract necessary information and then calls the relevant handler such as ‘handle_callback_query’, ‘handle_message’, or ‘handle_inline_query’.</p>
-<p>Exception handling is implemented to catch and log any errors during message processing.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -499,10 +480,6 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd>
 </dl>
 <p>The function also handles date-specific queries and provides a mechanism for calendar-based event selection.</p>
-<dl class="simple">
-<dt>Note:</dt><dd><p>The function relies on an external ‘fetcher’ module to retrieve data from a database based on the commands.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -529,7 +506,7 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 </dd>
 </dl>
 <dl class="simple">
-<dt>Note:</dt><dd><p>In group chats, the function only processes messages that start with “/” (commands).</p>
+<dt>Note:</dt><dd><p>In group chats, unlike private chats, this function only processes messages that start with “/” (commands).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -556,10 +533,6 @@ If the request fails (status code not 200), it retries up to 5 times with a 0.5-
 <dd class="field-even"><p>NoneType</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>Note:</dt><dd><p>The function formats the fetched data into a specific structure required by Telegram for inline query results.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -583,10 +556,6 @@ Structure: (callback_query_id, message_id, callback_query_data, callback_query_m
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>NoneType</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Note:</dt><dd><p>The function relies on ‘answer_callback_query’ to send an acknowledgement to the callback query and ‘edit_message_text’ to modify the message based on the callback query’s data.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -724,6 +693,12 @@ POSTGRES_DB (str): The postgres database name.</p>
 <dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – Parameters to establish a PostgreSQL connection.</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.establish_db_connection">
+<span class="sig-name descname"><span class="pre">establish_db_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.establish_db_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.establish_db_connection" title="Link to this definition"></a></dt>
+<dd><p>Establish a PostgreSQL DB connection and return it.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.start">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.start" title="Link to this definition"></a></dt>

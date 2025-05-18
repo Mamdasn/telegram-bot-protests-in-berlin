@@ -82,6 +82,7 @@
   <h1>Source code for libs.postgres_api</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
 
@@ -107,6 +108,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span>
+
+<div class="viewcode-block" id="Fetchpostgres.establish_db_connection">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.establish_db_connection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">establish_db_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Establish a PostgreSQL DB connection and return it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Establishing a Postgres DB connection, try </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to connect to Postgres DB due to: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can not establish a connection to the Postgres DB.&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Fetchpostgres.start">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.start">[docs]</a>
@@ -141,7 +158,7 @@
 <span class="sd">        :return: Commit status of the connection.</span>
 <span class="sd">        :rtype: None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
             <span class="n">check_existence</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">                SELECT EXISTS (</span>
 <span class="s2">                    SELECT 1</span>
@@ -182,7 +199,7 @@
                 <span class="p">),</span>
             <span class="p">)</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Fetchpostgres.get_by_specific_date">
@@ -196,7 +213,7 @@
 <span class="sd">        :return: Fetched records from the database.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
             <span class="n">postgreSQL_select_Query</span> <span class="o">=</span> <span class="s2">&quot;select * from events where Datum = </span><span class="si">%s</span><span class="s2">::date&quot;</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">postgreSQL_select_Query</span><span class="p">,</span> <span class="p">(</span><span class="n">date</span><span class="p">,))</span>
             <span class="n">fetched_records</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
@@ -216,7 +233,7 @@
 <span class="sd">        :return: Fetched records from the database.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
             <span class="n">postgreSQL_select_Query</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;select * from events where </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> = %s::time&quot;</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">postgreSQL_select_Query</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="p">,))</span>
             <span class="n">fetched_records</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
@@ -236,7 +253,7 @@
 <span class="sd">        :return: Rows from the database where the column contains the query.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
             <span class="n">query_statement</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> ILIKE ANY(%s)&quot;</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
                 <span class="s2">&quot;SELECT * FROM events WHERE &quot;</span> <span class="o">+</span> <span class="n">query_statement</span><span class="p">,</span>
@@ -261,7 +278,7 @@
 <span class="sd">        :return: Distinct rows from the database where any of the specified columns contains the query.</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
             <span class="n">query_statement</span> <span class="o">=</span> <span class="s2">&quot; OR &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> ILIKE %s&quot;</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">])</span>
             <span class="k">if</span> <span class="s2">&quot;Datum&quot;</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
                 <span class="n">query_statement</span> <span class="o">=</span> <span class="n">query_statement</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>

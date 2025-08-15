@@ -30,15 +30,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build & push arm64
+      - name: Build & push arm64/amd64
         run: |
           docker buildx bake --push --file docker-compose.yml \
-            --set *.platform=linux/arm64/v8
-
-      - name: Build & push amd64
-        run: |
-          docker buildx bake --push --file docker-compose.yml \
-            --set *.platform=linux/amd64
+            --set *.platform=linux/amd64,linux/arm64/v8
 
   deploy-on-host:
     runs-on: self-hosted

@@ -31,13 +31,13 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build & push arm64
-        run: |
+        run: >
           docker buildx bake --push --file docker-compose.yml
             --set *.tags=$IMAGE:arm64
             --set *.platform=linux/arm64/v8
 
       - name: Build & push amd64
-        run: |
+        run: >
           docker buildx bake --push --file docker-compose.yml
             --set *.tags=$IMAGE:amd64
             --set *.platform=linux/amd64

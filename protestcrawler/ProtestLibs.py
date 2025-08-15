@@ -58,7 +58,7 @@ class ProtestGrabber:
         html_content = await self.fetch_content(url)
         if html_content:
             soup = BeautifulSoup(html_content, "html.parser")
-            table_of_content = soup.find("div", {"id": "results"})
+            table_of_content = soup.find("div", {"id": "searchresults"})
             if table_of_content:
                 protests = table_of_content.find("tbody").find_all("tr", class_=True)
                 return protests

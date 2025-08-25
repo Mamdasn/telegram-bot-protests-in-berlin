@@ -36,7 +36,7 @@ services:
   telegrambot:
     container_name: telegrambot
     build: "telegrambot"
-    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:4.0.0}
+    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:4.1.0}
     ports:
       - "${SSL_PORT:-443}:443" # telegram server communication
     environment:

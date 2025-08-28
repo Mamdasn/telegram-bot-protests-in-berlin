@@ -1,4 +1,5 @@
 import asyncio
+import random
 import threading
 from datetime import datetime
 from queue import Queue
@@ -8,6 +9,7 @@ from ProtestLibs import ProtestGrabber, ProtestPostgres
 
 from credentials import config as envconfig
 
+CRAWLER_UA_UNIQ_ID = random.randint(10**11, 10**12 - 1)
 
 class EventCrawler:
     """
@@ -36,7 +38,7 @@ class EventCrawler:
 
     def __init__(self, url, data_grabber, postgres_worker):
         self.url = url
-        self.data_grabber = data_grabber()
+        self.data_grabber = data_grabber(CRAWLER_UA_UNIQ_ID)
         self.postgres_worker = postgres_worker(envconfig.POSTGRES)
 
     def get_event_list(self):

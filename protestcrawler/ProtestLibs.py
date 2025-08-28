@@ -18,6 +18,9 @@ class ProtestGrabber:
     :param aiohttp.ClientSession session: A session object for making asynchronous HTTP requests.
     """
 
+    def __init__(self, CRAWLER_UA_UNIQ_ID=1234567890):
+        self.CRAWLER_UA_UNIQ_ID = CRAWLER_UA_UNIQ_ID
+
     async def fetch_content(
         self, url: str, retry: int = 10, delay: int = 20
     ) -> ClientResponse:
@@ -30,7 +33,7 @@ class ProtestGrabber:
         :return: The HTML content of the page as a string.
         :raises Exception: If all retries fail.
         """
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(headers={"User-Agent": f"BerlinProtests/{self.CRAWLER_UA_UNIQ_ID}"}) as session:
             while retry > 0:
                 try:
                     proxy = "http://tor_privoxy:8118"

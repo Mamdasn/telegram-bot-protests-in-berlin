@@ -82,6 +82,7 @@
   <h1>Source code for ProtestLibs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.robotparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotFileParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
@@ -92,6 +93,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">aiohttp</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientResponse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span><span class="p">,</span> <span class="n">Tag</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ProtestGrabber">
 <a class="viewcode-back" href="../modules.html#ProtestLibs.ProtestGrabber">[docs]</a>
@@ -132,7 +134,7 @@
                         <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
 
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;Retry </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s2">: Exception occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Retrying after </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2"> seconds...&quot;</span>
                     <span class="p">)</span>
                     <span class="n">retry</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -158,10 +160,10 @@
         <span class="n">rp</span> <span class="o">=</span> <span class="n">RobotFileParser</span><span class="p">()</span>
         <span class="n">rp</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">rp</span><span class="o">.</span><span class="n">can_fetch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CRAWLER_UA</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Access to this URL is disallowed by robots.txt&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Access to this URL is disallowed by robots.txt&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Access to this URL is allowed by robots.txt&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Access to this URL is allowed by robots.txt&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span></div>
 
@@ -175,7 +177,7 @@
 <span class="sd">        :param url: The URL to scrape for protest information.</span>
 <span class="sd">        :return: A list of BeautifulSoup Tag objects, each representing a protest event.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;url:&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;url: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_robot_txt_rules</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -261,7 +263,7 @@
 
             <span class="k">return</span> <span class="n">details</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing event: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing event: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{}</span></div>
 </div>
 
@@ -292,7 +294,7 @@
 
 <span class="sd">        :return: A psycopg2 connection object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Waiting for postgres to load.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Waiting for postgres to load.&quot;</span><span class="p">)</span>
         <span class="n">retry</span> <span class="o">=</span> <span class="mi">60</span>
         <span class="k">while</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -301,21 +303,21 @@
                 <span class="k">break</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">e</span>
                 <span class="n">retry</span> <span class="o">-=</span> <span class="mi">1</span>
 
             <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The connection with the database is established at last.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Established connection to database.&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">cursor</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Commit resulted in error. Rolling back to the privious commit!&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Commit resulted in error. Rolling back to the privious commit!&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">e</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -379,7 +381,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_insert_event</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">DatabaseError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not write data into database due to: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 </div>
 

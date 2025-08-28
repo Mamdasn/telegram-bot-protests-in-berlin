@@ -81,6 +81,7 @@
              
   <h1>Source code for libs.incoming_message_handler</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">choice</span> <span class="k">as</span> <span class="n">pick_randomly</span>
 
@@ -102,6 +103,7 @@
 
 <span class="n">fetcher</span> <span class="o">=</span> <span class="n">Fetchpostgres</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">POSTGRES</span><span class="p">)</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="message_and_reply_markup_format">
 <a class="viewcode-back" href="../../modules.html#libs.incoming_message_handler.message_and_reply_markup_format">[docs]</a>
@@ -155,7 +157,7 @@
             <span class="k">elif</span> <span class="n">chat_type</span> <span class="o">==</span> <span class="s2">&quot;inline_query&quot;</span><span class="p">:</span>
                 <span class="n">handle_inline_query</span><span class="p">(</span><span class="n">inline_query_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_info</span><span class="o">=</span><span class="n">message_info</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception error during managing messages due to </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 
@@ -242,7 +244,7 @@
                 <span class="p">)</span>
                 <span class="n">queries</span> <span class="o">=</span> <span class="n">fetcher</span><span class="o">.</span><span class="n">get_by_specific_date</span><span class="p">(</span><span class="n">date_query</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception error during handling commands due to </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="s2">&quot;This command should be used as follows:</span><span class="se">\n</span><span class="s2">/date Day.Month.Year&quot;</span>
                 <span class="p">]</span>
@@ -365,8 +367,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">reply_markup</span> <span class="o">=</span> <span class="n">reply_keyboard_markup</span>
 
-        <span class="n">reaction</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;emoji&quot;</span><span class="p">,</span> <span class="s2">&quot;emoji&quot;</span><span class="p">:</span> <span class="n">pick_randomly</span><span class="p">(</span><span class="n">emojies</span><span class="p">)}]</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">set_message_reaction</span><span class="p">(</span><span class="n">chat_id</span><span class="p">,</span> <span class="n">message_id</span><span class="p">,</span> <span class="n">reaction</span><span class="p">))</span>
+        <span class="c1">#reaction = [{&quot;type&quot;: &quot;emoji&quot;, &quot;emoji&quot;: pick_randomly(emojies)}]</span>
+        <span class="c1">#asyncio.run(set_message_reaction(chat_id, message_id, reaction))</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
             <span class="n">send_message</span><span class="p">(</span>
                 <span class="n">chat_id</span><span class="o">=</span><span class="n">chat_id</span><span class="p">,</span>

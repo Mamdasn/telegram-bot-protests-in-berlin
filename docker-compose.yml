@@ -25,7 +25,7 @@ services:
   protestcrawler:
     container_name: protestcrawler
     build: "protestcrawler"
-    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.0.0}
+    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.1.0}
     environment:
         <<: *postgres-cred-shared
         DB_UPDATE_PERIOD: ${DB_UPDATE_PERIOD}
@@ -36,7 +36,7 @@ services:
   telegrambot:
     container_name: telegrambot
     build: "telegrambot"
-    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:4.1.0}
+    image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:4.2.0}
     ports:
       - "${SSL_PORT:-443}:443" # telegram server communication
     environment:

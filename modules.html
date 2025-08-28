@@ -109,6 +109,7 @@
 <li class="toctree-l1"><a class="reference internal" href="#module-ProtestLibs">Protest Library Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestGrabber"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.fetch_content"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.fetch_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.check_robot_txt_rules"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.check_robot_txt_rules()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.get_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.get_protest_list()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.rotate_ip_request"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.rotate_ip_request()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.parse_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.parse_protest_list()</span></code></a></li>
@@ -972,7 +973,7 @@ POSTGRES_DB (str): The postgres database name.</p>
 <span id="protest-library-module"></span><h1>Protest Library Module<a class="headerlink" href="#module-ProtestLibs" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestGrabber</span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestGrabber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">CRAWLER_UA_UNIQ_ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1234567890</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber" title="Link to this definition"></a></dt>
 <dd><p>A class dedicated to fetching and parsing protest information from web pages.</p>
 <p>Leverages <cite>aiohttp</cite> for asynchronous web requests and <cite>BeautifulSoup</cite> for HTML parsing.</p>
 <dl class="field-list simple">
@@ -997,6 +998,20 @@ POSTGRES_DB (str): The postgres database name.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Exception</strong> – If all retries fail.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ProtestGrabber.check_robot_txt_rules">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_robot_txt_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestGrabber.check_robot_txt_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestGrabber.check_robot_txt_rules" title="Link to this definition"></a></dt>
+<dd><p>Check robots.txt to see if a crawler is allowed to fetch the given URL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> – The URL to scrape for protest information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Bool that is True if allowed, False if disallowed.</p>
 </dd>
 </dl>
 </dd></dl>

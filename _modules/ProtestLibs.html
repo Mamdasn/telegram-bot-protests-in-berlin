@@ -82,6 +82,8 @@
   <h1>Source code for ProtestLibs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.robotparser</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotFileParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 
@@ -102,6 +104,10 @@
 <span class="sd">    :param aiohttp.ClientSession session: A session object for making asynchronous HTTP requests.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CRAWLER_UA_UNIQ_ID</span><span class="o">=</span><span class="mi">1234567890</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CRAWLER_UA</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BerlinProtests/</span><span class="si">{</span><span class="n">CRAWLER_UA_UNIQ_ID</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="o">=</span> <span class="kc">False</span>
+
 <div class="viewcode-block" id="ProtestGrabber.fetch_content">
 <a class="viewcode-back" href="../modules.html#ProtestLibs.ProtestGrabber.fetch_content">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_content</span><span class="p">(</span>
@@ -116,7 +122,8 @@
 <span class="sd">        :return: The HTML content of the page as a string.</span>
 <span class="sd">        :raises Exception: If all retries fail.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">CRAWLER_UA</span><span class="p">})</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">proxy</span> <span class="o">=</span> <span class="s2">&quot;http://tor_privoxy:8118&quot;</span>
@@ -134,6 +141,31 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
+<div class="viewcode-block" id="ProtestGrabber.check_robot_txt_rules">
+<a class="viewcode-back" href="../modules.html#ProtestLibs.ProtestGrabber.check_robot_txt_rules">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_robot_txt_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check robots.txt to see if a crawler is allowed to fetch the given URL.</span>
+
+<span class="sd">        :param url: The URL to scrape for protest information.</span>
+
+<span class="sd">        :return: Bool that is True if allowed, False if disallowed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">url_robot_txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">netloc</span><span class="si">}</span><span class="s2">/robots.txt&quot;</span>
+        <span class="n">robots_txt</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_content</span><span class="p">(</span><span class="n">url_robot_txt</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">robots_txt</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+        <span class="n">rp</span> <span class="o">=</span> <span class="n">RobotFileParser</span><span class="p">()</span>
+        <span class="n">rp</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rp</span><span class="o">.</span><span class="n">can_fetch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CRAWLER_UA</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Access to this URL is disallowed by robots.txt&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Access to this URL is allowed by robots.txt&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span></div>
+
+
 <div class="viewcode-block" id="ProtestGrabber.get_protest_list">
 <a class="viewcode-back" href="../modules.html#ProtestLibs.ProtestGrabber.get_protest_list">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_protest_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -144,13 +176,18 @@
 <span class="sd">        :return: A list of BeautifulSoup Tag objects, each representing a protest event.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;url:&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
-        <span class="n">html_content</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_content</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">html_content</span><span class="p">:</span>
-            <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_content</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
-            <span class="n">table_of_content</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;searchresults&quot;</span><span class="p">})</span>
-            <span class="k">if</span> <span class="n">table_of_content</span><span class="p">:</span>
-                <span class="n">protests</span> <span class="o">=</span> <span class="n">table_of_content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;tbody&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">protests</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_robot_txt_rules</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ROBOT_TXT_ALLOWS</span><span class="p">:</span>
+            <span class="n">html_content</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_content</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">html_content</span><span class="p">:</span>
+                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html_content</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+                <span class="n">table_of_content</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;searchresults&quot;</span><span class="p">})</span>
+                <span class="k">if</span> <span class="n">table_of_content</span><span class="p">:</span>
+                    <span class="n">protests</span> <span class="o">=</span> <span class="n">table_of_content</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;tbody&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">protests</span>
         <span class="k">return</span> <span class="p">[]</span></div>
 
 

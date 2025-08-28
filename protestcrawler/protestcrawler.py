@@ -9,7 +9,6 @@ from ProtestLibs import ProtestGrabber, ProtestPostgres
 
 from credentials import config as envconfig
 
-CRAWLER_UA_UNIQ_ID = random.randint(10**11, 10**12 - 1)
 
 class EventCrawler:
     """
@@ -38,8 +37,8 @@ class EventCrawler:
 
     def __init__(self, url, data_grabber, postgres_worker):
         self.url = url
-        self.data_grabber = data_grabber(CRAWLER_UA_UNIQ_ID)
-        self.postgres_worker = postgres_worker(envconfig.POSTGRES)
+        self.data_grabber = data_grabber
+        self.postgres_worker = postgres_worker
 
     def get_event_list(self):
         return asyncio.run(self.data_grabber.get_protest_list(self.url))
@@ -103,13 +102,15 @@ class EventCrawler:
         return event_list
 
 
+CRAWLER_UA_UNIQ_ID = random.randint(10**11, 10**12 - 1)
+
 berlinde_url = (
     "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
 )
 
 if __name__ == "__main__":
+    ecrawler = EventCrawler(berlinde_url, ProtestGrabber(CRAWLER_UA_UNIQ_ID), ProtestPostgres(envconfig.POSTGRES))
     while True:
-        ecrawler = EventCrawler(berlinde_url, ProtestGrabber, ProtestPostgres)
         print()
         print(datetime.now())
         try:

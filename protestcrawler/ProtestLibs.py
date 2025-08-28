@@ -1,5 +1,7 @@
 import socket
 from contextlib import contextmanager
+from urllib.parse import urlparse
+from urllib.robotparser import RobotFileParser
 from time import sleep
 from typing import Iterator
 
@@ -19,7 +21,8 @@ class ProtestGrabber:
     """
 
     def __init__(self, CRAWLER_UA_UNIQ_ID=1234567890):
-        self.CRAWLER_UA_UNIQ_ID = CRAWLER_UA_UNIQ_ID
+        self.CRAWLER_UA = f"BerlinProtests/{CRAWLER_UA_UNIQ_ID}"
+        self.ROBOT_TXT_ALLOWS = False
 
     async def fetch_content(
         self, url: str, retry: int = 10, delay: int = 20
@@ -33,7 +36,8 @@ class ProtestGrabber:
         :return: The HTML content of the page as a string.
         :raises Exception: If all retries fail.
         """
-        async with aiohttp.ClientSession(headers={"User-Agent": f"BerlinProtests/{self.CRAWLER_UA_UNIQ_ID}"}) as session:
+
+        async with aiohttp.ClientSession(headers={"User-Agent": self.CRAWLER_UA}) as session:
             while retry > 0:
                 try:
                     proxy = "http://tor_privoxy:8118"
@@ -50,6 +54,28 @@ class ProtestGrabber:
                     sleep(delay)
         return None
 
+    async def check_robot_txt_rules(self, url: str) -> bool:
+        """
+        Check robots.txt to see if a crawler is allowed to fetch the given URL.
+
+        :param url: The URL to scrape for protest information.
+
+        :return: Bool that is True if allowed, False if disallowed.
+        """
+        url_parsed = urlparse(url)
+        url_robot_txt = f"{url_parsed.scheme}://{url_parsed.netloc}/robots.txt"
+        robots_txt = await self.fetch_content(url_robot_txt)
+        lines = robots_txt.splitlines()
+        rp = RobotFileParser()
+        rp.parse(lines)
+        if not rp.can_fetch(self.CRAWLER_UA, url):
+            print("Access to this URL is disallowed by robots.txt")
+            self.ROBOT_TXT_ALLOWS = False
+        else:
+            print("Access to this URL is allowed by robots.txt")
+            self.ROBOT_TXT_ALLOWS = True
+        return self.ROBOT_TXT_ALLOWS
+
     async def get_protest_list(self, url: str) -> list:
         """
         Retrieves a list of protest events by parsing HTML content from the specified URL.
@@ -58,13 +84,18 @@ class ProtestGrabber:
         :return: A list of BeautifulSoup Tag objects, each representing a protest event.
         """
         print("url:", url)
-        html_content = await self.fetch_content(url)
-        if html_content:
-            soup = BeautifulSoup(html_content, "html.parser")
-            table_of_content = soup.find("div", {"id": "searchresults"})
-            if table_of_content:
-                protests = table_of_content.find("tbody").find_all("tr", class_=True)
-                return protests
+
+        if self.ROBOT_TXT_ALLOWS is False:
+            await self.check_robot_txt_rules(url)
+
+        if self.ROBOT_TXT_ALLOWS:
+            html_content = await self.fetch_content(url)
+            if html_content:
+                soup = BeautifulSoup(html_content, "html.parser")
+                table_of_content = soup.find("div", {"id": "searchresults"})
+                if table_of_content:
+                    protests = table_of_content.find("tbody").find_all("tr", class_=True)
+                    return protests
         return []
 
     @staticmethod

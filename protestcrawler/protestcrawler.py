@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import random
 import threading
 from datetime import datetime
@@ -92,12 +93,12 @@ class EventCrawler:
             )
 
         if save_to_database:
-            print("Writing/Updating data in database")
+            logger.info("Writing/Updating data in database")
             write_response = self.write_to_database(crawled_data)
             if write_response:
-                print("Writing/Updating data in database is done.")
+                logger.info("Writing/Updating data in database is done.")
             else:
-                print("There seems to be a problem with your database.")
+                logger.warn("There seems to be a problem with your database.")
 
         return event_list
 
@@ -108,23 +109,28 @@ berlinde_url = (
     "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
 )
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
 if __name__ == "__main__":
+    logger.info("Crawler app has started.")
     ecrawler = EventCrawler(berlinde_url, ProtestGrabber(CRAWLER_UA_UNIQ_ID), ProtestPostgres(envconfig.POSTGRES))
     while True:
-        print()
-        print(datetime.now())
         try:
-            print("Scraping data from berlin.de")
+            logger.info("Scraping data from berlin.de")
             lendata = len(
                 ecrawler.crawl(
                     number_of_threads=1,
                     save_to_database=True,
                 )
             )
-            print("Number of protests:", lendata)
-            print("Scraping data finished.")
+            logger.info(f"Number of protests: {lendata}")
+            logger.info("Scraping data finished.")
             sleep(envconfig.DB_UPDATE_PERIOD)
         except Exception as e:
-            print("An error occured when retrieving data from the internet.")
-            print(e)
+            logger.error(f"An error occured when retrieving data from the internet. Error: {e}")
             sleep(10)

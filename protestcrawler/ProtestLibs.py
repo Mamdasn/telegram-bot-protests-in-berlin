@@ -1,5 +1,6 @@
 import socket
 from contextlib import contextmanager
+import logging
 from urllib.parse import urlparse
 from urllib.robotparser import RobotFileParser
 from time import sleep
@@ -10,6 +11,7 @@ import psycopg2
 from aiohttp import ClientResponse
 from bs4 import BeautifulSoup, Tag
 
+logger = logging.getLogger(__name__)
 
 class ProtestGrabber:
     """
@@ -46,7 +48,7 @@ class ProtestGrabber:
                         return await response.text()
 
                 except Exception as e:
-                    print(
+                    logger.error(
                         f"Retry {retry}: Exception occurred: {e}. Retrying after {delay} seconds..."
                     )
                     retry -= 1
@@ -69,10 +71,10 @@ class ProtestGrabber:
         rp = RobotFileParser()
         rp.parse(lines)
         if not rp.can_fetch(self.CRAWLER_UA, url):
-            print("Access to this URL is disallowed by robots.txt")
+            logger.warn("Access to this URL is disallowed by robots.txt")
             self.ROBOT_TXT_ALLOWS = False
         else:
-            print("Access to this URL is allowed by robots.txt")
+            logger.info("Access to this URL is allowed by robots.txt")
             self.ROBOT_TXT_ALLOWS = True
         return self.ROBOT_TXT_ALLOWS
 
@@ -83,7 +85,7 @@ class ProtestGrabber:
         :param url: The URL to scrape for protest information.
         :return: A list of BeautifulSoup Tag objects, each representing a protest event.
         """
-        print("url:", url)
+        logger.info(f"url: {url}")
 
         if self.ROBOT_TXT_ALLOWS is False:
             await self.check_robot_txt_rules(url)
@@ -163,7 +165,7 @@ class ProtestGrabber:
 
             return details
         except Exception as e:
-            print(f"Error parsing event: {e}")
+            logger.error(f"Error parsing event: {e}")
             return {}
 
 
@@ -190,7 +192,7 @@ class ProtestPostgres:
 
         :return: A psycopg2 connection object.
         """
-        print("Waiting for postgres to load.")
+        logger.info("Waiting for postgres to load.")
         retry = 60
         while retry > 0:
             try:
@@ -199,21 +201,21 @@ class ProtestPostgres:
                 break
 
             except Exception as e:
-                print(e)
+                logger.error(e)
                 if retry == 1:
                     raise e
                 retry -= 1
 
             sleep(5)
 
-        print("The connection with the database is established at last.")
+        logger.info("Established connection to database.")
 
         try:
             yield cursor
             connection.commit()
         except Exception as e:
             connection.rollback()
-            print("Commit resulted in error. Rolling back to the privious commit!")
+            logger.error("Commit resulted in error. Rolling back to the privious commit!")
             raise e
         finally:
             connection.close()
@@ -275,5 +277,5 @@ class ProtestPostgres:
                         self._insert_event(cursor, event)
             return True
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+            logger.error(f"Could not write data into database due to: {error}")
             return False

@@ -1,10 +1,10 @@
+import logging
 import socket
 from contextlib import contextmanager
-import logging
-from urllib.parse import urlparse
-from urllib.robotparser import RobotFileParser
 from time import sleep
 from typing import Iterator
+from urllib.parse import urlparse
+from urllib.robotparser import RobotFileParser
 
 import aiohttp
 import psycopg2
@@ -12,6 +12,7 @@ from aiohttp import ClientResponse
 from bs4 import BeautifulSoup, Tag
 
 logger = logging.getLogger(__name__)
+
 
 class ProtestGrabber:
     """
@@ -39,7 +40,9 @@ class ProtestGrabber:
         :raises Exception: If all retries fail.
         """
 
-        async with aiohttp.ClientSession(headers={"User-Agent": self.CRAWLER_UA}) as session:
+        async with aiohttp.ClientSession(
+            headers={"User-Agent": self.CRAWLER_UA}
+        ) as session:
             while retry > 0:
                 try:
                     proxy = "http://tor_privoxy:8118"
@@ -96,7 +99,9 @@ class ProtestGrabber:
                 soup = BeautifulSoup(html_content, "html.parser")
                 table_of_content = soup.find("div", {"id": "searchresults"})
                 if table_of_content:
-                    protests = table_of_content.find("tbody").find_all("tr", class_=True)
+                    protests = table_of_content.find("tbody").find_all(
+                        "tr", class_=True
+                    )
                     return protests
         return []
 
@@ -215,7 +220,9 @@ class ProtestPostgres:
             connection.commit()
         except Exception as e:
             connection.rollback()
-            logger.error("Commit resulted in error. Rolling back to the privious commit!")
+            logger.error(
+                "Commit resulted in error. Rolling back to the privious commit!"
+            )
             raise e
         finally:
             connection.close()

@@ -14,4 +14,3 @@ RUN pip3 install -r requirements.txt
 
 # Create a directory in the container to log the output of the code
 RUN mkdir -p /app/output
-

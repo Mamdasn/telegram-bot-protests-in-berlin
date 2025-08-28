@@ -2,13 +2,11 @@ import asyncio
 import logging
 import random
 import threading
-from datetime import datetime
 from queue import Queue
 from time import sleep
 
-from ProtestLibs import ProtestGrabber, ProtestPostgres
-
 from credentials import config as envconfig
+from ProtestLibs import ProtestGrabber, ProtestPostgres
 
 
 class EventCrawler:
@@ -110,15 +108,18 @@ berlinde_url = (
 )
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     logger.info("Crawler app has started.")
-    ecrawler = EventCrawler(berlinde_url, ProtestGrabber(CRAWLER_UA_UNIQ_ID), ProtestPostgres(envconfig.POSTGRES))
+    ecrawler = EventCrawler(
+        berlinde_url,
+        ProtestGrabber(CRAWLER_UA_UNIQ_ID),
+        ProtestPostgres(envconfig.POSTGRES),
+    )
     while True:
         try:
             logger.info("Scraping data from berlin.de")
@@ -132,5 +133,7 @@ if __name__ == "__main__":
             logger.info("Scraping data finished.")
             sleep(envconfig.DB_UPDATE_PERIOD)
         except Exception as e:
-            logger.error(f"An error occured when retrieving data from the internet. Error: {e}")
+            logger.error(
+                f"An error occured when retrieving data from the internet. Error: {e}"
+            )
             sleep(10)

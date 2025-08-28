@@ -35,9 +35,8 @@ class config:
 
     DB_UPDATE_PERIOD = _isinteger(os.environ.get("DB_UPDATE_PERIOD"), default=3600)
     POSTGRES = {
-        'host': os.environ.get("POSTGRES_HOST", "PLACE HOLDER"), 
-        'database': os.environ.get("POSTGRES_DB", "PLACE HOLDER"), 
-        'user': os.environ.get("POSTGRES_USER", "PLACE HOLDER"), 
-        'password': os.environ.get("POSTGRES_PASSWORD", "PLACE HOLDER")
-        }
-
+        "host": os.environ.get("POSTGRES_HOST", "PLACE HOLDER"),
+        "database": os.environ.get("POSTGRES_DB", "PLACE HOLDER"),
+        "user": os.environ.get("POSTGRES_USER", "PLACE HOLDER"),
+        "password": os.environ.get("POSTGRES_PASSWORD", "PLACE HOLDER"),
+    }

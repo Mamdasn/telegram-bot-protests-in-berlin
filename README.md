@@ -3,7 +3,11 @@ The purpose of this code base is to facilitate access to the protests registered
 
 [![Dockerhub Publish and Deploy on host](https://github.com/Mamdasn/telegram-bot-protests-in-berlin/actions/workflows/build-and-push-to-dockerhub-deploy-on-host.yaml/badge.svg)](https://github.com/Mamdasn/telegram-bot-protests-in-berlin/actions/workflows/build-and-push-to-dockerhub-deploy-on-host.yaml)
 
-Telegram bot: [@ProtestsBerlinBot:](https://t.me/ProtestsBerlinBot)
+## Privacy
+This code does not in anyway log user's requests sent to the bot.
+
+## Example deploy
+Telegram bot: [@ProtestsBerlinBot](https://t.me/ProtestsBerlinBot)
 
 ## Usage
 After exporting the environmental variables `IP_ADDRESS` and `TG_BOT_TOKEN`, the docker instance is spawned by running `docker compose up --build -d`.

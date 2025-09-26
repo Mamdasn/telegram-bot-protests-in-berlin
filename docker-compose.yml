@@ -24,6 +24,7 @@ services:
         #  - '5432:5432' # postgresql
   protestcrawler:
     container_name: protestcrawler
+    restart: on-failure
     build: "protestcrawler"
     image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.1.0}
     environment:
@@ -35,6 +36,7 @@ services:
     command: ["sh", "-c", "python protestcrawler.py >> /app/output/protestcrawler.logs 2>&1"]
   telegrambot:
     container_name: telegrambot
+    restart: on-failure
     build: "telegrambot"
     image: ${TELEGRAMBOT_IMAGE_BUILD:-sfarhad/telegrambot:4.2.0}
     ports:

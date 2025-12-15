@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.11-alpine
+FROM python:3.11-alpine3.20
 
 # Install necessary packages for building python packages
 RUN apk --no-cache add gcc musl-dev libffi-dev libpq-dev

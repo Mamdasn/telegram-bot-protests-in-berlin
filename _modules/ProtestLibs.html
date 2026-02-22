@@ -114,7 +114,7 @@
 <div class="viewcode-block" id="ProtestGrabber.fetch_content">
 <a class="viewcode-back" href="../modules.html#ProtestLibs.ProtestGrabber.fetch_content">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_content</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">allow_404</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClientResponse</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetches HTML content from a URL asynchronously, with retry logic for robustness.</span>
@@ -133,6 +133,8 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">proxy</span> <span class="o">=</span> <span class="s2">&quot;http://tor_privoxy:8118&quot;</span>
                     <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">proxy</span><span class="o">=</span><span class="n">proxy</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">allow_404</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="s2">&quot;&quot;</span> <span class="c1"># if the url path doesn&#39;t exist: e.g. when robot.txt is removed</span>
                         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
                         <span class="k">return</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
 
@@ -158,7 +160,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">url_parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
         <span class="n">url_robot_txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">url_parsed</span><span class="o">.</span><span class="n">netloc</span><span class="si">}</span><span class="s2">/robots.txt&quot;</span>
-        <span class="n">robots_txt</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_content</span><span class="p">(</span><span class="n">url_robot_txt</span><span class="p">)</span>
+        <span class="n">robots_txt</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_content</span><span class="p">(</span><span class="n">url_robot_txt</span><span class="p">,</span> <span class="n">allow_404</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">robots_txt</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
         <span class="n">rp</span> <span class="o">=</span> <span class="n">RobotFileParser</span><span class="p">()</span>
         <span class="n">rp</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>

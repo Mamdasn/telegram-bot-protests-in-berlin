@@ -19,7 +19,7 @@ services:
         <<: *postgres-cred-shared
         log_statement: "all"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - protestcrawlerdata:/var/lib/postgresql/data
         #ports:
         #  - '5432:5432' # postgresql
   protestcrawler:
@@ -32,7 +32,7 @@ services:
         DB_UPDATE_PERIOD: ${DB_UPDATE_PERIOD}
         POSTGRES_HOST: 'postgres_db'
     volumes:
-      - ./protestcrawler/output:/app/output
+      - protestcrawleroutput:/app/output
     command: ["sh", "-c", "python protestcrawler.py >> /app/output/protestcrawler.logs 2>&1"]
   telegrambot:
     container_name: telegrambot
@@ -48,5 +48,10 @@ services:
         TG_BOT_TOKEN: ${TG_BOT_TOKEN}
         POSTGRES_HOST: 'postgres_db'
     volumes:
-      - ./telegrambot/output:/app/output
+      - telegrambotoutput:/app/output
     command: ["sh", "-c", "sh /app/entrypoint.sh && nginx && gunicorn -w 2 --bind 0.0.0.0:5000 wsgi:app >> /app/output/telegram.logs 2>&1;"]
+
+volumes:
+  protestcrawlerdata:
+  protestcrawleroutput:
+  telegrambotoutput:

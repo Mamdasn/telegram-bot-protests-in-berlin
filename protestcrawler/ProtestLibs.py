@@ -28,7 +28,7 @@ class ProtestGrabber:
         self.ROBOT_TXT_ALLOWS = False
 
     async def fetch_content(
-        self, url: str, retry: int = 10, delay: int = 20
+        self, url: str, retry: int = 10, delay: int = 20, allow_404: bool = False
     ) -> ClientResponse:
         """
         Fetches HTML content from a URL asynchronously, with retry logic for robustness.
@@ -47,6 +47,8 @@ class ProtestGrabber:
                 try:
                     proxy = "http://tor_privoxy:8118"
                     async with session.get(url, proxy=proxy) as response:
+                        if allow_404 and response.status == 404:
+                            return "" # if the url path doesn't exist: e.g. when robot.txt is removed
                         response.raise_for_status()
                         return await response.text()
 
@@ -69,7 +71,7 @@ class ProtestGrabber:
         """
         url_parsed = urlparse(url)
         url_robot_txt = f"{url_parsed.scheme}://{url_parsed.netloc}/robots.txt"
-        robots_txt = await self.fetch_content(url_robot_txt)
+        robots_txt = await self.fetch_content(url_robot_txt, allow_404=True)
         lines = robots_txt.splitlines()
         rp = RobotFileParser()
         rp.parse(lines)

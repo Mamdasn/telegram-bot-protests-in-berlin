@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import socket
 from contextlib import contextmanager
@@ -57,8 +58,13 @@ class ProtestGrabber:
                         f"Retry {retry}: Exception occurred: {e}. Retrying after {delay} seconds..."
                     )
                     retry -= 1
-                    ProtestGrabber.rotate_ip_request()
-                    sleep(delay)
+                    if retry == 0:
+                        break
+                    try:
+                        ProtestGrabber.rotate_ip_request()
+                    except Exception as rotate_error:
+                        logger.warning(f"Could not rotate Tor IP: {rotate_error}")
+                    await asyncio.sleep(delay)
         return None
 
     async def check_robot_txt_rules(self, url: str) -> bool:
@@ -72,11 +78,15 @@ class ProtestGrabber:
         url_parsed = urlparse(url)
         url_robot_txt = f"{url_parsed.scheme}://{url_parsed.netloc}/robots.txt"
         robots_txt = await self.fetch_content(url_robot_txt, allow_404=True)
+        if robots_txt is None:
+            logger.warning("Could not retrieve robots.txt;")
+            self.ROBOT_TXT_ALLOWS = True
+            return self.ROBOT_TXT_ALLOWS
         lines = robots_txt.splitlines()
         rp = RobotFileParser()
         rp.parse(lines)
         if not rp.can_fetch(self.CRAWLER_UA, url):
-            logger.warn("Access to this URL is disallowed by robots.txt")
+            logger.warning("Access to this URL is disallowed by robots.txt")
             self.ROBOT_TXT_ALLOWS = False
         else:
             logger.info("Access to this URL is allowed by robots.txt")
@@ -134,7 +144,8 @@ class ProtestGrabber:
 
         def get_text(soup):
             if soup:
-                return soup.get_text(strip=True)
+                text = soup.get_text(strip=True)
+                return text or None
             else:
                 return None
 
@@ -157,18 +168,9 @@ class ProtestGrabber:
             if all_values_are_none:
                 return {}
 
-            if details.get("PLZ") is None:
-                details["PLZ"] = "00000"
-
             # Adjusting date format if needed
             if details.get("Datum"):
                 details["Datum"] = ".".join(details["Datum"].split(".")[::-1])
-
-            # Handle missing 'Versammlungsort'
-            if ("Versammlungsort" not in details) and ("Aufzugsstrecke" in details):
-                details["Versammlungsort"] = (
-                    details["Aufzugsstrecke"].split(" - ")[0].split(" , ")[0]
-                )
 
             return details
         except Exception as e:
@@ -282,8 +284,17 @@ class ProtestPostgres:
             self._ensure_table_exists()
             with self._db_cursor() as cursor:
                 for event in data:
-                    if event:
-                        self._insert_event(cursor, event)
+                    if not event:
+                        continue
+                    missing_required_field = False
+                    for field in ("Datum", "Von", "Bis", "PLZ", "Versammlungsort"):
+                        if not str(event.get(field) or "").strip():
+                            logger.warning(f"Skipping event without {field}.")
+                            missing_required_field = True
+                            break
+                    if missing_required_field:
+                        continue
+                    self._insert_event(cursor, event)
             return True
         except (Exception, psycopg2.DatabaseError) as error:
             logger.error(f"Could not write data into database due to: {error}")

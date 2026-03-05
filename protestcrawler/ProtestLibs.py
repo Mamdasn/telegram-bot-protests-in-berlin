@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 import socket
 from contextlib import contextmanager
 from time import sleep
@@ -149,6 +150,88 @@ class ProtestGrabber:
             else:
                 return None
 
+        def extract_versammlungsort_from_route(route: str | None) -> str | None:
+            if not route:
+                return None
+
+            cleaned_route = re.sub(
+                r"^\s*(?:neu|alt)\s*:\s*", "", route, flags=re.IGNORECASE
+            ).strip()
+            if not cleaned_route:
+                return None
+
+            # Strip leading rally markers in German.
+            marker_pattern = (
+                r"^\s*(?:\((?:AK|EK|AP|EP|ZK\s*\d*)\)|(?:AK|EK|AP|EP|ZK\s*\d*))\s*:?\s*"
+            )
+            while True:
+                stripped_cleaned_route = re.sub(
+                    marker_pattern, "", cleaned_route, flags=re.IGNORECASE
+                ).strip()
+                if stripped_cleaned_route == cleaned_route:
+                    break
+                cleaned_route = stripped_cleaned_route
+            if not cleaned_route:
+                return None
+
+            # Normal separators
+            clear_separator_pattern = r"(?:\s+[–—-]\s*(?:>\s*)?|[–—-]\s+(?:>\s*)?)"
+            route_parts = [
+                part.strip()
+                for part in re.split(clear_separator_pattern, cleaned_route)
+                if part.strip()
+            ]
+
+            # Compact separators without spaces, e.g. "(AP)-Oranienstr." or "97-Kottbusser ...".
+            if len(route_parts) <= 1:
+                route_parts = [
+                    part.strip()
+                    for part in re.split(
+                        r"(?:(?<=\))\s*[–—-]\s*|(?<=\d)\s*[–—-]\s*(?=[A-ZÄÖÜ]))",
+                        cleaned_route,
+                    )
+                    if part.strip()
+                ]
+
+            if not route_parts:
+                return None
+
+            candidate = route_parts[0]
+            for part in route_parts[1:]:
+                if len(candidate) > 5:
+                    break
+                candidate = f"{candidate}-{part}"
+
+            while True:
+                stripped_candidate = re.sub(
+                    marker_pattern, "", candidate, flags=re.IGNORECASE
+                ).strip()
+                if stripped_candidate == candidate:
+                    break
+                candidate = stripped_candidate
+            candidate = re.sub(
+                r"\s*\((?:AK|EK|AP|EP|ZK)\b[^)]*\)\s*$",
+                "",
+                candidate,
+                flags=re.IGNORECASE,
+            ).strip()
+            candidate = re.split(r"\s+\.\s+", candidate, maxsplit=1)[0].strip()
+
+            if "," in candidate:
+                candidate = candidate.split(",", 1)[0].strip()
+
+            # Remove descriptive paranthesis like in: Unter den Linden 4 (AK an der Neuen Wache)
+            while True:
+                stripped_candidate = re.sub(r"\s*\([^)]*\)\s*$", "", candidate).strip()
+                if stripped_candidate == candidate:
+                    break
+                candidate = stripped_candidate
+
+            # remove Neue
+            candidate = re.sub(r"^\s*Neue\s+(?=\S+/\S+)", "", candidate).strip()
+
+            return candidate or None
+
         try:
             details = {
                 "Datum": get_text(event.find("td", {"headers": "Datum"})),
@@ -163,6 +246,9 @@ class ProtestGrabber:
                     event.find("td", {"headers": "Aufzugsstrecke"})
                 ),
             }
+
+            if not details["Versammlungsort"]:
+                details["Versammlungsort"] = extract_versammlungsort_from_route(details["Aufzugsstrecke"])
 
             all_values_are_none = all([v is None for v in details.values()])
             if all_values_are_none:

@@ -247,6 +247,9 @@ class ProtestGrabber:
                 ),
             }
 
+            if not details["PLZ"]:
+                details["PLZ"] = "00000"
+
             if not details["Versammlungsort"]:
                 details["Versammlungsort"] = extract_versammlungsort_from_route(details["Aufzugsstrecke"])
 

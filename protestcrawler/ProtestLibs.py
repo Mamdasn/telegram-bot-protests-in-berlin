@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 import socket
 from contextlib import contextmanager
 from time import sleep
@@ -149,6 +150,41 @@ class ProtestGrabber:
             else:
                 return None
 
+        def extract_versammlungsort_from_route(route: str | None) -> str | None:
+            if not route:
+                return None
+
+            cleaned_route = re.sub(
+                r"^\s*(?:neu|alt)\s*:\s*", "", route, flags=re.IGNORECASE
+            ).strip()
+            if not cleaned_route:
+                return None
+
+            clear_separator_pattern = r"(?:\s+[–—-]\s*(?:>\s*)?|[–—-]\s+(?:>\s*)?)"
+            route_parts = [
+                part.strip()
+                for part in re.split(clear_separator_pattern, cleaned_route)
+                if part.strip()
+            ]
+
+
+            if len(route_parts) <= 1 and re.search(r"\S[–—-]\S", cleaned_route):
+                route_parts = [
+                    part.strip() for part in re.split(r"[–—-]", cleaned_route) if part.strip()
+                ]
+
+            parts = route_parts
+            if not parts:
+                return None
+
+            candidate = parts[0]
+            for part in parts[1:]:
+                if len(candidate) > 5:
+                    break
+                candidate = f"{candidate}-{part}"
+
+            return candidate or None
+
         try:
             details = {
                 "Datum": get_text(event.find("td", {"headers": "Datum"})),
@@ -163,6 +199,9 @@ class ProtestGrabber:
                     event.find("td", {"headers": "Aufzugsstrecke"})
                 ),
             }
+
+            if not details["Versammlungsort"]:
+                details["Versammlungsort"] = extract_versammlungsort_from_route(details["Aufzugsstrecke"])
 
             all_values_are_none = all([v is None for v in details.values()])
             if all_values_are_none:

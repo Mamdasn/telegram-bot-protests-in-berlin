@@ -258,6 +258,16 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned_route</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
 
+            <span class="c1"># Strip leading rally markers in German.</span>
+            <span class="n">cleaned_route</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;^\s*(?:AK|EK|AP|EP|ZK\s*\d*)\s*:?\s*&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">cleaned_route</span><span class="p">,</span>
+                <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned_route</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
             <span class="n">clear_separator_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?:\s+[–—-]\s*(?:&gt;\s*)?|[–—-]\s+(?:&gt;\s*)?)&quot;</span>
             <span class="n">route_parts</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -268,7 +278,9 @@
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">route_parts</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\S[–—-]\S&quot;</span><span class="p">,</span> <span class="n">cleaned_route</span><span class="p">):</span>
                 <span class="n">route_parts</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[–—-]&quot;</span><span class="p">,</span> <span class="n">cleaned_route</span><span class="p">)</span> <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[–—-](?=\s*[A-ZÄÖÜ0-9(])&quot;</span><span class="p">,</span> <span class="n">cleaned_route</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                 <span class="p">]</span>
 
             <span class="n">parts</span> <span class="o">=</span> <span class="n">route_parts</span>
@@ -277,9 +289,16 @@
 
             <span class="n">candidate</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">40</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="n">candidate</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">candidate</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">candidate</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;^\s*(?:AK|EK|AP|EP|ZK\s*\d*)\s*:?\s*&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">candidate</span><span class="p">,</span>
+                <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
             <span class="k">return</span> <span class="n">candidate</span> <span class="ow">or</span> <span class="kc">None</span>
 

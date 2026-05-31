@@ -3,6 +3,7 @@ import logging
 import re
 import socket
 from contextlib import contextmanager
+from datetime import datetime
 from time import sleep
 from typing import Iterator
 from urllib.parse import urlparse
@@ -267,6 +268,157 @@ class ProtestGrabber:
             return {}
 
 
+class ApiGrabber:
+    """
+    Fetches and normalizes Berlin events from the RADAR JSON API.
+
+    Requests are sent directly by default. Tor can be enabled for deployments
+    that want to rotate the IP after retry-worthy request failures.
+    """
+
+    RADAR_PARAMS = {
+        "fields": "uuid,title,date_time,offline,offline:address",
+        "facets[city][]": "Berlin",
+    }
+    RETRYABLE_HTTP_STATUSES = {429, 500, 502, 503, 504}
+
+    def __init__(
+        self,
+        CRAWLER_UA_UNIQ_ID=1234567890,
+        params=None,
+        page_size=500,
+        proxy=None,
+        rotate_ip_on_retry=False,
+    ):
+        self.CRAWLER_UA = f"BerlinProtests/{CRAWLER_UA_UNIQ_ID}"
+        self.params = dict(params or self.RADAR_PARAMS)
+        self.page_size = page_size
+        self.proxy = proxy
+        self.rotate_ip_on_retry = rotate_ip_on_retry
+
+    async def fetch_content(
+        self, url: str, params=None, retry: int = 10, delay: int = 20
+    ) -> dict:
+        """
+        Fetches and decodes a JSON response from an API endpoint.
+        """
+        async with aiohttp.ClientSession(
+            headers={"User-Agent": self.CRAWLER_UA}
+        ) as session:
+            while retry > 0:
+                try:
+                    async with session.get(
+                        url, params=params, proxy=self.proxy
+                    ) as response:
+                        response.raise_for_status()
+                        payload = await response.json()
+                        if not isinstance(payload, dict):
+                            raise ValueError("API response is not a JSON object.")
+                        return payload
+                except Exception as error:
+                    if (
+                        isinstance(error, aiohttp.ClientResponseError)
+                        and error.status not in self.RETRYABLE_HTTP_STATUSES
+                    ):
+                        raise
+
+                    retry -= 1
+                    if retry == 0:
+                        raise
+                    logger.error(
+                        f"Retry {retry}: Exception occurred: {error}. "
+                        f"Retrying after {delay} seconds..."
+                    )
+                    if self.rotate_ip_on_retry:
+                        try:
+                            ApiGrabber.rotate_ip_request()
+                        except Exception as rotate_error:
+                            logger.warning(f"Could not rotate Tor IP: {rotate_error}")
+                    await asyncio.sleep(delay)
+
+    async def get_protest_list(self, url: str) -> list:
+        """
+        Retrieves all events from the API using offset pagination.
+        """
+        logger.info(f"url: {url}")
+        events = []
+        offset = 0
+        expected_count = None
+
+        while expected_count is None or len(events) < expected_count:
+            params = {
+                **self.params,
+                "limit": self.page_size,
+                "offset": offset,
+            }
+            payload = await self.fetch_content(url, params=params)
+            result = payload.get("result", {})
+            if not isinstance(result, dict):
+                raise ValueError("API response field 'result' is not a JSON object.")
+
+            batch = list(result.values())
+            if expected_count is None:
+                expected_count = int(payload.get("count", len(batch)))
+            if not batch:
+                break
+
+            events.extend(batch)
+            offset += len(batch)
+
+        if len(events) != expected_count:
+            raise ValueError(
+                f"Expected {expected_count} API events but fetched {len(events)}."
+            )
+
+        event_ids = [event.get("uuid") for event in events]
+        if any(not event_id for event_id in event_ids):
+            raise ValueError("At least one API event is missing its UUID.")
+        if len(event_ids) != len(set(event_ids)):
+            raise ValueError("API response contains duplicate event UUIDs.")
+
+        return events
+
+    @staticmethod
+    def rotate_ip_request() -> bool:
+        """
+        Send a request to torprivoxy to change the IP.
+        """
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect(("tor_privoxy", 9051))
+            commands = 'AUTHENTICATE ""\r\nSIGNAL NEWNYM\r\nQUIT\r\n'
+            s.sendall(commands.encode("utf-8"))
+
+            data = s.recv(1024)
+            return data.decode("utf-8").find("OK") != -1
+
+    @staticmethod
+    def parse_protest_list(event: dict) -> dict:
+        """
+        Maps a RADAR event to the existing events table shape.
+        """
+        try:
+            period = event["date_time"][0]
+            location = event["offline"][0]
+            address = location.get("address") or {}
+            start = datetime.fromisoformat(period["time_start"])
+            end = datetime.fromisoformat(
+                period.get("time_end") or period["time_start"]
+            )
+
+            return {
+                "Datum": start.date().isoformat(),
+                "Von": start.strftime("%H:%M:%S"),
+                "Bis": end.strftime("%H:%M:%S"),
+                "Thema": event.get("title"),
+                "PLZ": address.get("postal_code") or "00000",
+                "Versammlungsort": location.get("title"),
+                "Aufzugsstrecke": None,
+            }
+        except Exception as error:
+            logger.error(f"Error parsing API event: {error}")
+            return {}
+
+
 class ProtestPostgres:
     """
     Manages the storage of protest information in a PostgreSQL database.
@@ -357,7 +509,16 @@ class ProtestPostgres:
                             SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis
                             RETURNING id;"""
 
-        cursor.execute(sql_protest, list(data.values()))
+        fields = (
+            "Datum",
+            "Von",
+            "Bis",
+            "Thema",
+            "PLZ",
+            "Versammlungsort",
+            "Aufzugsstrecke",
+        )
+        cursor.execute(sql_protest, [data.get(field) for field in fields])
 
         return True
 

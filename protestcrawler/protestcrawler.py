@@ -6,7 +6,7 @@ from queue import Queue
 from time import sleep
 
 from credentials import config as envconfig
-from ProtestLibs import ProtestGrabber, ProtestPostgres
+from ProtestLibs import ApiGrabber, ProtestGrabber, ProtestPostgres
 
 
 class EventCrawler:
@@ -106,6 +106,7 @@ CRAWLER_UA_UNIQ_ID = random.randint(10**11, 10**12 - 1)
 berlinde_url = (
     "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
 )
+radar_url = "https://radar.squat.net/api/1.2/search/events.json"
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -115,25 +116,38 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     logger.info("Crawler app has started.")
-    ecrawler = EventCrawler(
-        berlinde_url,
-        ProtestGrabber(CRAWLER_UA_UNIQ_ID),
-        ProtestPostgres(envconfig.POSTGRES),
+    crawlers = (
+        (
+            "berlin.de",
+            EventCrawler(
+                berlinde_url,
+                ProtestGrabber(CRAWLER_UA_UNIQ_ID),
+                ProtestPostgres(envconfig.POSTGRES),
+            ),
+        ),
+        (
+            "RADAR",
+            EventCrawler(
+                radar_url,
+                ApiGrabber(CRAWLER_UA_UNIQ_ID),
+                ProtestPostgres(envconfig.POSTGRES),
+            ),
+        ),
     )
     while True:
-        try:
-            logger.info("Scraping data from berlin.de")
-            lendata = len(
-                ecrawler.crawl(
-                    number_of_threads=1,
-                    save_to_database=True,
+        for source, crawler in crawlers:
+            try:
+                logger.info(f"Fetching data from {source}")
+                lendata = len(
+                    crawler.crawl(
+                        number_of_threads=1,
+                        save_to_database=True,
+                    )
                 )
-            )
-            logger.info(f"Number of protests: {lendata}")
-            logger.info("Scraping data finished.")
-            sleep(envconfig.DB_UPDATE_PERIOD)
-        except Exception as e:
-            logger.error(
-                f"An error occured when retrieving data from the internet. Error: {e}"
-            )
-            sleep(10)
+                logger.info(f"Number of events from {source}: {lendata}")
+                logger.info(f"Fetching data from {source} finished.")
+            except Exception as e:
+                logger.error(
+                    f"An error occured when retrieving data from {source}. Error: {e}"
+                )
+        sleep(envconfig.DB_UPDATE_PERIOD)

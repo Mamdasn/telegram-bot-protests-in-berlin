@@ -85,6 +85,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span>
@@ -367,6 +368,172 @@
 
 
 
+<div class="viewcode-block" id="ApiGrabber">
+<a class="viewcode-back" href="../modules.html#ProtestLibs.ApiGrabber">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ApiGrabber</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fetches and normalizes Berlin events from the RADAR JSON API.</span>
+
+<span class="sd">    Requests are sent directly by default. Tor can be enabled for deployments</span>
+<span class="sd">    that want to rotate the IP after retry-worthy request failures.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">RADAR_PARAMS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="s2">&quot;uuid,title,date_time,offline,offline:address&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;facets[city][]&quot;</span><span class="p">:</span> <span class="s2">&quot;Berlin&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">RETRYABLE_HTTP_STATUSES</span> <span class="o">=</span> <span class="p">{</span><span class="mi">429</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">502</span><span class="p">,</span> <span class="mi">503</span><span class="p">,</span> <span class="mi">504</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">CRAWLER_UA_UNIQ_ID</span><span class="o">=</span><span class="mi">1234567890</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">proxy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">rotate_ip_on_retry</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CRAWLER_UA</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BerlinProtests/</span><span class="si">{</span><span class="n">CRAWLER_UA_UNIQ_ID</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">params</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">RADAR_PARAMS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span> <span class="o">=</span> <span class="n">page_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate_ip_on_retry</span> <span class="o">=</span> <span class="n">rotate_ip_on_retry</span>
+
+<div class="viewcode-block" id="ApiGrabber.fetch_content">
+<a class="viewcode-back" href="../modules.html#ProtestLibs.ApiGrabber.fetch_content">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_content</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">delay</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches and decodes a JSON response from an API endpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">CRAWLER_UA</span><span class="p">}</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">proxy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">proxy</span>
+                    <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+                        <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API response is not a JSON object.&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">payload</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="nb">isinstance</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientResponseError</span><span class="p">)</span>
+                        <span class="ow">and</span> <span class="n">error</span><span class="o">.</span><span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">RETRYABLE_HTTP_STATUSES</span>
+                    <span class="p">):</span>
+                        <span class="k">raise</span>
+
+                    <span class="n">retry</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Retry </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s2">: Exception occurred: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Retrying after </span><span class="si">{</span><span class="n">delay</span><span class="si">}</span><span class="s2"> seconds...&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate_ip_on_retry</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">ApiGrabber</span><span class="o">.</span><span class="n">rotate_ip_request</span><span class="p">()</span>
+                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">rotate_error</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not rotate Tor IP: </span><span class="si">{</span><span class="n">rotate_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ApiGrabber.get_protest_list">
+<a class="viewcode-back" href="../modules.html#ProtestLibs.ApiGrabber.get_protest_list">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_protest_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves all events from the API using offset pagination.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;url: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">expected_count</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">while</span> <span class="n">expected_count</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">expected_count</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="n">offset</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_content</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API response field &#39;result&#39; is not a JSON object.&quot;</span><span class="p">)</span>
+
+            <span class="n">batch</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">expected_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">expected_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">batch</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">events</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="n">expected_count</span><span class="si">}</span><span class="s2"> API events but fetched </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">event_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;uuid&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">event_id</span> <span class="k">for</span> <span class="n">event_id</span> <span class="ow">in</span> <span class="n">event_ids</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one API event is missing its UUID.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">event_ids</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;API response contains duplicate event UUIDs.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">events</span></div>
+
+
+<div class="viewcode-block" id="ApiGrabber.rotate_ip_request">
+<a class="viewcode-back" href="../modules.html#ProtestLibs.ApiGrabber.rotate_ip_request">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate_ip_request</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send a request to torprivoxy to change the IP.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;tor_privoxy&quot;</span><span class="p">,</span> <span class="mi">9051</span><span class="p">))</span>
+            <span class="n">commands</span> <span class="o">=</span> <span class="s1">&#39;AUTHENTICATE &quot;&quot;</span><span class="se">\r\n</span><span class="s1">SIGNAL NEWNYM</span><span class="se">\r\n</span><span class="s1">QUIT</span><span class="se">\r\n</span><span class="s1">&#39;</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">commands</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;OK&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="ApiGrabber.parse_protest_list">
+<a class="viewcode-back" href="../modules.html#ProtestLibs.ApiGrabber.parse_protest_list">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_protest_list</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Maps a RADAR event to the existing events table shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">period</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;date_time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;offline&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;address&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">period</span><span class="p">[</span><span class="s2">&quot;time_start&quot;</span><span class="p">])</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span>
+                <span class="n">period</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_end&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">period</span><span class="p">[</span><span class="s2">&quot;time_start&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;Datum&quot;</span><span class="p">:</span> <span class="n">start</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;Von&quot;</span><span class="p">:</span> <span class="n">start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Bis&quot;</span><span class="p">:</span> <span class="n">end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Thema&quot;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;PLZ&quot;</span><span class="p">:</span> <span class="n">address</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;postal_code&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;00000&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">:</span> <span class="n">location</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing API event: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="ProtestPostgres">
 <a class="viewcode-back" href="../modules.html#ProtestLibs.ProtestPostgres">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProtestPostgres</span><span class="p">:</span>
@@ -376,14 +543,20 @@
 <span class="sd">    :param dict db_config: Configuration parameters for connecting to the database.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_config</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_config</span><span class="p">,</span> <span class="n">source_url</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the database configuration.</span>
 
 <span class="sd">        :param db_config: Database connection parameters.</span>
 <span class="sd">        :type db_config: dict</span>
+<span class="sd">        :param source_url: URL of the event source.</span>
+<span class="sd">        :type source_url: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">db_config</span> <span class="o">=</span> <span class="n">db_config</span>
+        <span class="n">source_hostname</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">source_url</span><span class="p">)</span><span class="o">.</span><span class="n">hostname</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_hostname</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not determine event source from URL: </span><span class="si">{</span><span class="n">source_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source_hostname</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;www.&quot;</span><span class="p">)</span>
 
     <span class="nd">@contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_db_cursor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">extensions</span><span class="o">.</span><span class="n">connection</span><span class="p">:</span>
@@ -436,7 +609,8 @@
 <span class="s2">            PLZ VARCHAR(10) NOT NULL,</span>
 <span class="s2">            Versammlungsort VARCHAR NOT NULL,</span>
 <span class="s2">            Aufzugsstrecke VARCHAR,</span>
-<span class="s2">            UNIQUE(PLZ, Versammlungsort, Datum, Von)</span>
+<span class="s2">            source VARCHAR NOT NULL,</span>
+<span class="s2">            UNIQUE(source, PLZ, Versammlungsort, Datum, Von)</span>
 <span class="s2">        );</span>
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
@@ -454,12 +628,21 @@
 <span class="sd">        :type data: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">sql_protest</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)</span>
-<span class="s2">                            VALUES(</span><span class="si">%s</span><span class="s2">::DATE, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE</span>
+        <span class="n">sql_protest</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke, source)</span>
+<span class="s2">                            VALUES(</span><span class="si">%s</span><span class="s2">::DATE, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">::TIME, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">) ON CONFLICT (source, PLZ, Versammlungsort, Datum, Von) DO UPDATE</span>
 <span class="s2">                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis</span>
 <span class="s2">                            RETURNING id;&quot;&quot;&quot;</span>
 
-        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_protest</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Datum&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Von&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Bis&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Thema&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PLZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Versammlungsort&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Aufzugsstrecke&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql_protest</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="kc">True</span>
 

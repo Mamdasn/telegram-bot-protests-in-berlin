@@ -115,6 +115,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestGrabber.parse_protest_list"><code class="docutils literal notranslate"><span class="pre">ProtestGrabber.parse_protest_list()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ApiGrabber"><code class="docutils literal notranslate"><span class="pre">ApiGrabber</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ApiGrabber.fetch_content"><code class="docutils literal notranslate"><span class="pre">ApiGrabber.fetch_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ApiGrabber.get_protest_list"><code class="docutils literal notranslate"><span class="pre">ApiGrabber.get_protest_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ApiGrabber.rotate_ip_request"><code class="docutils literal notranslate"><span class="pre">ApiGrabber.rotate_ip_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ApiGrabber.parse_protest_list"><code class="docutils literal notranslate"><span class="pre">ApiGrabber.parse_protest_list()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#ProtestLibs.ProtestPostgres"><code class="docutils literal notranslate"><span class="pre">ProtestPostgres</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ProtestLibs.ProtestPostgres.write_to_database"><code class="docutils literal notranslate"><span class="pre">ProtestPostgres.write_to_database()</span></code></a></li>
 </ul>
@@ -1053,8 +1060,40 @@ POSTGRES_DB (str): The postgres database name.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="ProtestLibs.ApiGrabber">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ApiGrabber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">CRAWLER_UA_UNIQ_ID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1234567890</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate_ip_on_retry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ApiGrabber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ApiGrabber" title="Link to this definition"></a></dt>
+<dd><p>Fetches and normalizes Berlin events from the RADAR JSON API.</p>
+<p>Requests are sent directly by default. Tor can be enabled for deployments
+that want to rotate the IP after retry-worthy request failures.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ApiGrabber.fetch_content">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ApiGrabber.fetch_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ApiGrabber.fetch_content" title="Link to this definition"></a></dt>
+<dd><p>Fetches and decodes a JSON response from an API endpoint.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ApiGrabber.get_protest_list">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_protest_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ApiGrabber.get_protest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ApiGrabber.get_protest_list" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all events from the API using offset pagination.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ApiGrabber.rotate_ip_request">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rotate_ip_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ApiGrabber.rotate_ip_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ApiGrabber.rotate_ip_request" title="Link to this definition"></a></dt>
+<dd><p>Send a request to torprivoxy to change the IP.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ProtestLibs.ApiGrabber.parse_protest_list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_protest_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/ProtestLibs.html#ApiGrabber.parse_protest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ApiGrabber.parse_protest_list" title="Link to this definition"></a></dt>
+<dd><p>Maps a RADAR event to the existing events table shape.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="ProtestLibs.ProtestPostgres">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestPostgres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestPostgres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestPostgres" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ProtestLibs.</span></span><span class="sig-name descname"><span class="pre">ProtestPostgres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ProtestLibs.html#ProtestPostgres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ProtestLibs.ProtestPostgres" title="Link to this definition"></a></dt>
 <dd><p>Manages the storage of protest information in a PostgreSQL database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

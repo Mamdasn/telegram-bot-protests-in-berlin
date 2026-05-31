@@ -122,7 +122,7 @@ if __name__ == "__main__":
             EventCrawler(
                 berlinde_url,
                 ProtestGrabber(CRAWLER_UA_UNIQ_ID),
-                ProtestPostgres(envconfig.POSTGRES),
+                ProtestPostgres(envconfig.POSTGRES, berlinde_url),
             ),
         ),
         (
@@ -130,7 +130,7 @@ if __name__ == "__main__":
             EventCrawler(
                 radar_url,
                 ApiGrabber(CRAWLER_UA_UNIQ_ID),
-                ProtestPostgres(envconfig.POSTGRES),
+                ProtestPostgres(envconfig.POSTGRES, radar_url),
             ),
         ),
     )

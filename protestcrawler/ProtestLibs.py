@@ -426,14 +426,20 @@ class ProtestPostgres:
     :param dict db_config: Configuration parameters for connecting to the database.
     """
 
-    def __init__(self, db_config):
+    def __init__(self, db_config, source_url):
         """
         Initializes the database configuration.
 
         :param db_config: Database connection parameters.
         :type db_config: dict
+        :param source_url: URL of the event source.
+        :type source_url: str
         """
         self.db_config = db_config
+        source_hostname = urlparse(source_url).hostname
+        if not source_hostname:
+            raise ValueError(f"Could not determine event source from URL: {source_url}")
+        self.source = source_hostname.removeprefix("www.")
 
     @contextmanager
     def _db_cursor(self) -> psycopg2.extensions.connection:
@@ -486,7 +492,8 @@ class ProtestPostgres:
             PLZ VARCHAR(10) NOT NULL,
             Versammlungsort VARCHAR NOT NULL,
             Aufzugsstrecke VARCHAR,
-            UNIQUE(PLZ, Versammlungsort, Datum, Von)
+            source VARCHAR NOT NULL,
+            UNIQUE(source, PLZ, Versammlungsort, Datum, Von)
         );
         """
         with self._db_cursor() as cursor:
@@ -504,8 +511,8 @@ class ProtestPostgres:
         :type data: dict
         """
 
-        sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke)
-                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s) ON CONFLICT (PLZ, Versammlungsort, Datum, Von) DO UPDATE
+        sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke, source)
+                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s, %s) ON CONFLICT (source, PLZ, Versammlungsort, Datum, Von) DO UPDATE
                             SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis
                             RETURNING id;"""
 
@@ -518,7 +525,7 @@ class ProtestPostgres:
             "Versammlungsort",
             "Aufzugsstrecke",
         )
-        cursor.execute(sql_protest, [data.get(field) for field in fields])
+        cursor.execute(sql_protest, [data.get(field) for field in fields] + [self.source])
 
         return True
 

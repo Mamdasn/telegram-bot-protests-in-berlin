@@ -16,6 +16,9 @@ from bs4 import BeautifulSoup, Tag
 
 logger = logging.getLogger(__name__)
 
+# Cap the SQUAT description so one event doesn't fill a whole listing page.
+SQUAT_DESCRIPTION_MAX_CHARS = 500
+
 
 class ProtestGrabber:
     """
@@ -270,14 +273,14 @@ class ProtestGrabber:
 
 class ApiGrabber:
     """
-    Fetches and normalizes Berlin events from the RADAR JSON API.
+    Fetches and normalizes Berlin events from the SQUAT JSON API.
 
     Requests are sent directly by default. Tor can be enabled for deployments
     that want to rotate the IP after retry-worthy request failures.
     """
 
-    RADAR_PARAMS = {
-        "fields": "uuid,title,date_time,offline,offline:address",
+    SQUAT_PARAMS = {
+        "fields": "uuid,title,date_time,offline,offline:address,url,body",
         "facets[city][]": "Berlin",
     }
     RETRYABLE_HTTP_STATUSES = {429, 500, 502, 503, 504}
@@ -291,7 +294,7 @@ class ApiGrabber:
         rotate_ip_on_retry=False,
     ):
         self.CRAWLER_UA = f"BerlinProtests/{CRAWLER_UA_UNIQ_ID}"
-        self.params = dict(params or self.RADAR_PARAMS)
+        self.params = dict(params or self.SQUAT_PARAMS)
         self.page_size = page_size
         self.proxy = proxy
         self.rotate_ip_on_retry = rotate_ip_on_retry
@@ -392,9 +395,30 @@ class ApiGrabber:
             return data.decode("utf-8").find("OK") != -1
 
     @staticmethod
+    def _strip_html(html: str | None) -> str | None:
+        """
+        Turn an HTML snippet into a single line of plain text.
+        """
+        if not html:
+            return None
+        text = BeautifulSoup(html, "html.parser").get_text(separator=" ", strip=True)
+        text = re.sub(r"\s+", " ", text).strip()
+        return text or None
+
+    @staticmethod
+    def _event_description(body: dict | None) -> str | None:
+        """
+        Plain-text event description, shortened to fit a listing.
+        """
+        description = ApiGrabber._strip_html((body or {}).get("value"))
+        if description and len(description) > SQUAT_DESCRIPTION_MAX_CHARS:
+            description = description[:SQUAT_DESCRIPTION_MAX_CHARS].rstrip() + "…"
+        return description
+
+    @staticmethod
     def parse_protest_list(event: dict) -> dict:
         """
-        Maps a RADAR event to the existing events table shape.
+        Maps a SQUAT event to the existing events table shape.
         """
         try:
             period = event["date_time"][0]
@@ -413,6 +437,8 @@ class ApiGrabber:
                 "PLZ": address.get("postal_code") or "00000",
                 "Versammlungsort": location.get("title"),
                 "Aufzugsstrecke": None,
+                "source": event.get("url"),
+                "description": ApiGrabber._event_description(event.get("body")),
             }
         except Exception as error:
             logger.error(f"Error parsing API event: {error}")
@@ -493,6 +519,7 @@ class ProtestPostgres:
             Versammlungsort VARCHAR NOT NULL,
             Aufzugsstrecke VARCHAR,
             source VARCHAR NOT NULL,
+            description VARCHAR(600),
             UNIQUE(source, PLZ, Versammlungsort, Datum, Von)
         );
         """
@@ -511,9 +538,9 @@ class ProtestPostgres:
         :type data: dict
         """
 
-        sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke, source)
-                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s, %s) ON CONFLICT (source, PLZ, Versammlungsort, Datum, Von) DO UPDATE
-                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis
+        sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke, source, description)
+                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s, %s, %s) ON CONFLICT (source, PLZ, Versammlungsort, Datum, Von) DO UPDATE
+                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis, description = EXCLUDED.description
                             RETURNING id;"""
 
         fields = (
@@ -525,7 +552,12 @@ class ProtestPostgres:
             "Versammlungsort",
             "Aufzugsstrecke",
         )
-        cursor.execute(sql_protest, [data.get(field) for field in fields] + [self.source])
+        # Use the event's own source (e.g. its SQUAT link) if it has one.
+        source = data.get("source") or self.source
+        cursor.execute(
+            sql_protest,
+            [data.get(field) for field in fields] + [source, data.get("description")],
+        )
 
         return True
 

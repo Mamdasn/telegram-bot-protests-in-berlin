@@ -106,7 +106,7 @@ CRAWLER_UA_UNIQ_ID = random.randint(10**11, 10**12 - 1)
 berlinde_url = (
     "https://www.berlin.de/polizei/service/versammlungsbehoerde/versammlungen-aufzuege"
 )
-radar_url = "https://radar.squat.net/api/1.2/search/events.json"
+squat_url = "https://radar.squat.net/api/1.2/search/events.json"
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -126,11 +126,11 @@ if __name__ == "__main__":
             ),
         ),
         (
-            "RADAR",
+            "SQUAT",
             EventCrawler(
-                radar_url,
+                squat_url,
                 ApiGrabber(CRAWLER_UA_UNIQ_ID),
-                ProtestPostgres(envconfig.POSTGRES, radar_url),
+                ProtestPostgres(envconfig.POSTGRES, squat_url),
             ),
         ),
     )

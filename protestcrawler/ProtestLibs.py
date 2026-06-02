@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup, Tag
 logger = logging.getLogger(__name__)
 
 # Cap the SQUAT description
-SQUAT_DESCRIPTION_MAX_CHARS = 500
+SQUAT_DESCRIPTION_MAX_CHARS = 250
 
 # berlin.de only has registered action, protest, and camp
 BERLINDE_CATEGORY = "action/protest/camp"

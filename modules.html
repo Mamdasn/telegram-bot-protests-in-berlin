@@ -84,7 +84,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#module-libs.postgres_api">Postgres API Module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_source_icons"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_source_icons()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.get_category_icons"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.get_category_icons()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.establish_db_connection"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.establish_db_connection()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.start"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.start()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libs.postgres_api.Fetchpostgres.close"><code class="docutils literal notranslate"><span class="pre">Fetchpostgres.close()</span></code></a></li>
@@ -682,14 +682,15 @@ POSTGRES_DB (str): The postgres database name.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_source_icons">
-<span class="sig-name descname"><span class="pre">get_source_icons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_source_icons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_source_icons" title="Link to this definition"></a></dt>
-<dd><p>Map each event source to a color icon, ordered alphabetically by source.</p>
-<p>The distinct sources are read from the database once and cached, so the
-color assignment is consistent across every formatted event.</p>
+<dt class="sig sig-object py" id="libs.postgres_api.Fetchpostgres.get_category_icons">
+<span class="sig-name descname"><span class="pre">get_category_icons</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/libs/postgres_api.html#Fetchpostgres.get_category_icons"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#libs.postgres_api.Fetchpostgres.get_category_icons" title="Link to this definition"></a></dt>
+<dd><p>Assign a color square to each event category.</p>
+<p>Categories are sorted before colors are assigned. The result is cached so
+every event in the same category uses the same color. The bar/cafe, food
+label uses the food color.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A mapping of source name to its color square.</p>
+<dd class="field-odd"><p>Category names and their color squares.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict</p>

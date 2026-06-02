@@ -83,13 +83,14 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">html</span><span class="w"> </span><span class="kn">import</span> <span class="n">escape</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">psycopg2</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">SOURCE_COLOR_PALETTE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;🟥&quot;</span><span class="p">,</span> <span class="s2">&quot;🟦&quot;</span><span class="p">,</span> <span class="s2">&quot;🟪&quot;</span><span class="p">,</span> <span class="s2">&quot;🟩&quot;</span><span class="p">,</span> <span class="s2">&quot;🟨&quot;</span><span class="p">,</span> <span class="s2">&quot;🟧&quot;</span><span class="p">,</span> <span class="s2">&quot;🟫&quot;</span><span class="p">)</span>
+<span class="n">CATEGORY_COLOR_PALETTE</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;🟥&quot;</span><span class="p">,</span> <span class="s2">&quot;🟦&quot;</span><span class="p">,</span> <span class="s2">&quot;🟪&quot;</span><span class="p">,</span> <span class="s2">&quot;🟩&quot;</span><span class="p">,</span> <span class="s2">&quot;🟨&quot;</span><span class="p">,</span> <span class="s2">&quot;🟧&quot;</span><span class="p">,</span> <span class="s2">&quot;🟫&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Fetchpostgres">
@@ -113,33 +114,42 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_source_icons</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_category_icons</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Fetchpostgres.get_source_icons">
-<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_source_icons">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_source_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Fetchpostgres.get_category_icons">
+<a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.get_category_icons">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_category_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Map each event source to a color icon, ordered alphabetically by source.</span>
+<span class="sd">        Assign a color square to each event category.</span>
 
-<span class="sd">        The distinct sources are read from the database once and cached, so the</span>
-<span class="sd">        color assignment is consistent across every formatted event.</span>
+<span class="sd">        Categories are sorted before colors are assigned. The result is cached so</span>
+<span class="sd">        every event in the same category uses the same color. The bar/cafe, food</span>
+<span class="sd">        label uses the food color.</span>
 
-<span class="sd">        :return: A mapping of source name to its color square.</span>
+<span class="sd">        :return: Category names and their color squares.</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_icons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category_icons</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">establish_db_connection</span><span class="p">()</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
                 <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                    <span class="s2">&quot;SELECT DISTINCT source FROM events &quot;</span>
-                    <span class="s2">&quot;WHERE source IS NOT NULL ORDER BY source&quot;</span>
+                    <span class="s2">&quot;SELECT DISTINCT category FROM events &quot;</span>
+                    <span class="s2">&quot;WHERE category IS NOT NULL AND btrim(category) &lt;&gt; &#39;&#39; &quot;</span>
+                    <span class="s2">&quot;ORDER BY category&quot;</span>
                 <span class="p">)</span>
-                <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_source_icons</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">source</span><span class="p">:</span> <span class="n">SOURCE_COLOR_PALETTE</span><span class="p">[</span><span class="n">index</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">SOURCE_COLOR_PALETTE</span><span class="p">)]</span>
-                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+                <span class="n">categories</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_category_color_key</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()}</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_category_icons</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">category</span><span class="p">:</span> <span class="n">CATEGORY_COLOR_PALETTE</span><span class="p">[</span><span class="n">index</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">CATEGORY_COLOR_PALETTE</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">categories</span><span class="p">)</span>
             <span class="p">}</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_icons</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_category_icons</span></div>
 
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_category_color_key</span><span class="p">(</span><span class="n">category</span><span class="p">):</span>
+        <span class="n">category</span> <span class="o">=</span> <span class="p">(</span><span class="n">category</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;food&quot;</span> <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="s2">&quot;bar/cafe, food&quot;</span> <span class="k">else</span> <span class="n">category</span>
 
 <div class="viewcode-block" id="Fetchpostgres.establish_db_connection">
 <a class="viewcode-back" href="../../modules.html#libs.postgres_api.Fetchpostgres.establish_db_connection">[docs]</a>
@@ -474,7 +484,9 @@
             <span class="p">),</span>
         <span class="p">}</span>
         <span class="n">newline</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">source_icon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_source_icons</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">category_icon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_category_icons</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_category_color_key</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="k">else</span> <span class="kc">None</span><span class="p">),</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
         <span class="n">date</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;b&gt;&lt;ins&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/ins&gt;&lt;/b&gt;&#39;</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">time_range</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;&lt;ins&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;time range start&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/ins&gt; to &lt;ins&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;time range end&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&lt;/ins&gt;&#39;</span>
@@ -483,7 +495,19 @@
             <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;time range start&quot;</span><span class="p">]</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
-        <span class="n">thema</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;Thema&lt;/b&gt;: &lt;i&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;thema&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/i&gt;</span><span class="si">{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;thema&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">event_url</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">escape</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="n">quote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">))</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">thema</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;b&gt;Thema&lt;/b&gt;: &lt;a href=&quot;</span><span class="si">{</span><span class="n">event_url</span><span class="si">}</span><span class="s1">&quot;&gt;&lt;i&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;thema&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;/i&gt;&lt;/a&gt;</span><span class="si">{</span><span class="n">newline</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="n">event_url</span> <span class="ow">and</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;thema&quot;</span><span class="p">]</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;Thema&lt;/b&gt;: &lt;i&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;thema&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/i&gt;</span><span class="si">{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;thema&quot;</span><span class="p">]</span>
+            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="p">)</span>
         <span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;Beschreibung&lt;/b&gt;: &lt;i&gt;</span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/i&gt;</span><span class="si">{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
@@ -515,8 +539,8 @@
             <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span>
             <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="p">)</span>
-        <span class="n">source_marker</span> <span class="o">=</span> <span class="n">source_icon</span> <span class="k">if</span> <span class="n">source_icon</span> <span class="k">else</span> <span class="s2">&quot;🔹️&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">source_marker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">date</span><span class="si">}{</span><span class="s1">&#39; - &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">date</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">time_range</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">time_range</span><span class="si">}{</span><span class="n">newline</span><span class="si">}{</span><span class="n">thema</span><span class="si">}{</span><span class="n">category</span><span class="si">}{</span><span class="n">description</span><span class="si">}{</span><span class="n">versammlungsort</span><span class="si">}{</span><span class="n">aufzugsstrecke</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="n">category_marker</span> <span class="o">=</span> <span class="n">category_icon</span> <span class="k">if</span> <span class="n">category_icon</span> <span class="k">else</span> <span class="s2">&quot;🔹️&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category_marker</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">date</span><span class="si">}{</span><span class="s1">&#39; - &#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">date</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">time_range</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}{</span><span class="n">time_range</span><span class="si">}{</span><span class="n">newline</span><span class="si">}{</span><span class="n">thema</span><span class="si">}{</span><span class="n">category</span><span class="si">}{</span><span class="n">description</span><span class="si">}{</span><span class="n">versammlungsort</span><span class="si">}{</span><span class="n">aufzugsstrecke</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
 <div class="viewcode-block" id="Fetchpostgres.format_postgre_queries">

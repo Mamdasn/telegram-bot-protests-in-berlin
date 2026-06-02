@@ -16,8 +16,11 @@ from bs4 import BeautifulSoup, Tag
 
 logger = logging.getLogger(__name__)
 
-# Cap the SQUAT description so one event doesn't fill a whole listing page.
+# Cap the SQUAT description
 SQUAT_DESCRIPTION_MAX_CHARS = 500
+
+# berlin.de only has registered action, protest, and camp
+BERLINDE_CATEGORY = "action/protest/camp"
 
 
 class ProtestGrabber:
@@ -265,6 +268,7 @@ class ProtestGrabber:
             if details.get("Datum"):
                 details["Datum"] = ".".join(details["Datum"].split(".")[::-1])
 
+            details["category"] = BERLINDE_CATEGORY
             return details
         except Exception as e:
             logger.error(f"Error parsing event: {e}")
@@ -280,7 +284,7 @@ class ApiGrabber:
     """
 
     SQUAT_PARAMS = {
-        "fields": "uuid,title,date_time,offline,offline:address,url,body",
+        "fields": "uuid,title,date_time,offline,offline:address,url,body,category",
         "facets[city][]": "Berlin",
     }
     RETRYABLE_HTTP_STATUSES = {429, 500, 502, 503, 504}
@@ -416,6 +420,18 @@ class ApiGrabber:
         return description
 
     @staticmethod
+    def _event_categories(categories: list | None) -> str | None:
+        """
+        Comma-separated category names, de-duplicated and order-preserved.
+        """
+        names = []
+        for term in categories or []:
+            name = (term.get("name") or "").strip()
+            if name and name not in names:
+                names.append(name)
+        return ", ".join(names) or None
+
+    @staticmethod
     def parse_protest_list(event: dict) -> dict:
         """
         Maps a SQUAT event to the existing events table shape.
@@ -439,6 +455,7 @@ class ApiGrabber:
                 "Aufzugsstrecke": None,
                 "source": event.get("url"),
                 "description": ApiGrabber._event_description(event.get("body")),
+                "category": ApiGrabber._event_categories(event.get("category")),
             }
         except Exception as error:
             logger.error(f"Error parsing API event: {error}")
@@ -520,6 +537,7 @@ class ProtestPostgres:
             Aufzugsstrecke VARCHAR,
             source VARCHAR NOT NULL,
             description VARCHAR(600),
+            category VARCHAR(500),
             UNIQUE(source, PLZ, Versammlungsort, Datum, Von)
         );
         """
@@ -538,9 +556,9 @@ class ProtestPostgres:
         :type data: dict
         """
 
-        sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke, source, description)
-                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s, %s, %s) ON CONFLICT (source, PLZ, Versammlungsort, Datum, Von) DO UPDATE
-                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis, description = EXCLUDED.description
+        sql_protest = """INSERT INTO events (Datum, Von, Bis, Thema, PLZ, Versammlungsort, Aufzugsstrecke, source, description, category)
+                            VALUES(%s::DATE, %s::TIME, %s::TIME, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (source, PLZ, Versammlungsort, Datum, Von) DO UPDATE
+                            SET Aufzugsstrecke = EXCLUDED.Aufzugsstrecke, Thema = EXCLUDED.Thema, Bis = EXCLUDED.Bis, description = EXCLUDED.description, category = EXCLUDED.category
                             RETURNING id;"""
 
         fields = (
@@ -556,7 +574,8 @@ class ProtestPostgres:
         source = data.get("source") or self.source
         cursor.execute(
             sql_protest,
-            [data.get(field) for field in fields] + [source, data.get("description")],
+            [data.get(field) for field in fields]
+            + [source, data.get("description"), data.get("category")],
         )
 
         return True

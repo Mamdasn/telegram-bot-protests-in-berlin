@@ -21,7 +21,7 @@ services:
     container_name: protestcrawler
     restart: on-failure
     build: "protestcrawler"
-    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.3.2}
+    image: ${PROTESTCRAWLER_IMAGE_BUILD:-sfarhad/protestcrawler:4.4.0}
     environment:
         <<: *postgres-cred-shared
         DB_UPDATE_PERIOD: ${DB_UPDATE_PERIOD}

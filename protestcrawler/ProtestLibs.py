@@ -3,7 +3,7 @@ import logging
 import re
 import socket
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import sleep
 from typing import Iterator
 from urllib.parse import urlparse
@@ -13,6 +13,7 @@ import aiohttp
 import psycopg2
 from aiohttp import ClientResponse
 from bs4 import BeautifulSoup, Tag
+from dateutil.rrule import rrulestr
 
 logger = logging.getLogger(__name__)
 
@@ -432,7 +433,7 @@ class ApiGrabber:
         return ", ".join(names) or None
 
     @staticmethod
-    def parse_protest_list(event: dict) -> dict:
+    def parse_protest_list(event: dict) -> dict | list:
         """
         Maps a SQUAT event to the existing events table shape.
         """
@@ -445,7 +446,7 @@ class ApiGrabber:
                 period.get("time_end") or period["time_start"]
             )
 
-            return {
+            parsed = {
                 "Datum": start.date().isoformat(),
                 "Von": start.strftime("%H:%M:%S"),
                 "Bis": end.strftime("%H:%M:%S"),
@@ -457,6 +458,18 @@ class ApiGrabber:
                 "description": ApiGrabber._event_description(event.get("body")),
                 "category": ApiGrabber._event_categories(event.get("category")),
             }
+
+            rrule = period.get("rrule")
+            if not rrule:
+                return parsed
+
+            horizon = end + timedelta(days=366)
+            rows = []
+            for occurrence in rrulestr(rrule, dtstart=start):
+                if occurrence > horizon or len(rows) >= 366:
+                    break
+                rows.append({**parsed, "Datum": occurrence.date().isoformat()})
+            return rows or parsed
         except Exception as error:
             logger.error(f"Error parsing API event: {error}")
             return {}
@@ -591,7 +604,12 @@ class ProtestPostgres:
         try:
             self._ensure_table_exists()
             with self._db_cursor() as cursor:
-                for event in data:
+                events = (
+                    row
+                    for item in data
+                    for row in (item if isinstance(item, list) else [item])
+                )
+                for event in events:
                     if not event:
                         continue
                     missing_required_field = False
